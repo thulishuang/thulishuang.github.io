@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+		Game of Life
+		</title>
+		<meta charset = "UTF-8">
+		<meta name = "viewport" content = "width=device-width, initial-scale=1,maximum-scale=1">
+		<meta name = "keyword" content = "html,game of life">
+		<script type="text/javascript" src = "jquery-3.0.0.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="style.css">
+	</head>
+	<body>
+		<div class="Header">
+			<div class="Title"><h3>Game of Life</h3><hr/></div>
+			<div class="Button">
+                <div class="word">Generation: <span class="Generation">0</span></div>
+                <div class="button">
+                    <button class="btnStart">Start</button>
+                    <button class="btnPause" disabled="disabled">Pause</button>
+                    <button class="btnRandom">Random</button>
+                    <button class="btnReset">Reset</button>
+                    <button class="btnHelp">Help</button>
+                </div>
+            </div>
+        <div>
+        <div class="Cell">
+        	<canvas class="Canvas" width="500" height="500"/>
+        </div>
+        <div class="Footer">
+        	<hr/>
+            &copy; 2016 Game of Life Designed by <a href="#">李书昂</a>
+        </div>
+	</body>
+    <script type="text/javascript" src="function.js"></script>
+</html>

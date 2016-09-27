@@ -1,0 +1,30 @@
+canvas {
+	border: 1px solid; 
+	background-color: #eeeeee; 
+}
+
+div {
+	text-align: center;
+}
+
+hr {
+	width: 550px;
+}
+
+.word {
+	float: left;
+}
+
+.button {
+	float: right;
+}
+
+.Button {
+	width: 500px;
+	padding-left: 420px;
+	margin-top: 20px;	
+}
+
+.Cell {
+	padding-top: 40px;
+}
