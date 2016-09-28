@@ -1,6 +1,6 @@
 	function LifeGame ()
 	{
-		this.timer = 100;
+		this.timer = 200;
 		this.cellWidth = 10;
 		this.cellXNum = 50;
 		this.cellYNum = 50;
@@ -11,8 +11,7 @@
 		this.percent = 20.0;
 		this.btnStart = $(".btnStart")[0];
 		this.btnPause = $(".btnPause")[0];
-		this.btnHelp = $(".btnHelp")[0];
-		this.btnReset = $(".btnReset")[0];	
+		this.btnHelp = $(".btnHelp")[0];	
 	}
 	var life = new LifeGame();
 
@@ -20,9 +19,10 @@
 	LifeGame.prototype.startGame = function () {
 		life.isRunning = 1;
 		life.percent = $(".Percent")[0].value;
+		life.btnPause.innerText = "Pause";
+		life.randomGame();
 		life.btnPause.disabled = false;
-		life.btnStart.disabled = true;
-		life.btnReset.disabled = true;
+
 		life.update();
 	};
 
@@ -105,10 +105,18 @@
 	};
 
 	LifeGame.prototype.pauseGame = function () {
-		life.isRunning = 0;
-		life.btnPause.disabled = true;
-		life.btnStart.disabled = false;
-		life.btnReset.disabled = false;
+		if (life.isRunning == 1) {
+			life.isRunning = 0;
+			life.btnPause.innerText = "Continue";
+			life.update();
+			return;
+		}
+		if (life.isRunning == 0) {
+			life.isRunning = 1;
+			life.btnPause.innerText = "Pause";
+			life.update();
+			return;
+		}
 	};
 
 	LifeGame.prototype.randomGame = function () {
@@ -122,14 +130,6 @@
 				life.drawCell(i,j,life.cells[[i,j]]);
 			}
 		}
-	};
-
-	LifeGame.prototype.resetGame = function () {
-		life.percent = $(".Percent")[0].value;
-		life.randomGame();
-		life.generation = 0;
-		$(".Generation")[0].innerHTML = life.generation;
-		$(".Livings")[0].innerHTML = life.livings;
 	};
 
 	LifeGame.prototype.drawCell = function (x,y,state) {
@@ -160,8 +160,5 @@
 	};
 	life.btnHelp.onclick = function () {
 		life.help();
-	};
-	life.btnReset.onclick = function () {
-		life.resetGame();
 	};
 	window.addEventListener("load", life.loadGame(),true);

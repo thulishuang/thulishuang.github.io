@@ -9,14 +9,6 @@ describe('GameOfLife',function() {
 		it('should be a function',function() {
 			assert.isFunction(life.pauseGame);
 		});
-		context('isRunning flag',function () {
-			beforeEach(function () {
-				life.pauseGame();
-			});
-			it('isRunning should equal 0 when the game paused',function() {
-				assert.equal(life.isRunning,0);
-			});
-		});
 	});
 	describe('life.randomGame',function () {
 		it('should be a function',function() {
@@ -45,20 +37,6 @@ describe('GameOfLife',function() {
 		it('should be a function',function() {
 			assert.isFunction(life.help);
 		});
-	});
-	describe('life.resetGame',function () {
-		it('should be a function',function() {
-			assert.isFunction(life.resetGame);
-		});
-		context('the generation',function () {
-			beforeEach(function () {
-				life.resetGame();
-			});
-			it('the generation should equal to 0 when the game has reset',function() {
-				assert.equal(life.generation,0);
-			});
-		});
-
 	});
 	describe('life.update',function () {
 		it('should be a function',function() {
