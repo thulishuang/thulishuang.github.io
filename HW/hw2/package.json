@@ -4,7 +4,8 @@
   "description": "2016/09/22",
   "main": "function.js",
   "scripts": {
-    "test": "test.js"
+    "test": "test.js",
+    "jquery":"jquery-3.0.0.min.js"
   },
   "author": "",
   "license": "ISC",

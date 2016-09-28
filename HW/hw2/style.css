@@ -28,3 +28,7 @@ hr {
 .Cell {
 	padding-top: 40px;
 }
+
+input {
+	width:40px;
+}

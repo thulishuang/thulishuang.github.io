@@ -3,9 +3,26 @@
 <head>
 	<meta charset="utf-8">
 	<title>Test</title>
+	<script type="text/javascript" src="jquery-3.0.0.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="./node_modules/mocha/mocha.css">
 </head>
 <body>
+	<div style="display: none">
+		<div class="word">Generation: <span class="Generation">0</span>&nbsp;Livings：<span class="Livings">0</span>
+	    </div>
+		<div class="Button">
+	        <div class="button">
+	        	<input class="Percent" type="number" value="30"></input>
+	            <button class="btnStart"></button>
+	            <button class="btnPause" disabled="disabled"></button>
+	            <button class="btnReset"></button>
+	            <button class="btnHelp"></button>
+	        </div>
+	    </div>
+	    <div class="Cell">
+			<canvas class="Canvas" width="500" height="500"/>
+	    </div>
+    </div>
 	<div id="mocha"></div>
 	<script src="./node_modules/mocha/mocha.js"></script>
 	<script>mocha.setup('bdd');</script>

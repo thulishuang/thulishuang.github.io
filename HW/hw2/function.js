@@ -1,79 +1,72 @@
-	var timer = 10;
-	var cellWidth = 10;
-	var cellXNum = 50;
-	var cellYNum = 50;
-	var cells = [];
-	var isRunning = 0;
-	var generation = 0;
-	var canvas = $(".Canvas")[0];
-	var cxt = canvas.getContext("2d");
-	var btnStart = $(".btnStart")[0];
-	var btnPause = $(".btnPause")[0];
-	var btnRandom = $(".btnRandom")[0];
-	var btnHelp = $(".btnHelp")[0];
-	var btnReset = $(".btnReset")[0];
-	btnStart.onclick = function () {
-		startGame();
-	};
-	btnPause.onclick = function () {
-		pauseGame();
-	};
-	btnRandom.onclick = function () {
-		randomGame();
-	};
-	btnHelp.onclick = function () {
-		help();
-	};
-	btnReset.onclick = function () {
-		resetGame();
-	};
-	window.addEventListener("load", loadGame(),true);
-
-	function startGame () {
-		isRunning = 1;
-		btnPause.disabled = false;
-		btnStart.disabled = true;
-		btnRandom.disabled = true;
-		btnReset.disabled = true;
-		update();
+	function LifeGame ()
+	{
+		this.timer = 100;
+		this.cellWidth = 10;
+		this.cellXNum = 50;
+		this.cellYNum = 50;
+		this.cells = [];
+		this.isRunning = 0;
+		this.generation = 0;
+		this.livings = 0;
+		this.percent = 20.0;
+		this.btnStart = $(".btnStart")[0];
+		this.btnPause = $(".btnPause")[0];
+		this.btnHelp = $(".btnHelp")[0];
+		this.btnReset = $(".btnReset")[0];	
 	}
+	var life = new LifeGame();
 
-	function update () {
+
+	LifeGame.prototype.startGame = function () {
+		life.isRunning = 1;
+		life.percent = $(".Percent")[0].value;
+		life.btnPause.disabled = false;
+		life.btnStart.disabled = true;
+		life.btnReset.disabled = true;
+		life.update();
+	};
+
+	LifeGame.prototype.update = function () {
 		var nextGeneration = [];
 		var i,j;
-		for(i = 0; i < cellXNum; i++){
-			for(j = 0; j < cellYNum; j++){
-				nextGeneration[[i,j]] = LivingRule(i,j);
+		life.livings = 0;
+		for(i = 0; i < life.cellXNum; i++){
+			for(j = 0; j < life.cellYNum; j++){
+				nextGeneration[[i,j]] = life.LivingRule(i,j);
 			}
 		}
-		for(i = 0; i < cellXNum; i++){
-			for(j = 0; j < cellYNum; j++){
-				cells[[i,j]] = nextGeneration[[i,j]];
+		for(i = 0; i < life.cellXNum; i++){
+			for(j = 0; j < life.cellYNum; j++){
+				life.cells[[i,j]] = nextGeneration[[i,j]];
 			}
 		}
-		for(i = 0; i < cellXNum; i++){
-			for(j = 0; j < cellYNum; j++){
-				drawCell(i,j,cells[[i,j]]);
+		for(i = 0; i < life.cellXNum; i++){
+			for(j = 0; j < life.cellYNum; j++){
+				if (life.cells[[i,j]] == 1) {
+					life.livings++;
+				}
+				life.drawCell(i,j,life.cells[[i,j]]);
 			}
 		}
-		generation++;
-		$(".Generation")[0].innerHTML = generation;
-		if (isRunning) {
-			setTimeout(update,timer);
+		life.generation++;
+		$(".Generation")[0].innerHTML = life.generation;
+		$(".Livings")[0].innerHTML = life.livings;
+		if (life.isRunning) {
+			setTimeout(life.update,life.timer);
 		}
-	}
+	};
 
-	function LivingRule (x,y) {
+	LifeGame.prototype.LivingRule  = function (x,y) {
 		var near = [];
 		var livingNum = 0;
-		near[0] = cells[[(x-1+cellXNum)%cellXNum,(y-1+cellYNum)%cellYNum]];
-		near[1] = cells[[x,(y-1+cellYNum)%cellYNum]];
-		near[2] = cells[[(x+1+cellXNum)%cellXNum,(y-1+cellYNum)%cellYNum]];
-		near[3] = cells[[(x-1+cellXNum)%cellXNum,y]];
-		near[4] = cells[[(x+1+cellXNum)%cellXNum,y]];
-		near[5] = cells[[(x-1+cellXNum)%cellXNum,(y+1+cellYNum)%cellYNum]];
-		near[6] = cells[[x,(y+1+cellYNum)%cellYNum]];
-		near[7] = cells[[(x+1+cellXNum)%cellXNum,(y+1+cellYNum)%cellYNum]];
+		near[0] = life.cells[[(x-1+life.cellXNum)%life.cellXNum,(y-1+life.cellYNum)%life.cellYNum]];
+		near[1] = life.cells[[x,(y-1+life.cellYNum)%life.cellYNum]];
+		near[2] = life.cells[[(x+1+life.cellXNum)%life.cellXNum,(y-1+life.cellYNum)%life.cellYNum]];
+		near[3] = life.cells[[(x-1+life.cellXNum)%life.cellXNum,y]];
+		near[4] = life.cells[[(x+1+life.cellXNum)%life.cellXNum,y]];
+		near[5] = life.cells[[(x-1+life.cellXNum)%life.cellXNum,(y+1+life.cellYNum)%life.cellYNum]];
+		near[6] = life.cells[[x,(y+1+life.cellYNum)%life.cellYNum]];
+		near[7] = life.cells[[(x+1+life.cellXNum)%life.cellXNum,(y+1+life.cellYNum)%life.cellYNum]];
 		for(var i = 0; i < 8; i++){
 			var state = near[i];
 			if (state && state == 1) {
@@ -84,69 +77,91 @@
 			return 1;
 		}
 		else if (livingNum == 2) {
-			return cells[[x,y]];
+			return life.cells[[x,y]];
 		}
 		else {
 			return 0;
 		}
-	}
-	function loadGame () {
+	};
+	LifeGame.prototype.loadGame = function () {
+		var canvas = $(".Canvas")[0];
 		canvas.onmousedown = function (event) {
-			if (isRunning) {
+			if (life.isRunning) {
 				return;
 			}
-			var x = Math.floor(event.offsetX / cellWidth);
-			var y = Math.floor(event.offsetY / cellWidth);
-			var isLiving = cells[[x,y]];
+			var x = Math.floor(event.offsetX / life.cellWidth);
+			var y = Math.floor(event.offsetY / life.cellWidth);
+			var isLiving = life.cells[[x,y]];
 			if (isLiving && isLiving == 1) {
-				cells[[x,y]] = 0;
-				drawCell(x,y,0);
+				life.cells[[x,y]] = 0;
+				life.drawCell(x,y,0);
 			}
 			else {
-				cells[[x,y]] = 1;
-				drawCell(x,y,1);
+				life.cells[[x,y]] = 1;
+				life.drawCell(x,y,1);
 			}
 		};
-		randomGame();
-		generation = 0;
-		$(".Generation")[0].innerHTML = generation;
-	}
+		life.randomGame();
+	};
 
-	function pauseGame () {
-		isRunning = 0;
-		btnPause.disabled = true;
-		btnStart.disabled = false;
-		btnRandom.disabled = false;
-		btnReset.disabled = false;
-	}
+	LifeGame.prototype.pauseGame = function () {
+		life.isRunning = 0;
+		life.btnPause.disabled = true;
+		life.btnStart.disabled = false;
+		life.btnReset.disabled = false;
+	};
 
-	function randomGame () {
-		for(var i = 0; i < cellXNum; i++){
-			for(var j = 0; j < cellYNum; j++){
-				cells[[i,j]] = Math.random() > 0.8?1:0;
-				drawCell(i,j,cells[[i,j]]);
+	LifeGame.prototype.randomGame = function () {
+		life.livings = 0;
+		for(var i = 0; i < life.cellXNum; i++){
+			for(var j = 0; j < life.cellYNum; j++){
+				life.cells[[i,j]] = Math.random() > (1 - life.percent / 100)?1:0;
+				if (life.cells[[i,j]] == 1) {
+					life.livings++;
+				}
+				life.drawCell(i,j,life.cells[[i,j]]);
 			}
 		}
-	}
+	};
 
-	function resetGame () {
-		randomGame();
-		generation = 0;
-		$(".Generation")[0].innerHTML = generation;
-	}
+	LifeGame.prototype.resetGame = function () {
+		life.percent = $(".Percent")[0].value;
+		life.randomGame();
+		life.generation = 0;
+		$(".Generation")[0].innerHTML = life.generation;
+		$(".Livings")[0].innerHTML = life.livings;
+	};
 
-	function drawCell (x,y,state) {
+	LifeGame.prototype.drawCell = function (x,y,state) {
+		var canvas = $(".Canvas")[0];
+		var cxt = canvas.getContext("2d");
 		if (state && state == 1) {
 			cxt.fillStyle = "Black";
-			cxt.fillRect(x*cellWidth,y*cellWidth,cellWidth,cellWidth);
+			cxt.fillRect(x*life.cellWidth,y*life.cellWidth,life.cellWidth,life.cellWidth);
 			cxt.strokeStyle = "White";
-			cxt.strokeRect(x*cellWidth+1,y*cellWidth+1,cellWidth-2,cellWidth-2);
+			cxt.strokeRect(x*life.cellWidth+1,y*life.cellWidth+1,life.cellWidth-2,life.cellWidth-2);
+			return 1;
 		}
 		else {
-			cxt.clearRect(x*cellWidth,y*cellWidth,cellWidth,cellWidth);
+			cxt.clearRect(x*life.cellWidth,y*life.cellWidth,life.cellWidth,life.cellWidth);
+			return 0;
 		}
-	}
+	};
 
-	function help () {
+	LifeGame.prototype.help = function () {
 		window.open("http://baike.baidu.com/link?url=ibx7NALvhaoszqqLslPjjNPDkijy0qn-AhERmnddf994dVH_N4WGvTuebC7kpka9ggQVj0bIJC3xYDgVC-ydEbd0MHXEfeSR-xhJwAWbzrGZ83zYOukPBD8IpY1LtC9h");
-	}
+	};
+
+	life.btnStart.onclick = function () {
+		life.startGame();
+	};
+	life.btnPause.onclick = function () {
+		life.pauseGame();
+	};
+	life.btnHelp.onclick = function () {
+		life.help();
+	};
+	life.btnReset.onclick = function () {
+		life.resetGame();
+	};
+	window.addEventListener("load", life.loadGame(),true);
