@@ -7,11 +7,11 @@ layout: default
 My name is Shuang Li (李书昂). I am a Ph.D. student at the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/), where I am advised by Associate Prof. [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm).
 
 My research interests lie in the fields of Natural Language Processing and Large Language Model.
-<!-- In particular, I am interested in mining information from heterogeneous data sources and focusing on:
+In particular, I am interested in natural language understanding and inference:
 
-- Automated fact-checking (especially fact-checking large language models),
-- Low-resource, open-world information extraction,
-- Data discovery, especially to query joinable and unionable tables from data lake tables. -->
+- Low-resource natural language inference
+- Cross-lingual natural language inference
+- Multi-modal natural language inference
 
 Contact: <lisa18@mails.tsinghua.edu.cn>
 
@@ -25,9 +25,15 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
 
 ## Publications
 
-<!-- <sup>*</sup> denotes equal contribution. -->
+### 2023
 
-**2023**
+- **RAPL: A Relation-Aware Prototype Learning Approach for Few-Shot Document-Level Relation Extraction**
+
+  Shiao Meng, Xuming Hu, Aiwei Liu, **Shuang Li**, Fukun Ma, Yawen Yang, Lijie Wen
+  
+  **EMNLP 2023**
+
+  <!-- [[Paper]]() [[Code]]() -->
 
 - **Semantics Matters: AMR-based Path Aggregation Relational Network for Aspect-based Sentiment Analysis**
 
@@ -35,44 +41,41 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
   
   **ACL 2023**
 
-  [[Paper]](xuminghu.github.io) [[Code & Data]](xuminghu.github.io)
+  [[Paper]](https://aclanthology.org/2023.acl-long.19.pdf) [[Code]](https://github.com/THU-BPM/APARN)
 
 - **Enhancing Cross-lingual Natural Language Inference by Soft Prompting with Multilingual Verbalizer**
 
   **Shuang Li**, Xuming Hu, Aiwei Liu, Yawen Yang, Fukun Ma, Philip S. Yu, Lijie Wen
   
-  **ACL 2023 (Findings)**
+  **ACL 2023 (Findings)**, *Long paper*
 
-  [[Paper]](xuminghu.github.io) [[Code & Data]](xuminghu.github.io)
+  [[Paper]](https://aclanthology.org/2023.findings-acl.88.pdf) [[Code]](https://github.com/THU-BPM/SoftMV)
 
 - **Exploring the Compositional Generalization in Context Dependent Text-to-SQL Parsing**
 
   Aiwei Liu, Wei Liu, Xuming Hu, **Shuang Li**, Fukun Ma, Yawen Yang, Lijie Wen
   
-  **ACL 2023 (Findings)**
+  **ACL 2023 (Findings)**, *Long paper*
 
-  [[Paper]](xuminghu.github.io) [[Code & Data]](xuminghu.github.io)
+  [[Paper]](https://aclanthology.org/2023.findings-acl.43.pdf) [[Code]](https://github.com/THU-BPM/CD-Text2SQL-CG)
 
 - **A Multi-level Supervised Contrastive Learning Framework for Low-Resource Natural Language Inference**
 
   **Shuang Li**, Xuming Hu, Li Lin, Aiwei Liu, Lijie Wen, Philip S Yu
   
-  **IEEE/ACM TASLP 2023**
+  **IEEE/ACM TASLP 2023**, *Long paper*
 
-  [[Paper]](https://arxiv.org/pdf/2205.15550.pdf) [[Code & Data]](https://github.com/THU-BPM/MultiSCL)
-
+  [[Paper]](https://arxiv.org/pdf/2205.15550.pdf) [[Code]](https://github.com/THU-BPM/MultiSCL)
 
 - **Gaussian Prior Reinforcement Learning for Nested Named Entity Recognition**
 
   Yawen Yang, Xuming Hu, Fukun Ma, **Shuang Li**, Aiwei Liu, Lijie Wen, Philip S. Yu
   
-  **ICASSP 2023**
+  **ICASSP 2023**, *Long paper*
 
-  [[Paper]](https://arxiv.org/pdf/2305.07266.pdf) [[Code & Data]](thulishuang.github.io)
+  [[Paper]](https://arxiv.org/pdf/2305.07266.pdf)
 
- -->
-
-**2022**
+### 2022
   
 - **HiURE: Hierarchical Exemplar Contrastive Learning for Unsupervised Relation Extraction**
 
@@ -94,7 +97,7 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
 
   **Shuang Li**, Xuming Hu, Li Lin, Lijie Wen
   
-  **ICASSP 2022**, *Full paper*
+  **ICASSP 2022**, *Long paper*
 
   [[Paper]](https://arxiv.org/abs/2201.10927) [[Code]](https://github.com/THU-BPM/PairSCL)
 
@@ -102,10 +105,6 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
 
   Li Lin, Yixin Cao, Lifu Huang, **Shuang Li**, Xuming Hu, Lijie Wen, Jianmin Wang
   
-  **SIGIR 2022**, *Full paper*
+  **SIGIR 2022**, *Long paper*
 
   [[Paper]](https://arxiv.org/abs/2201.07099) [[Code]](https://github.com/THU-BPM/CoEP)
-
-
-**2021**
-
