@@ -31,15 +31,23 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
 
   Shiao Meng, Xuming Hu, Aiwei Liu, **Shuang Li**, Fukun Ma, Yawen Yang, Lijie Wen
   
-  **EMNLP 2023**
+  **EMNLP**
 
   <!-- [[Paper]]() [[Code]]() -->
+
+- **A Private Watermark for Large Language Models**
+
+  Aiwei Liu, Leyi Pan, Xuming Hu, **Shuang Li**, Lijie Wen, Irwin King, Philip S. Yu
+  
+  **arXiv**
+
+  [[Paper]](https://arxiv.org/abs/2307.16230) [[Code]](https://github.com/THU-BPM/private_watermark)
 
 - **Semantics Matters: AMR-based Path Aggregation Relational Network for Aspect-based Sentiment Analysis**
 
   Fukun Ma, Xuming Hu, Aiwei Liu, Yawen Yang, **Shuang Li**, Philip S. Yu, Lijie Wen
   
-  **ACL 2023**
+  **ACL**, *Long paper*
 
   [[Paper]](https://aclanthology.org/2023.acl-long.19.pdf) [[Code]](https://github.com/THU-BPM/APARN)
 
@@ -47,7 +55,7 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
 
   **Shuang Li**, Xuming Hu, Aiwei Liu, Yawen Yang, Fukun Ma, Philip S. Yu, Lijie Wen
   
-  **ACL 2023 (Findings)**, *Long paper*
+  **ACL (Findings)**, *Long paper*
 
   [[Paper]](https://aclanthology.org/2023.findings-acl.88.pdf) [[Code]](https://github.com/THU-BPM/SoftMV)
 
@@ -55,7 +63,7 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
 
   Aiwei Liu, Wei Liu, Xuming Hu, **Shuang Li**, Fukun Ma, Yawen Yang, Lijie Wen
   
-  **ACL 2023 (Findings)**, *Long paper*
+  **ACL (Findings)**, *Long paper*
 
   [[Paper]](https://aclanthology.org/2023.findings-acl.43.pdf) [[Code]](https://github.com/THU-BPM/CD-Text2SQL-CG)
 
@@ -63,7 +71,7 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
 
   **Shuang Li**, Xuming Hu, Li Lin, Aiwei Liu, Lijie Wen, Philip S Yu
   
-  **IEEE/ACM TASLP 2023**, *Long paper*
+  **IEEE/ACM TASLP**, *Long paper*
 
   [[Paper]](https://arxiv.org/pdf/2205.15550.pdf) [[Code]](https://github.com/THU-BPM/MultiSCL)
 
@@ -71,7 +79,7 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
 
   Yawen Yang, Xuming Hu, Fukun Ma, **Shuang Li**, Aiwei Liu, Lijie Wen, Philip S. Yu
   
-  **ICASSP 2023**, *Long paper*
+  **ICASSP**, *Long paper*
 
   [[Paper]](https://arxiv.org/pdf/2305.07266.pdf)
 
@@ -81,7 +89,7 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
 
   Shuliang Liu, Xuming Hu, Chenwei Zhang, **Shuang Li**, Lijie Wen, Philip S. Yu
   
-  **NAACL 2022**, *Long paper (Oral)*
+  **NAACL**, *Long paper*
 
   [[Paper]](https://arxiv.org/abs/2205.02225) [[Code]](https://github.com/THU-BPM/HiURE)
 
@@ -89,7 +97,7 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
   
   Aiwei Liu, Honghai Yu, Xuming Hu, **Shuang Li**, Li Lin, Fukun Ma, Yawen Yang, Lijie Wen
 
-  **EMNLP 2022**, *Long paper*
+  **EMNLP**, *Long paper*
 
   [[Paper]](https://arxiv.org/abs/2210.17004) [[Code]](https://github.com/THU-BPM/CWBA)
 
@@ -97,14 +105,34 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
 
   **Shuang Li**, Xuming Hu, Li Lin, Lijie Wen
   
-  **ICASSP 2022**, *Long paper*
+  **ICASSP**, *Long paper*
 
   [[Paper]](https://arxiv.org/abs/2201.10927) [[Code]](https://github.com/THU-BPM/PairSCL)
 
-- **Inferring Commonsense Explanations as Prompts for Future Event Generation**
+- **What makes the story forward? inferring commonsense explanations as prompts for future event generation**
 
   Li Lin, Yixin Cao, Lifu Huang, **Shuang Li**, Xuming Hu, Lijie Wen, Jianmin Wang
   
-  **SIGIR 2022**, *Long paper*
+  **SIGIR**, *Long paper*
 
   [[Paper]](https://arxiv.org/abs/2201.07099) [[Code]](https://github.com/THU-BPM/CoEP)
+
+### 2021
+
+- **MM-CPred: A Multi-task Predictive Model for Continuous-Time Event Sequences with Mixture Learning Losses**
+
+  Li Lin, Zan Zong, Lijie Wen, Chen Qian, **Shuang Li**, Jianmin Wang
+  
+  **DASFAA**, *Long paper*
+
+  [[Paper]](https://link.springer.com/chapter/10.1007/978-3-030-73194-6_34) [[Code]](https://github.com/veralily/DeepPred)
+
+### 2020
+
+- **An approach for process model extraction by multi-grained text classification**
+
+  Chen Qian, Lijie Wen, Akhil Kumar, Leilei Lin, Li Lin, Zan Zong, **Shuang Li**, Jianmin Wang
+  
+  **CAiSE**, *Long paper*
+
+  [[Paper]](https://link.springer.com/chapter/10.1007/978-3-030-49435-3_17)
