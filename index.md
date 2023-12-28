@@ -6,12 +6,8 @@ layout: default
 
 My name is Shuang Li (李书昂). I am a Ph.D. student at the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/), where I am advised by Associate Prof. [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm).
 
-My research interests lie in the fields of Natural Language Processing and Large Language Model.
-In particular, I am interested in natural language understanding and inference:
-
-- Low-resource natural language inference
-- Cross-lingual natural language inference
-- Multi-modal natural language inference
+My research interests lie in the fields of Natural Language Processing.
+In particular, I am interested in Natural Language Understanding and Large Language Model
 
 Contact: <lisa18@mails.tsinghua.edu.cn>
 
@@ -33,15 +29,15 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
   
   **EMNLP**
 
-  <!-- [[Paper]]() [[Code]]() -->
+  <!-- [[Paper]](https://aclanthology.org/2023.emnlp-main.316/) [[Code]](https://github.com/THU-BPM/RAPL) -->
 
-- **A Private Watermark for Large Language Models**
+- **An Unforgeable Publicly Verifiable Watermark for Large Language Models**
 
   Aiwei Liu, Leyi Pan, Xuming Hu, **Shuang Li**, Lijie Wen, Irwin King, Philip S. Yu
   
   **arXiv**
 
-  [[Paper]](https://arxiv.org/abs/2307.16230) [[Code]](https://github.com/THU-BPM/private_watermark)
+  [[Paper]](https://arxiv.org/abs/2307.16230) [[Code]](https://github.com/THU-BPM/unforgeable_watermark)
 
 - **Semantics Matters: AMR-based Path Aggregation Relational Network for Aspect-based Sentiment Analysis**
 
