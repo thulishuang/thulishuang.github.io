@@ -18,6 +18,7 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
 ## News
 
 - **2024.01**: One paper on Large Language Model Watermark is accepted by [ICLR 2024](https://openreview.net/group?id=ICLR.cc/2024/Conference)
+- **2023.10**: One paper on Document-Level Realtion Extraction is accepted by [EMNLP 2023](https://2023.emnlp.org)
 
 ## Publications
 
