@@ -17,9 +17,19 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
 
 ## News
 
-- **2023.10**: One paper on Document-Level Realtion Extraction is accepted by [EMNLP 2023](https://2023.emnlp.org)
+- **2024.01**: One paper on Large Language Model Watermark is accepted by [ICLR 2024](https://openreview.net/group?id=ICLR.cc/2024/Conference)
 
 ## Publications
+
+### 2024
+
+- **An Unforgeable Publicly Verifiable Watermark for Large Language Models**
+
+  Aiwei Liu, Leyi Pan, Xuming Hu, **Shuang Li**, Lijie Wen, Irwin King, Philip S. Yu
+  
+  **ICLR**
+
+  [[Paper]](https://arxiv.org/abs/2307.16230) [[Code]](https://github.com/THU-BPM/unforgeable_watermark)
 
 ### 2023
 
@@ -30,14 +40,6 @@ Contact: <lisa18@mails.tsinghua.edu.cn>
   **EMNLP**
 
   <!-- [[Paper]](https://aclanthology.org/2023.emnlp-main.316/) [[Code]](https://github.com/THU-BPM/RAPL) -->
-
-- **An Unforgeable Publicly Verifiable Watermark for Large Language Models**
-
-  Aiwei Liu, Leyi Pan, Xuming Hu, **Shuang Li**, Lijie Wen, Irwin King, Philip S. Yu
-  
-  **arXiv**
-
-  [[Paper]](https://arxiv.org/abs/2307.16230) [[Code]](https://github.com/THU-BPM/unforgeable_watermark)
 
 - **Semantics Matters: AMR-based Path Aggregation Relational Network for Aspect-based Sentiment Analysis**
 
