@@ -4,12 +4,11 @@ layout: default
 
 ## About
 
-My name is Shuang Li (李书昂). I am a Ph.D. student at the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/), where I am advised by Associate Prof. [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm).
+Hi! My name is Shuang Li (李书昂). I am a Researcher at Tencent. I earned my PhD. at the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/) in 2024, under the supervisor of Asso Prof. [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm).
 
-My research interests lie in the fields of Natural Language Processing.
-In particular, I am interested in Natural Language Understanding and Large Language Model
+My research interests lie in the fields of Natural Language Processing. In particular, I am interested in LLMs and Diffusion Models.
 
-Contact: <lisa18@mails.tsinghua.edu.cn>
+Contact: <lishuangthss@gmail.com>
 
 [[Google Scholar]](https://scholar.google.com/citations?user=LSTOX04AAAAJ&hl=en) [[ResearchGate]](https://www.researchgate.net/profile/Shuang-Li-64) [[Semantic Scholar]](https://www.semanticscholar.org/author/Shuang-Li/2133436155)
 
