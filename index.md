@@ -25,7 +25,7 @@ Contact: <lishuangthss@gmail.com>
 ### 2024
 - **Enhancing Reinforcement Learning with Label-Sensitive Reward for Natural Language Understanding**
 
-  Kuo Liao*, **Shuang Li***, Meng Zhao, Liqun Liu, Mengge Xue, zhenyu hu, Honglin Han, Chengguo Yin
+  Kuo Liao\*, **Shuang Li\***, Meng Zhao, Liqun Liu, Mengge Xue, zhenyu hu, Honglin Han, Chengguo Yin
 
   **ACL 2024**
 
@@ -107,7 +107,7 @@ Contact: <lishuangthss@gmail.com>
   
 - **HiURE: Hierarchical Exemplar Contrastive Learning for Unsupervised Relation Extraction**
 
-  Shuliang Liu, Xuming Hu, Chenwei Zhang, **Shuang Li**, Lijie Wen, Philip S. Yu
+  Shuliang Liu\*, Xuming Hu\*, Chenwei Zhang, **Shuang Li**, Lijie Wen, Philip S. Yu
   
   **NAACL 2022**
 
