@@ -33,7 +33,7 @@ Contact: <lishuangthss@gmail.com>
 
 - **Strengthened Symbol Binding Makes Large Language Models Reliable Multiple-Choice Selectors**
 
-  Mengge Xue, zhenyu hu, Meng Zhao, Liqun Liu, Kuo Liao, **Shuang Li**, Honglin Han, Chengguo Yin
+  Mengge Xue\*, Zhenyu Hu\*, Meng Zhao, Liqun Liu, Kuo Liao, **Shuang Li**, Honglin Han, Chengguo Yin
 
   **ACL 2024**
 
