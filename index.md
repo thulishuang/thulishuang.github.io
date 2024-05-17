@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## About
+## About me
 
 Hi! My name is Shuang Li (李书昂). Currently, I am a researcher at Tencent. I received my Ph.D. at the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/) in 2024, under the supervisor of Asso Prof. [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm).
 
