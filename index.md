@@ -61,7 +61,7 @@ Contact: <lishuangthss@gmail.com>
    
   **EMNLP 2023**
 
-  <!-- [[Paper]](https://aclanthology.org/2023.emnlp-main.316/) [[Code]](https://github.com/THU-BPM/RAPL) -->
+  [[Paper]](https://aclanthology.org/2023.emnlp-main.316/) [[Code]](https://github.com/THU-BPM/RAPL)
 
 - **Semantics Matters: AMR-based Path Aggregation Relational Network for Aspect-based Sentiment Analysis**
 
