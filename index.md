@@ -29,7 +29,7 @@ Contact: <lishuangthss@gmail.com>
 
   **ACL 2024**
 
-  [[Paper]]() [[Code]]()
+  [[Paper]](https://arxiv.org/abs/2405.19763) [[Code]](https://github.com/MagiaSN/ACL2024_RLLR)
 
 - **Strengthened Symbol Binding Makes Large Language Models Reliable Multiple-Choice Selectors**
 
@@ -37,7 +37,7 @@ Contact: <lishuangthss@gmail.com>
 
   **ACL 2024**
 
-  [[Paper]]() [[Code]]()
+  [[Paper]]() [[Code]](https://github.com/berryxue/PIF)
 
 - **On the Robustness of Document-Level Relation Extraction Models to Entity Name Variations**
 
