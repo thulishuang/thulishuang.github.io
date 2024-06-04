@@ -37,7 +37,7 @@ Contact: <lishuangthss@gmail.com>
 
   **ACL 2024**
 
-  [[Paper]]() [[Code]](https://github.com/berryxue/PIF)
+  [[Paper]](https://arxiv.org/abs/2406.01026) [[Code]](https://github.com/berryxue/PIF)
 
 - **On the Robustness of Document-Level Relation Extraction Models to Entity Name Variations**
 
