@@ -45,6 +45,8 @@ Contact: <lishuangthss@gmail.com>
 
   **ACL (Findings) 2024**
 
+  [[Paper]](https://arxiv.org/abs/2406.07444) [[Code]](https://github.com/THU-BPM/Env-DocRE)
+
 - **An Unforgeable Publicly Verifiable Watermark for Large Language Models**
 
   Aiwei Liu, Leyi Pan, Xuming Hu, **Shuang Li**, Lijie Wen, Irwin King, Philip S. Yu
