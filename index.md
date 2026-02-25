@@ -16,11 +16,18 @@ Contact: <lishuangthss@gmail.com>
 
 ## News
 
-- **2024.05**: 🎉🎉 One paper about Reinforcement Learning on LLM is accepted by [ACL 2024](https://2024.aclweb.org/)
-- **2024.05**: 🎉🎉 One paper about Multiple-Choice Select Bias for LLM is accepted by [ACL 2024](https://2024.aclweb.org/)
-- **2024.05**: 🎉🎉 One paper about Robustness of Document-Level Relation Extraction Models is accepted by Findings of [ACL 2024](https://2024.aclweb.org/)
+- **2026.02**: 🎉🎉 One paper about Subject-driven Text-to-image on AIGC is accepted by [CVPR 2026](https://cvpr.thecvf.com/)
 
 ## Publications
+
+### 2026
+- **Disentangling to Re-couple: Resolving the Similarity-Controllability Paradox in Subject-Driven Text-to-Image Generation**
+
+  **Shuang Li\***, Chao Deng\*, Hang Chen, Liqun Liu et al.
+
+  **CVPR 2026**
+
+  [[Paper]]() [[Code]]()
 
 ### 2024
 - **Enhancing Reinforcement Learning with Label-Sensitive Reward for Natural Language Understanding**
