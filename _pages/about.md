@@ -11,9 +11,9 @@ redirect_from:
 
 # About Me
 
-Hi! My name is **Shuang Li (李书昂)**. I am currently a researcher at StepFun, working on AIGC. Before that, I am a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing.
+Hi! My name is **Shuang Li (李书昂)**. I am currently a researcher at **StepFun**, working on AIGC. Before that, I am a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing.
 
-I received my Ph.D. degree from the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/) in 2024, where I was advised by Associate Professor [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm). Before that, I received my B.Eng. degree from the School of Software in Tsinghua University in 2018. I am also a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing.
+I received my Ph.D. degree from the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/) in 2024, where I was advised by Associate Professor [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm). Before that, I received my B.Eng. degree from the School of Software in Tsinghua University in 2018.
 
 ### Research Interests：
 
