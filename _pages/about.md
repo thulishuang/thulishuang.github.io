@@ -11,42 +11,42 @@ redirect_from:
 
 # About Me
 
-Hi! My name is **Shuang Li (李书昂)**. I am currently a researcher at **Tencent** in Beijing. I received my Ph.D. from the [School of Software](https://www.thss.tsinghua.edu.cn/) at [Tsinghua University](https://www.tsinghua.edu.cn/) in 2024, under the supervision of Associate Professor [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm).
+Hi! My name is **Shuang Li (李书昂)**. I am currently a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing. I received my Ph.D. degree from the [School of Software](https://www.thss.tsinghua.edu.cn/) at [Tsinghua University](https://www.tsinghua.edu.cn/) in 2024, where I was advised by Associate Professor [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm).
 
-My research interests lie in natural language processing, with a particular focus on **large language models** and **diffusion models**.
+My research interests lie in natural language processing, with a particular focus on **large language models** and **diffusion models**. I am especially interested in reasoning, controllable generation, and reliable adaptation of foundation models.
 
-### Research Interests
+### Research Interests：
 
 - **Large Language Models** — reasoning, alignment, and efficient adaptation
-- **Diffusion Models** — generation and controllable learning
-- **Natural Language Processing** — understanding and generation
+- **Diffusion Models** — subject-driven and controllable generation
+- **Natural Language Processing** — robust understanding and generation
 
 <span class='anchor' id='news'></span>
 
 # News
 
-- **2026.02**: One paper on subject-driven text-to-image generation was accepted to [CVPR 2026](https://cvpr.thecvf.com/).
+- **2026.02**: Our paper on subject-driven text-to-image generation was accepted to [CVPR 2026](https://cvpr.thecvf.com/).
 
 <span class='anchor' id='education'></span>
 
 # 📖 Education
 
-- <span style="font-size: 0.92em;">**2019 - 2024** | **Ph.D. in Software Engineering**</span>  
+- <span class="entry-title">**2019.09 - 2024.06** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **Ph.D. in Software Engineering**</span>  
   School of Software, Tsinghua University
 
 <span class='anchor' id='experiences'></span>
 
 # 💻 Research Experiences
 
-- <span style="font-size: 0.92em;">**Present** | **Tencent**</span>  
-  <span style="font-size: 0.869em;">Researcher in Beijing</span>
+- <span class="entry-title">**Present** | <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent**</span>  
+  <span class="entry-note">Researcher in Beijing, working on large language models and diffusion models</span>
 
-- <span style="font-size: 0.92em;">**2019 - 2024** | **Tsinghua University**</span>  
-  <span style="font-size: 0.869em;">Ph.D. researcher at the School of Software</span>
+- <span class="entry-title">**2019.09 - 2024.06** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **Tsinghua University**</span>  
+  <span class="entry-note">Ph.D. researcher at the School of Software, advised by <a href="https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm">Lijie Wen</a></span>
 
 <span class='anchor' id='publications'></span>
 
-# 📝 Selected Publications
+# 📝 Selected Publications（[**Full List**](https://scholar.google.com/citations?user=LSTOX04AAAAJ&hl=en)）
 
 - <span style="font-size: 0.92em;">**Disentangling to Re-couple: Resolving the Similarity-Controllability Paradox in Subject-Driven Text-to-Image Generation**</span>\
 <span style="font-size: 0.869em;"> **Shuang Li***, Chao Deng*, Hang Chen, Liqun Liu, et al.</span>\
@@ -77,21 +77,41 @@ My research interests lie in natural language processing, with a particular focu
 <span style="font-size: 0.87em; color: #c00000;">**EMNLP 2023**</span> \
 [Code](https://github.com/THU-BPM/RAPL)
 
-[**Full publication list**]({{ '/publications/' | relative_url }})
-
 <span class='anchor' id='contact'></span>
 
 # 📞 Contact
 
-- **Email**:
-  - lishuangthss@gmail.com
-- **Profiles**:
-  - [Google Scholar](https://scholar.google.com/citations?user=LSTOX04AAAAJ&hl=en)
-  - [ResearchGate](https://www.researchgate.net/profile/Shuang-Li-64)
-  - [Semantic Scholar](https://www.semanticscholar.org/author/Shuang-Li/2133436155)
+- **Email**: [lishuangthss@gmail.com](mailto:lishuangthss@gmail.com)
+- **Google Scholar**: [LSTOX04AAAAJ](https://scholar.google.com/citations?user=LSTOX04AAAAJ&hl=en)
+- **ResearchGate**: [Shuang Li](https://www.researchgate.net/profile/Shuang-Li-64)
+- **Semantic Scholar**: [Shuang Li](https://www.semanticscholar.org/author/Shuang-Li/2133436155)
 
 <span class='anchor' id='academic-services'></span>
 
 # 🔍 Academic Services
 
-- **Conference Reviewer**: CVPR, NeurIPS, ECCV, ICLR, ACL, EMNLP, NAACL
+- **Reviewer**: CVPR, NeurIPS, ECCV, ICLR, ACL, EMNLP, NAACL
+
+<p align="center" style="padding-top: 90px;"></p>
+
+<style>
+.inline-logo {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.12em;
+  margin: 0 0.18em 0 0.04em;
+}
+
+.inline-logo-wide {
+  width: auto;
+  height: 0.95em;
+}
+
+.entry-title {
+  font-size: 0.92em;
+}
+
+.entry-note {
+  font-size: 0.869em;
+}
+</style>
