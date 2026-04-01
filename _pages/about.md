@@ -11,7 +11,7 @@ redirect_from:
 
 # About Me
 
-Hi! My name is **Shuang Li (李书昂)**. I am currently a researcher at **StepFun** in Shanghai, working on AIGC. Before that, I was a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing.
+Hi! My name is **Shuang Li (李书昂)**. I am currently a researcher at <img src="images/stepfun.svg" class="inline-logo" alt="StepFun logo"> **StepFun** in Shanghai, working on AIGC. Before that, I was a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing.
 
 I received my Ph.D. degree from the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/) in 2023, where I was advised by Associate Professor [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm). Before that, I received my B.Eng. degree from the School of Software in Tsinghua University in 2018.
 
@@ -41,7 +41,7 @@ I received my Ph.D. degree from the [School of Software](https://www.thss.tsingh
 
 # 💻 Work Experiences
 
-- <span class="entry-title">**2026.03 - Present** | **StepFun**</span>  
+- <span class="entry-title">**2026.03 - Present** | <img src="images/stepfun.svg" class="inline-logo" alt="StepFun logo"> **StepFun**</span>  
   <span class="entry-note">Researcher in Shanghai, working on AIGC</span>
 
 - <span class="entry-title">**2023.12 - 2026.03** | <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent, CDG**</span>  
