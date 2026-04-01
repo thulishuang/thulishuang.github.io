@@ -44,10 +44,10 @@ I received my Ph.D. degree from the [School of Software](https://www.thss.tsingh
 - <span class="entry-title">**2026.03 - Present** | <img src="images/stepfun.svg" class="inline-logo" alt="StepFun logo"> **StepFun**</span>  
   <span class="entry-note">Researcher in Shanghai, working on AIGC</span>
 
-- <span class="entry-title">**2023.12 - 2026.03** | <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent, CDG**</span>  
+- <span class="entry-title">**2023.12 - 2026.03** | <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **CDG, Tencent**</span>  
   <span class="entry-note">Researcher in Beijing, working on large language models and diffusion models</span>
 
-- <span class="entry-title">**2023.03 - 2023.12** | <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent, TEG**</span>  
+- <span class="entry-title">**2023.03 - 2023.12** | <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **TEG, Tencent**</span>  
   <span class="entry-note">Research Intern in Beijing, working on large language models</span>
 
 <span class='anchor' id='publications'></span>
