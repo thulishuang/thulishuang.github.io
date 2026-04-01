@@ -55,33 +55,18 @@ I received my Ph.D. degree from the [School of Software](https://www.thss.tsingh
 # 📝 Selected Publications（[**Full List**](https://scholar.google.com/citations?user=LSTOX04AAAAJ&hl=en)）
 
 - <span style="font-size: 0.92em;">**Disentangling to Re-couple: Resolving the Similarity-Controllability Paradox in Subject-Driven Text-to-Image Generation**</span>\
-<span style="font-size: 0.869em;"> **Shuang Li***, Chao Deng*, Hang Chen, Liqun Liu, et al.</span>\
+<span style="font-size: 0.869em;"><strong>Shuang Li*</strong>, Chao Deng*, Hang Chen, Liqun Liu, et al.</span>\
 <span style="font-size: 0.87em; color: #c00000;">**CVPR 2026**</span>
 
 - <span style="font-size: 0.92em;">[**Enhancing Reinforcement Learning with Label-Sensitive Reward for Natural Language Understanding**](https://arxiv.org/abs/2405.19763)</span>\
-<span style="font-size: 0.869em;"> Kuo Liao*, **Shuang Li***, Meng Zhao, Liqun Liu, Mengge Xue, Zhenyu Hu, Honglin Han, Chengguo Yin</span>\
+<span style="font-size: 0.869em;">Kuo Liao*, <strong>Shuang Li*</strong>, Meng Zhao, Liqun Liu, Mengge Xue, Zhenyu Hu, Honglin Han, Chengguo Yin</span>\
 <span style="font-size: 0.87em; color: #c00000;">**ACL 2024**</span> \
 [Code](https://github.com/MagiaSN/ACL2024_RLLR)
 
-- <span style="font-size: 0.92em;">[**Strengthened Symbol Binding Makes Large Language Models Reliable Multiple-Choice Selectors**](https://arxiv.org/abs/2406.01026)</span>\
-<span style="font-size: 0.869em;"> Mengge Xue*, Zhenyu Hu*, Meng Zhao, Liqun Liu, Kuo Liao, **Shuang Li**, Honglin Han, Chengguo Yin</span>\
-<span style="font-size: 0.87em; color: #c00000;">**ACL 2024**</span> \
-[Code](https://github.com/berryxue/PIF)
-
-- <span style="font-size: 0.92em;">[**On the Robustness of Document-Level Relation Extraction Models to Entity Name Variations**](https://arxiv.org/abs/2406.07444)</span>\
-<span style="font-size: 0.869em;"> Shiao Meng, Xuming Hu, Aiwei Liu, Fukun Ma, Yawen Yang, **Shuang Li**, Lijie Wen</span>\
-<span style="font-size: 0.87em; color: #c00000;">**ACL Findings 2024**</span> \
-[Code](https://github.com/THU-BPM/Env-DocRE)
-
 - <span style="font-size: 0.92em;">[**An Unforgeable Publicly Verifiable Watermark for Large Language Models**](https://arxiv.org/abs/2307.16230)</span>\
-<span style="font-size: 0.869em;"> Aiwei Liu, Leyi Pan, Xuming Hu, **Shuang Li**, Lijie Wen, Irwin King, Philip S. Yu</span>\
+<span style="font-size: 0.869em;">Aiwei Liu, Leyi Pan, Xuming Hu, <strong>Shuang Li</strong>, Lijie Wen, Irwin King, Philip S. Yu</span>\
 <span style="font-size: 0.87em; color: #c00000;">**ICLR 2024**</span> \
 [Code](https://github.com/THU-BPM/unforgeable_watermark)
-
-- <span style="font-size: 0.92em;">[**RAPL: A Relation-Aware Prototype Learning Approach for Few-Shot Document-Level Relation Extraction**](https://aclanthology.org/2023.emnlp-main.316/)</span>\
-<span style="font-size: 0.869em;"> Shiao Meng, Xuming Hu, Aiwei Liu, **Shuang Li**, Fukun Ma, Yawen Yang, Lijie Wen</span>\
-<span style="font-size: 0.87em; color: #c00000;">**EMNLP 2023**</span> \
-[Code](https://github.com/THU-BPM/RAPL)
 
 <span class='anchor' id='contact'></span>
 
