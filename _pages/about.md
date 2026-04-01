@@ -39,7 +39,7 @@ I received my Ph.D. degree from the [School of Software](https://www.thss.tsingh
 
 <span class='anchor' id='experiences'></span>
 
-# 💻 Research Experiences
+# 💻 Work Experiences
 
 - <span class="entry-title">**Present** | <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent**</span>  
   <span class="entry-note">Researcher in Beijing, working on large language models and diffusion models</span>
