@@ -179,6 +179,15 @@ body:hover .visually-hidden button {
   vertical-align: middle;
 }
 
+/* Keep sidebar icon and text columns aligned */
+.icon-pad-right {
+  display: inline-block;
+  width: 1.25em;
+  margin-right: 0.55em;
+  text-align: center;
+  vertical-align: middle;
+}
+
 /* social icons*/
 
 .social-icons {

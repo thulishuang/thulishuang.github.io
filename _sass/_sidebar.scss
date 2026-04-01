@@ -251,11 +251,14 @@
   }
 
   li {
+    display: flex;
+    align-items: center;
     white-space: nowrap;
   }
 
   a {
-    display: block;
+    display: flex;
+    align-items: center;
     margin-bottom: 5px;
     padding-right: 5px;
     padding-top: 2px;
