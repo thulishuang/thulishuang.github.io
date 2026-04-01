@@ -11,9 +11,9 @@ redirect_from:
 
 # About Me
 
-Hi! My name is **Shuang Li (李书昂)**. I am currently a researcher at **StepFun**, working on AIGC. Before that, I am a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing.
+Hi! My name is **Shuang Li (李书昂)**. I am currently a researcher at **StepFun** in Shanghai, working on AIGC. Before that, I was a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing.
 
-I received my Ph.D. degree from the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/) in 2024, where I was advised by Associate Professor [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm). Before that, I received my B.Eng. degree from the School of Software in Tsinghua University in 2018.
+I received my Ph.D. degree from the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/) in 2023, where I was advised by Associate Professor [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm). Before that, I received my B.Eng. degree from the School of Software in Tsinghua University in 2018.
 
 ### Research Interests：
 
@@ -31,7 +31,7 @@ I received my Ph.D. degree from the [School of Software](https://www.thss.tsingh
 
 # 📖 Education
 
-- <span class="entry-title">**2019.09 - 2024.06** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **Ph.D. in Software Engineering**</span>  
+- <span class="entry-title">**2018.09 - 2023.12** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **Ph.D. in Software Engineering**</span>  
   School of Software, Tsinghua University
 
 - <span class="entry-title">**2014.09 - 2018.06** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **B.Eng. in Computer Science**</span>  
@@ -40,6 +40,9 @@ I received my Ph.D. degree from the [School of Software](https://www.thss.tsingh
 <span class='anchor' id='experiences'></span>
 
 # 💻 Work Experiences
+
+- <span class="entry-title">**2026.03 - Present** | **StepFun**</span>  
+  <span class="entry-note">Researcher in Shanghai, working on AIGC</span>
 
 - <span class="entry-title">**2023.12 - 2026.03** | <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent, CDG**</span>  
   <span class="entry-note">Researcher in Beijing, working on large language models and diffusion models</span>
