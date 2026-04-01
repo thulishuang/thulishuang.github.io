@@ -1,5 +1,51 @@
-_site
-.sass-cache
+# Ignore the contents of the _site directory and other cache directories
+_site/
+.sass-cache/
+
+# Ignore the directory for local files during development
+local/
+
+# Ignore the Gemfile that is generated
 Gemfile.lock
-*.gem
+
+# Ignore files created by npm
+node_modules
+package-lock.json
+
+# Ignore the vendor file at root level and bundle for alternative installation
+/vendor/
+.bundle/
+
+# Ignore folders related to IDEs
+.vscode/
+
+# Ignore files created by MacOS
 .DS_Store
+
+# Ignore unused AcademicPages sample content copied during the refactor
+.devcontainer/
+.github/ISSUE_TEMPLATE/
+.github/workflows/
+CONTRIBUTING.md
+Dockerfile
+docker-compose.yaml
+_config_docker.yml
+files/
+markdown_generator/
+package.json
+scripts/
+talkmap/
+talkmap.py
+talkmap.ipynb
+talkmap_out.ipynb
+_drafts/
+_portfolio/
+_posts/
+_talks/
+_teaching/
+images/500x300.png
+images/bio-photo.jpg
+images/bio-photo-2.jpg
+images/editing-talk.png
+images/profile.png
+images/themes/
