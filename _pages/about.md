@@ -82,9 +82,6 @@ My research interests lie in natural language processing, with a particular focu
 # 📞 Contact
 
 - **Email**: [lishuangthss@gmail.com](mailto:lishuangthss@gmail.com)
-- **Google Scholar**: [LSTOX04AAAAJ](https://scholar.google.com/citations?user=LSTOX04AAAAJ&hl=en)
-- **ResearchGate**: [Shuang Li](https://www.researchgate.net/profile/Shuang-Li-64)
-- **Semantic Scholar**: [Shuang Li](https://www.semanticscholar.org/author/Shuang-Li/2133436155)
 
 <span class='anchor' id='academic-services'></span>
 
