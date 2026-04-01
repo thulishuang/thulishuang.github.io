@@ -12,7 +12,7 @@ site_theme               : "default" # The available themes options are "default
 title                    : "Shuang Li"
 title_separator          : "-"
 name                     : &name "Shuang Li"
-description              : &description "Researcher at Tencent, Beijing"
+description              : &description "School of Software, Tsinghua University"
 url                      : https://thulishuang.github.io
                                                            # or if you already have some other page hosted on Github then use "https://[your GitHub username].github.io/[Your Repo Name]"
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
@@ -26,9 +26,9 @@ author:
   avatar           : "selfie.jpg"
   name             : "Shuang Li"
   pronouns         : # example: "she/her"  
-  bio              : "Researcher @ Tencent, Beijing"
+  bio              : "School of Software, Tsinghua University"
   location         : "Beijing"
-  employer         : "Tencent"
+  employer         : "Tsinghua University"
   uri              : # URL
   email            : "lishuangthss@gmail.com" 
 

@@ -11,7 +11,7 @@ redirect_from:
 
 # About Me
 
-Hi! My name is **Shuang Li (李书昂)**. I am currently a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing. I received my Ph.D. degree from the [School of Software](https://www.thss.tsinghua.edu.cn/) at [Tsinghua University](https://www.tsinghua.edu.cn/) in 2024, where I was advised by Associate Professor [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm).
+Hi! My name is **Shuang Li (李书昂)**. I received my Ph.D. degree from the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/) in 2024, where I was advised by Associate Professor [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm). Before that, I received my B.Eng. degree from the School of Software in Tsinghua University in 2018. I am also a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing.
 
 My research interests lie in natural language processing, with a particular focus on **large language models** and **diffusion models**. I am especially interested in reasoning, controllable generation, and reliable adaptation of foundation models.
 
@@ -34,15 +34,15 @@ My research interests lie in natural language processing, with a particular focu
 - <span class="entry-title">**2019.09 - 2024.06** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **Ph.D. in Software Engineering**</span>  
   School of Software, Tsinghua University
 
+- <span class="entry-title">**2018** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **B.Eng. in Computer Science**</span>  
+  School of Software, Tsinghua University
+
 <span class='anchor' id='experiences'></span>
 
 # 💻 Research Experiences
 
 - <span class="entry-title">**Present** | <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent**</span>  
   <span class="entry-note">Researcher in Beijing, working on large language models and diffusion models</span>
-
-- <span class="entry-title">**2019.09 - 2024.06** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **Tsinghua University**</span>  
-  <span class="entry-note">Ph.D. researcher at the School of Software, advised by <a href="https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm">Lijie Wen</a></span>
 
 <span class='anchor' id='publications'></span>
 
