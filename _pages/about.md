@@ -34,7 +34,7 @@ I received my Ph.D. degree from the [School of Software](https://www.thss.tsingh
 - <span class="entry-title">**2019.09 - 2024.06** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **Ph.D. in Software Engineering**</span>  
   School of Software, Tsinghua University
 
-- <span class="entry-title">**2014.09 - 20118.06** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **B.Eng. in Computer Science**</span>  
+- <span class="entry-title">**2014.09 - 2018.06** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **B.Eng. in Computer Science**</span>  
   School of Software, Tsinghua University
 
 <span class='anchor' id='experiences'></span>
