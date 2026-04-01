@@ -85,7 +85,7 @@ I received my Ph.D. degree from the [School of Software](https://www.thss.tsingh
 
 - <span style="font-size: 0.92em;">[**Enhancing Cross-lingual Natural Language Inference by Soft Prompting with Multilingual Verbalizer**](https://aclanthology.org/2023.findings-acl.88.pdf)</span>\
 <span style="font-size: 0.869em;"><strong>Shuang Li</strong>, Xuming Hu, Aiwei Liu, Yawen Yang, Fukun Ma, Philip S. Yu, Lijie Wen</span>\
-<span style="font-size: 0.87em; color: #c00000;">**ACL Findings 2023**</span> \
+<span style="font-size: 0.87em; color: #c00000;">**ACL 2023**</span> \
 [Code](https://github.com/THU-BPM/SoftMV)
 
 - <span style="font-size: 0.92em;">[**A Multi-level Supervised Contrastive Learning Framework for Low-Resource Natural Language Inference**](https://arxiv.org/pdf/2205.15550.pdf)</span>\
