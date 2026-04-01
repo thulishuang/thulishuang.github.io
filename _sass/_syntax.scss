@@ -6,20 +6,19 @@ div.highlighter-rouge, figure.highlight {
   position: relative;
   margin-bottom: 1em;
   padding: 1em;
-  border: 1px solid var(--global-border-color);
+  border: 1px solid $border-color;
   border-radius: $border-radius;
-  background-color: var(--global-code-background-color);
+  background-color: $code-background-color;
   box-shadow: $box-shadow;
-  font-size: $type-size-4;
 
   &:before {
     position: absolute;
     top: 0;
     right: 0;
     padding: 0.5em;
-    background-color: mix(#fff, #7a8288, 90%);
+    background-color: $lighter-gray;
     content: "\f121";
-    font-family: "Font Awesome 6 Free" !important;
+    font-family: "fontawesome" !important;
     font-size: $type-size-6;
     line-height: 1;
     text-transform: none;
@@ -29,9 +28,19 @@ div.highlighter-rouge, figure.highlight {
   .highlight {
     margin: 0;
     font-family: $monospace;
-    font-size: $type-size-6;
+    font-size: $type-size-7;
     line-height: 1.8;
   }
+}
+
+.highlighter-rouge{
+  background-color: #03228d;
+  color: white;
+  margin-bottom: 0em;
+  padding: 0em;
+  font-size: .8em;
+  border: 0px solid $border-color;
+  border-radius: 0;
 }
 
 .highlight table td { padding: 5px; }
