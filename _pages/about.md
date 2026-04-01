@@ -11,15 +11,15 @@ redirect_from:
 
 # About Me
 
-Hi! My name is **Shuang Li (李书昂)**. I received my Ph.D. degree from the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/) in 2024, where I was advised by Associate Professor [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm). Before that, I received my B.Eng. degree from the School of Software in Tsinghua University in 2018. I am also a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing.
+Hi! My name is **Shuang Li (李书昂)**. I am currently a researcher at StepFun, working on AIGC. Before that, I am a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing.
 
-My research interests lie in natural language processing, with a particular focus on **large language models** and **diffusion models**. I am especially interested in reasoning, controllable generation, and reliable adaptation of foundation models.
+I received my Ph.D. degree from the [School of Software](https://www.thss.tsinghua.edu.cn/) in [Tsinghua University](https://www.tsinghua.edu.cn/) in 2024, where I was advised by Associate Professor [Lijie Wen](https://www.thss.tsinghua.edu.cn/faculty/wenlijie.htm). Before that, I received my B.Eng. degree from the School of Software in Tsinghua University in 2018. I am also a researcher at <img src="images/tencent.svg" class="inline-logo inline-logo-wide" alt="Tencent logo"> **Tencent** in Beijing.
 
 ### Research Interests：
 
+- **AIGC** — text-to-image, image editing, and world models
 - **Large Language Models** — reasoning, alignment, and efficient adaptation
-- **Diffusion Models** — subject-driven and controllable generation
-- **Natural Language Processing** — robust understanding and generation
+
 
 <span class='anchor' id='news'></span>
 
@@ -34,7 +34,7 @@ My research interests lie in natural language processing, with a particular focu
 - <span class="entry-title">**2019.09 - 2024.06** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **Ph.D. in Software Engineering**</span>  
   School of Software, Tsinghua University
 
-- <span class="entry-title">**2018** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **B.Eng. in Computer Science**</span>  
+- <span class="entry-title">**2014.09 - 20118.06** | <img src="images/tsinghua.svg" class="inline-logo" alt="Tsinghua logo"> **B.Eng. in Computer Science**</span>  
   School of Software, Tsinghua University
 
 <span class='anchor' id='experiences'></span>
