@@ -5,6 +5,7 @@ category: conferences
 date: 2026-02-01
 venue: "CVPR"
 authors: "<strong>Shuang Li*</strong>, Chao Deng*, Hang Chen, Liqun Liu, et al."
+paperurl: "https://arxiv.org/abs/2604.00849"
 excerpt: "Subject-driven text-to-image generation with improved similarity and controllability."
 ---
 

@@ -54,7 +54,7 @@ I received my Ph.D. degree from the [School of Software](https://www.thss.tsingh
 
 # 📝 Selected Publications（[**Full List**](https://scholar.google.com/citations?user=LSTOX04AAAAJ&hl=en)）
 
-- <span style="font-size: 0.92em;">**Disentangling to Re-couple: Resolving the Similarity-Controllability Paradox in Subject-Driven Text-to-Image Generation**</span>\
+- <span style="font-size: 0.92em;">[**Disentangling to Re-couple: Resolving the Similarity-Controllability Paradox in Subject-Driven Text-to-Image Generation**](https://arxiv.org/abs/2604.00849)</span>\
 <span style="font-size: 0.869em;"><strong>Shuang Li</strong>, Chao Deng, Hang Chen, Liqun Liu, et al.</span>\
 <span style="font-size: 0.87em; color: #c00000;">**CVPR 2026**</span>
 
