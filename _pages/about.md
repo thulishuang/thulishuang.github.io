@@ -64,7 +64,7 @@ I received my Ph.D. degree from the [School of Software](https://www.thss.tsingh
 [Code](https://github.com/MagiaSN/ACL2024_RLLR)
 
 - <span style="font-size: 0.92em;">[**Strengthened Symbol Binding Makes Large Language Models Reliable Multiple-Choice Selectors**](https://arxiv.org/abs/2406.01026)</span>\
-<span style="font-size: 0.869em;">Mengge Xue*, Zhenyu Hu*, Meng Zhao, Liqun Liu, Kuo Liao, <strong>Shuang Li</strong>, Honglin Han, Chengguo Yin</span>\
+<span style="font-size: 0.869em;">Mengge Xue&#42;, Zhenyu Hu&#42;, Meng Zhao, Liqun Liu, Kuo Liao, <strong>Shuang Li</strong>, Honglin Han, Chengguo Yin</span>\
 <span style="font-size: 0.87em; color: #c00000;">**ACL 2024**</span> \
 [Code](https://github.com/berryxue/PIF)
 
