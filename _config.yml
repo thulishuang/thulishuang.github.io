@@ -26,7 +26,7 @@ author:
   avatar           : "selfie.jpg"
   name             : "Shuang Li"
   pronouns         : # example: "she/her"  
-  bio              : 'Researcher at <img src="images/stepfun.svg" style="width: 0.95em; height: 0.95em; vertical-align: -0.1em; margin: 0 0.18em 0 0.08em;" alt="StepFun logo">StepFun'
+  bio              : 'Researcher at <img src="images/stepfun.webp" style="width: 0.95em; height: 0.95em; vertical-align: -0.1em; margin: 0 0.18em 0 0.08em;" alt="StepFun logo">StepFun'
   location         : "Shanghai"
   employer         : "Tsinghua University"
   uri              : # URL
