@@ -13,14 +13,13 @@
       <a href="#results" class="brand">ABC Lounge Finder</a>
       <div class="navlinks">
         <a href="#filters">筛选</a>
-        <a href="#data-source">数据源</a>
       </div>
     </nav>
     <section class="hero-inner">
       <div>
         <p class="eyebrow">农行信用卡 / 机场贵宾厅</p>
         <h1>境内、境外机场贵宾厅一站式查询</h1>
-        <p class="lead">支持关键词、城市、机场、航站楼、安检类型筛选；可导出 CSV，也可通过 URL 加载最新 JSON / Excel / 结构化网页数据。</p>
+        <p class="lead">支持关键词、城市、机场、航站楼、安检类型筛选；可导出 CSV。数据通过仓库自动任务定期更新。</p>
         <div class="hero-actions">
           <a class="btn primary" href="#filters">开始查询</a>
           <button class="btn ghost" id="copy-current-url" type="button">复制当前分享链接</button>
@@ -40,31 +39,6 @@
       <div><strong id="stat-domestic">0</strong><span>境内</span></div>
       <div><strong id="stat-overseas">0</strong><span>境外</span></div>
       <div><strong id="stat-airports">0</strong><span>机场 / 站点</span></div>
-    </section>
-
-    <section class="panel source-panel" id="data-source">
-      <div class="section-title">
-        <div>
-          <p class="eyebrow">实时更新</p>
-          <h2>通过 URL 更新数据</h2>
-        </div>
-        <button class="link-btn" id="toggle-source-help" type="button">查看说明</button>
-      </div>
-      <div class="source-grid">
-        <label class="field wide">
-          <span>数据 URL</span>
-          <input id="source-url" type="url" placeholder="https://.../lounges.json 或 .xlsx 或结构化 HTML" autocomplete="off" />
-        </label>
-        <button class="btn primary" id="load-source-url" type="button">加载 URL</button>
-        <button class="btn" id="load-official-overseas" type="button">刷新境外 Excel</button>
-        <button class="btn" id="load-domestic-reference" type="button">刷新境内参考页</button>
-        <button class="btn subtle" id="reset-data" type="button">恢复内置数据</button>
-      </div>
-      <div class="help" id="source-help" hidden>
-        <p><strong>URL 规则：</strong>JSON 可以是本项目导出的完整 <code>lounges.json</code>，也可以是记录数组；<code>.xlsx</code> 默认按境外贵宾厅 Excel 解析；包含 <code>&lt;script id="lounge-data"&gt;</code> 的网页会按境内/境外结构化数据解析。</p>
-        <p>如果第三方 URL 因浏览器跨域限制无法直接加载，可通过仓库内的自动更新任务定时生成最新 <code>data/lounges.json</code>。</p>
-        <p>也可以把最新 Excel / HTML 转为 <code>data/lounges.json</code> 后重新部署，命令见 README。</p>
-      </div>
     </section>
 
     <section class="panel filters" id="filters">

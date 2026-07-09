@@ -446,7 +446,8 @@
     };
     setBundle(bundle, label);
     localStorage.setItem('agbank-lounge-source-url', url);
-    $('source-url').value = url;
+    const sourceInput = $('source-url');
+    if (sourceInput) sourceInput.value = url;
     if (updateHistory) {
       const next = new URL(location.href);
       next.searchParams.set('dataUrl', url);
@@ -486,6 +487,11 @@
   }
 
   function bindEvents() {
+    const on = (id, eventName, handler) => {
+      const el = $(id);
+      if (el) el.addEventListener(eventName, handler);
+    };
+
     $('q').addEventListener('input', (event) => {
       state.q = event.target.value.trim();
       state.visible = PAGE_SIZE;
@@ -508,42 +514,7 @@
       state.visible += PAGE_SIZE;
       renderCards();
     });
-    $('toggle-source-help').addEventListener('click', () => {
-      const help = $('source-help');
-      help.hidden = !help.hidden;
-    });
-    $('load-source-url').addEventListener('click', async () => {
-      try {
-        await applyRuntimeSource($('source-url').value.trim(), 'URL 数据');
-      } catch (error) {
-        setStatus('URL 加载失败，已保留当前数据', error.message);
-        showToast(error.message, true);
-      }
-    });
-    $('load-official-overseas').addEventListener('click', async () => {
-      try {
-        await applyRuntimeSource(OFFICIAL_OVERSEAS_XLSX, '农行官网境外 Excel');
-      } catch (error) {
-        setStatus('境外 Excel 加载失败，已保留当前数据', error.message);
-        showToast(error.message, true);
-      }
-    });
-    $('load-domestic-reference').addEventListener('click', async () => {
-      try {
-        await applyRuntimeSource(DOMESTIC_REFERENCE_HTML, '境内结构化参考页');
-      } catch (error) {
-        setStatus('境内参考页加载失败，已保留当前数据', error.message);
-        showToast(error.message, true);
-      }
-    });
-    $('reset-data').addEventListener('click', () => {
-      localStorage.removeItem('agbank-lounge-source-url');
-      $('source-url').value = '';
-      history.replaceState(null, '', location.pathname);
-      setBundle(defaultBundle, '内置数据');
-      showToast('已恢复内置数据');
-    });
-    $('copy-current-url').addEventListener('click', async () => {
+    on('copy-current-url', 'click', async () => {
       await copyText(location.href);
       showToast('已复制当前链接');
     });
@@ -551,31 +522,13 @@
 
   async function init() {
     bindEvents();
-    const params = new URLSearchParams(location.search);
-    $('source-url').value = params.get('dataUrl') || localStorage.getItem('agbank-lounge-source-url') || '';
+    localStorage.removeItem('agbank-lounge-source-url');
     try {
       defaultBundle = await loadDefaultBundle();
       setBundle(defaultBundle, '内置数据');
     } catch (error) {
       setStatus('内置数据加载失败', error.message);
       showToast(error.message, true);
-      return;
-    }
-
-    const overrides = [
-      ['dataUrl', 'URL 数据'],
-      ['overseasUrl', '境外 URL 数据'],
-      ['domesticUrl', '境内 URL 数据'],
-    ];
-    for (const [key, label] of overrides) {
-      const url = params.get(key);
-      if (!url) continue;
-      try {
-        await applyRuntimeSource(url, label, false);
-      } catch (error) {
-        setStatus(`${label} 加载失败，已使用内置数据`, error.message);
-        showToast(error.message, true);
-      }
     }
   }
 
