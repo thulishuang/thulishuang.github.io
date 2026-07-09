@@ -17,10 +17,10 @@
   let toastTimer = 0;
   const state = {
     q: '',
-    scope: '',
-    region: '',
-    country: '',
-    city: '',
+    scope: '境内',
+    region: '上海',
+    country: '中国',
+    city: '上海',
     airport: '',
     terminal: '',
     security: '',

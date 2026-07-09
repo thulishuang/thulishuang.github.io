@@ -75,7 +75,7 @@ code {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 310px;
   gap: 28px;
-  align-items: end;
+  align-items: start;
   padding-top: 86px;
 }
 .eyebrow {
@@ -103,6 +103,7 @@ h1 {
 }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 .source-card {
+  margin-top: 28px;
   padding: 22px;
   border: 1px solid rgba(255,255,255,0.24);
   border-radius: var(--radius);
@@ -303,22 +304,29 @@ summary { cursor: pointer; font-weight: 800; color: var(--green-strong); }
   position: fixed;
   left: 50%;
   bottom: 22px;
-  transform: translate(-50%, 120%);
+  transform: translate(-50%, calc(100% + 42px));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   background: rgba(23, 35, 29, 0.94);
   color: #fff;
   border-radius: 999px;
   padding: 11px 16px;
   box-shadow: var(--shadow);
-  transition: transform .22s ease;
+  transition: transform .22s ease, opacity .22s ease, visibility .22s ease;
   z-index: 20;
   max-width: min(92vw, 720px);
 }
-.toast.show { transform: translate(-50%, 0); }
+.toast.show {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  visibility: visible;
+}
 .toast.error { background: var(--red); }
 
 @media (max-width: 980px) {
   .hero-inner { grid-template-columns: 1fr; padding-top: 58px; }
-  .source-card { max-width: 520px; }
+  .source-card { max-width: 520px; margin-top: 0; }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .source-grid { grid-template-columns: 1fr 1fr; }
