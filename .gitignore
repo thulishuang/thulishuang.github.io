@@ -49,3 +49,9 @@ images/bio-photo-2.jpg
 images/editing-talk.png
 images/profile.png
 images/themes/
+
+# Keep the AgBank lounge finder update workflow/script trackable.
+!.github/workflows/
+!.github/workflows/update-agbank-lounges.yml
+!agbank-lounge-finder/scripts/
+!agbank-lounge-finder/scripts/build_data.py
