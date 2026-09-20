@@ -1,0 +1,1294 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>尼罗河十一日</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* ===== tokens：白天 = 纸草 / 石灰岩 / 尼罗蓝 / 金箔 ===== */
+:root{
+  --font-pixel:"Press Start 2P","Courier New",monospace;
+  --font-body:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Source Han Sans SC",sans-serif;
+  --font-data:"Space Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  --bg:#F4E8D0;
+  --surface:#FFFBF0;
+  --surface-2:#F6EDD8;
+  --line:#DCC79B;
+  --line-strong:#B2944F;
+  --ink:#2B2312;
+  --ink-2:#5E4E30;
+  --ink-3:#8B7A54;
+
+  --gold:#9C6E12;
+  --gold-bright:#D99B1F;
+  --gold-soft:#F6E3B0;
+  --nile:#11637F;
+  --nile-soft:#D2E8EF;
+  --clay:#9C3F22;
+  --clay-soft:#F7DED2;
+  --leaf:#316B41;
+  --leaf-soft:#DCEDDD;
+
+  --sky-1:#FCE9B9; --sky-2:#F0C385;
+  --land:#E8CB92; --land-2:#D9B674; --land-3:#C7A05F;
+  --sea:#2E8CA8; --sea-2:#185F7D; --sea-3:#0E4A66;
+  --route:#8E6414;
+  --node:#FFFAEB; --node-ink:#4A3A1B;
+  --star-op:0;
+
+  --shadow-hard:0 3px 0 var(--line-strong);
+  --shadow-soft:0 2px 0 rgba(43,35,18,.16),0 8px 18px rgba(43,35,18,.07);
+}
+/* ===== tokens：夜晚 = 星夜沙漠 ===== */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#171208; --surface:#241B0C; --surface-2:#2E2311;
+    --line:#43331A; --line-strong:#6B5324;
+    --ink:#F5E9CC; --ink-2:#C4B086; --ink-3:#937F5C;
+    --gold:#F0BE4E; --gold-bright:#FFD470; --gold-soft:#4A3812;
+    --nile:#57BEDD; --nile-soft:#1B4152;
+    --clay:#E5835C; --clay-soft:#4A2417;
+    --leaf:#7FC48C; --leaf-soft:#1E3A22;
+    --sky-1:#141B33; --sky-2:#2E2340;
+    --land:#3E3220; --land-2:#332A1A; --land-3:#2A2214;
+    --sea:#2A7B9C; --sea-2:#134B63; --sea-3:#0B3243;
+    --route:#F0BE4E; --node:#4C3B1E; --node-ink:#FFEFC4;
+    --star-op:1;
+    --shadow-hard:0 3px 0 #000;
+    --shadow-soft:0 2px 0 rgba(0,0,0,.5),0 10px 22px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#171208; --surface:#241B0C; --surface-2:#2E2311;
+  --line:#43331A; --line-strong:#6B5324;
+  --ink:#F5E9CC; --ink-2:#C4B086; --ink-3:#937F5C;
+  --gold:#F0BE4E; --gold-bright:#FFD470; --gold-soft:#4A3812;
+  --nile:#57BEDD; --nile-soft:#1B4152;
+  --clay:#E5835C; --clay-soft:#4A2417;
+  --leaf:#7FC48C; --leaf-soft:#1E3A22;
+  --sky-1:#141B33; --sky-2:#2E2340;
+  --land:#3E3220; --land-2:#332A1A; --land-3:#2A2214;
+  --sea:#2A7B9C; --sea-2:#134B63; --sea-3:#0B3243;
+  --route:#F0BE4E; --node:#4C3B1E; --node-ink:#FFEFC4;
+  --star-op:1;
+  --shadow-hard:0 3px 0 #000;
+  --shadow-soft:0 2px 0 rgba(0,0,0,.5),0 10px 22px rgba(0,0,0,.45);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:var(--font-body);font-size:14.5px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,p,ul,ol,figure{margin:0}
+ul,ol{padding:0;list-style:none}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold-bright);outline-offset:2px}
+img,svg{max-width:100%}
+.wrap{max-width:1200px;margin-inline:auto;padding-inline:clamp(16px,4vw,40px)}
+
+.pixel-box{background:var(--surface);border:2px solid var(--line-strong);box-shadow:var(--shadow-hard)}
+.eyebrow{font-family:var(--font-pixel);font-size:9px;letter-spacing:.14em;color:var(--gold);text-transform:uppercase;line-height:1.8}
+.sec-title{font-size:clamp(20px,3vw,26px);font-weight:800;letter-spacing:-.01em;text-wrap:balance}
+.sec-sub{color:var(--ink-2);font-size:13.5px;max-width:64ch}
+.mono{font-family:var(--font-data)}
+.tnum{font-variant-numeric:tabular-nums}
+section{padding-block:clamp(30px,5vw,52px)}
+.sec-head{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+.tag{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;font-size:11px;font-weight:700;
+  border:2px solid var(--line-strong);background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.tag.gold{background:var(--gold-soft);color:var(--gold)}
+.tag.nile{background:var(--nile-soft);color:var(--nile)}
+.tag.clay{background:var(--clay-soft);color:var(--clay)}
+.tag.leaf{background:var(--leaf-soft);color:var(--leaf)}
+:root[data-theme="dark"] .tag.gold,
+:root[data-theme="dark"] .tag.nile,
+:root[data-theme="dark"] .tag.clay,
+:root[data-theme="dark"] .tag.leaf{background:var(--surface-2)}
+
+/* ---------- 顶栏 ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:60;background:var(--bg);border-bottom:2px solid var(--line-strong)}
+.topbar-in{max-width:1200px;margin-inline:auto;padding:9px clamp(16px,4vw,40px);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-mark{width:30px;height:30px;flex:none;background:var(--gold-bright);border:2px solid var(--line-strong);display:grid;place-items:center}
+.brand-mark svg{display:block;shape-rendering:crispEdges}
+.brand-txt{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.brand-name{font-weight:800;font-size:16px;letter-spacing:.02em;white-space:nowrap}
+.brand-sub{font-family:var(--font-data);font-size:10.5px;color:var(--ink-3);letter-spacing:.03em;white-space:nowrap}
+.topbar-spacer{flex:1 1 auto}
+.countdown{display:flex;align-items:baseline;gap:6px;padding:5px 10px;background:var(--surface);border:2px solid var(--line-strong)}
+.countdown b{font-family:var(--font-pixel);font-size:15px;color:var(--gold);line-height:1}
+.countdown span{font-size:11px;color:var(--ink-2);white-space:nowrap}
+.icon-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;background:var(--surface);
+  border:2px solid var(--line-strong);font-size:11.5px;font-weight:700;box-shadow:0 2px 0 var(--line-strong);
+  transition:transform .1s,box-shadow .1s}
+.icon-btn:hover{background:var(--surface-2)}
+.icon-btn:active{transform:translateY(2px);box-shadow:none}
+.icon-btn[aria-pressed="true"]{background:var(--gold-bright);color:#2B2312}
+.icon-btn .sw{font-family:var(--font-pixel);font-size:8px}
+.progress-mini{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-2)}
+.pbar{width:78px;height:10px;background:var(--surface-2);border:2px solid var(--line-strong);padding:1px;flex:none}
+.pbar i{display:block;height:100%;background:var(--gold-bright);transition:width .4s}
+
+/* ---------- HERO ---------- */
+.hero{padding-block:clamp(26px,4vw,44px) 0}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:end}
+.hero h1{font-size:clamp(34px,6.5vw,60px);font-weight:900;line-height:1.03;letter-spacing:-.02em;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero-lede{margin-top:14px;color:var(--ink-2);font-size:15px;max-width:54ch}
+.hero-lede b{color:var(--ink);font-weight:700}
+.stats{display:flex;flex-wrap:wrap;border:2px solid var(--line-strong);background:var(--surface);box-shadow:var(--shadow-hard)}
+.stat{flex:1 1 84px;padding:11px 13px;border-right:2px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat b{display:block;font-family:var(--font-pixel);font-size:14px;line-height:1.4;color:var(--ink)}
+.stat span{font-size:11px;color:var(--ink-3)}
+.stat.hl b{color:var(--gold)}
+
+/* ---------- 地图 ---------- */
+.atlas{padding-block:clamp(22px,3.5vw,38px)}
+.map-shell{position:relative}
+.map-frame{position:relative;border:3px solid var(--line-strong);background:var(--sky-2);box-shadow:var(--shadow-hard);overflow:hidden}
+.map-frame::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.055) 0 1px,transparent 1px 4px)}
+.map-frame.is3d #map{transform:perspective(1600px) rotateX(7deg)}
+#map{display:block;width:100%;height:auto;transition:transform .7s cubic-bezier(.2,.75,.2,1)}
+.layer{transform-box:view-box;transform-origin:0 0;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+/* 立体视角下按 --d 景深做视差：天空最远、城邦最近 */
+.map-frame.is3d .layer{
+  transform:translate(calc(var(--mx,0) * var(--d,1) * 1px),calc(var(--my,0) * var(--d,1) * 1px));
+}
+#viewport{transform-box:view-box;transform-origin:0 0;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.stars{opacity:var(--star-op);transition:opacity .5s}
+.city-node{cursor:pointer}
+.city-node .plate{fill:var(--node);stroke:var(--line-strong);stroke-width:2}
+.city-node .ext{fill:var(--land-3)}
+.city-node .cn{fill:var(--node-ink);font-weight:800;font-size:15px;text-anchor:middle}
+.city-node .cd{fill:var(--ink-3);font-size:9.5px;text-anchor:middle;font-family:var(--font-data)}
+.city-node:hover .plate{fill:var(--gold-soft)}
+.city-node.on .plate{fill:var(--gold-bright);stroke:#2B2312}
+.city-node.on .cn{fill:#2B2312}
+.city-node.on .cd{fill:#4A3A1B}
+:root[data-theme="dark"] .city-node.on .plate{stroke:#1A1206;fill:#FFD470}
+:root[data-theme="dark"] .city-node.on .cn{fill:#1A1206}
+:root[data-theme="dark"] .city-node.on .cd{fill:#4A3A1B}
+.pulse{fill:none;stroke:var(--gold-bright);stroke-width:2;stroke-dasharray:5 5;opacity:0}
+.city-node.on .pulse{animation:pulse 2.2s ease-out infinite}
+@keyframes pulse{0%{opacity:.95;stroke-width:3}70%{opacity:0;stroke-width:2}100%{opacity:0;stroke-width:2}}
+.leg{fill:none;stroke:var(--route);stroke-width:3;stroke-dasharray:2 7;stroke-linecap:round;opacity:.55}
+.leg.on{opacity:1;stroke-width:4;stroke-dasharray:10 6;animation:legflow 1.1s linear infinite}
+@keyframes legflow{to{stroke-dashoffset:-16}}
+.leg.air{stroke-dasharray:1 7;opacity:.45}
+.leg.air.on{stroke-dasharray:9 7;opacity:1}
+.flow{fill:none;stroke:#fff;stroke-opacity:.45;stroke-width:2;stroke-dasharray:5 13;animation:legflow 2.6s linear infinite}
+.map-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.map-hint{font-size:11.5px;color:var(--ink-3);margin-left:auto}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.lg-chip{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;background:var(--surface);
+  border:2px solid var(--line-strong);font-size:12px;font-weight:700;box-shadow:0 2px 0 var(--line-strong)}
+.lg-chip svg{display:block;shape-rendering:crispEdges}
+.lg-chip small{font-family:var(--font-data);color:var(--ink-3);font-weight:400}
+/* ---------- 行程轴 ---------- */
+.rail-wrap{margin-top:20px}
+.rail{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;scroll-snap-type:x proximity;scrollbar-width:thin}
+.day-chip{flex:0 0 auto;width:106px;scroll-snap-align:start;text-align:left;padding:9px 10px 10px;
+  background:var(--surface);border:2px solid var(--line-strong);box-shadow:0 3px 0 var(--line-strong);
+  display:flex;flex-direction:column;gap:4px;transition:transform .12s,box-shadow .12s,background .15s}
+.day-chip:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--line-strong);background:var(--surface-2)}
+.day-chip:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line-strong)}
+.day-chip.on{background:var(--gold-bright)}
+.day-chip.on .dc-num{color:#2B2312}
+.day-chip.on .dc-dt{color:#4A3A1B}
+.day-chip.on .dc-city{color:#2B2312}
+.dc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.dc-num{font-family:var(--font-pixel);font-size:13px;color:var(--gold);line-height:1}
+.dc-ic svg{display:block;shape-rendering:crispEdges}
+.dc-dt{font-family:var(--font-data);font-size:11px;color:var(--ink-3);line-height:1.4}
+.dc-city{font-size:12px;font-weight:700;color:var(--ink);line-height:1.3}
+
+/* ---------- 当日安排 ---------- */
+.day-panel{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;align-items:start}
+.dp-main{border:2px solid var(--line-strong);background:var(--surface);box-shadow:var(--shadow-hard)}
+.dp-head{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;padding:16px 18px;border-bottom:2px solid var(--line);background:var(--surface-2)}
+.dp-day{font-family:var(--font-pixel);font-size:24px;color:var(--gold);line-height:1}
+.dp-when{display:flex;flex-direction:column;line-height:1.35}
+.dp-date{font-size:19px;font-weight:800}
+.dp-week{font-size:11.5px;color:var(--ink-3);font-family:var(--font-data)}
+.dp-city{margin-left:auto;display:flex;align-items:center;gap:9px}
+.dp-city svg{display:block;shape-rendering:crispEdges}
+.dp-city b{font-size:16px}
+.dp-city small{display:block;font-size:10.5px;color:var(--ink-3);font-family:var(--font-data)}
+.dp-body{padding:6px 18px 18px}
+.dp-sub{font-family:var(--font-pixel);font-size:8.5px;letter-spacing:.14em;color:var(--ink-3);
+  text-transform:uppercase;margin:16px 0 10px;display:flex;align-items:center;gap:8px}
+.dp-sub::after{content:"";flex:1;height:2px;background:var(--line)}
+.ticket{display:flex;align-items:center;gap:14px;padding:12px 14px;margin-top:12px;
+  background:var(--surface-2);border:2px solid var(--line-strong);position:relative;overflow:hidden}
+.ticket::before,.ticket::after{content:"";position:absolute;width:12px;height:12px;border-radius:50%;
+  background:var(--surface);border:2px solid var(--line-strong);top:50%;transform:translateY(-50%)}
+.ticket::before{left:-8px}.ticket::after{right:-8px}
+.tk-ic{width:38px;height:38px;flex:none;background:var(--gold-soft);border:2px solid var(--line-strong);display:grid;place-items:center}
+.tk-ic svg{display:block;shape-rendering:crispEdges}
+.tk-main{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.45}
+.tk-route{font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tk-route code{font-family:var(--font-data);font-size:12.5px;background:var(--surface);border:2px solid var(--line);padding:0 5px}
+.tk-meta{font-family:var(--font-data);font-size:11.5px;color:var(--ink-3)}
+.tk-times{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--font-data);font-size:12px}
+.tk-times b{display:block;font-size:15px;color:var(--ink);letter-spacing:.02em}
+.tk-times span{font-size:10.5px;color:var(--ink-3)}
+.tasks{display:flex;flex-direction:column;gap:2px}
+.task{display:flex;gap:12px;align-items:flex-start;padding:8px 8px 8px 6px;border-bottom:2px dotted var(--line);cursor:pointer;position:relative}
+.task:last-child{border-bottom:0}
+.task:hover{background:var(--surface-2)}
+.chk{width:18px;height:18px;flex:none;margin-top:3px;background:var(--surface);border:2px solid var(--line-strong);position:relative}
+.chk::after{content:"";position:absolute;inset:2px;background:var(--leaf);opacity:0;transition:opacity .12s}
+.task.done .chk::after{opacity:1}
+.task.done .tk-tx{color:var(--ink-3);text-decoration:line-through;text-decoration-thickness:2px}
+.tk-time{font-family:var(--font-data);font-size:11.5px;color:var(--ink-3);flex:none;width:74px;padding-top:2px}
+.tk-time.est::after{content:"≈";margin-left:3px;color:var(--clay)}
+.tk-tx{font-size:14px;line-height:1.6;flex:1;min-width:0}
+.tk-tx b{font-weight:700}
+.tk-tx .sub{display:block;font-size:12px;color:var(--ink-3);line-height:1.55}
+.tk-link{font-size:11.5px;color:var(--gold);font-weight:700;white-space:nowrap;padding-top:2px;text-decoration:underline;text-underline-offset:3px}
+.tk-link:hover{color:var(--clay)}
+.dp-side{display:flex;flex-direction:column;gap:14px}
+.side-card{border:2px solid var(--line-strong);background:var(--surface);box-shadow:var(--shadow-hard)}
+.side-card h3{font-size:12px;font-weight:800;letter-spacing:.06em;padding:10px 14px;border-bottom:2px solid var(--line);
+  background:var(--surface-2);display:flex;align-items:center;gap:8px}
+.side-card h3 svg{display:block;shape-rendering:crispEdges}
+.side-body{padding:12px 14px;font-size:13px;display:flex;flex-direction:column;gap:9px}
+.kv{display:flex;gap:10px;align-items:baseline;font-size:13px}
+.kv dt{flex:none;color:var(--ink-3);font-size:11.5px;width:4.2em}
+.kv dd{margin:0;font-weight:600;flex:1;min-width:0}
+.note-list{display:flex;flex-direction:column;gap:8px}
+.note-item{display:flex;gap:9px;font-size:12.5px;color:var(--ink-2);line-height:1.65}
+.note-item i{flex:none;width:8px;height:8px;margin-top:7px;background:var(--gold-bright);border:1px solid var(--line-strong)}
+.note-item.warn{color:var(--clay)}
+.note-item.warn i{background:var(--clay)}
+.spots{display:flex;flex-wrap:wrap;gap:6px}
+.spot-btn{padding:4px 9px;font-size:12px;font-weight:700;background:var(--surface-2);
+  border:2px solid var(--line-strong);box-shadow:0 2px 0 var(--line-strong);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line-strong)}
+.spot-btn:hover{background:var(--gold-soft);text-decoration-color:var(--gold)}
+
+/* ---------- 景点详情弹层 ---------- */
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px}
+.modal.open{display:flex}
+.modal-bd{position:absolute;inset:0;background:rgba(20,14,4,.62)}
+.modal-card{position:relative;width:min(560px,100%);max-height:86vh;overflow:auto;
+  background:var(--surface);border:3px solid var(--line-strong);box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.mc-head{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border-bottom:2px solid var(--line);background:var(--surface-2)}
+.mc-ic{width:56px;height:56px;flex:none;background:var(--surface);border:2px solid var(--line-strong);display:grid;place-items:center}
+.mc-ic svg{display:block;shape-rendering:crispEdges}
+.mc-tt{flex:1;min-width:0}
+.mc-tt h3{font-size:19px;font-weight:800;line-height:1.3}
+.mc-tt .mc-en{font-family:var(--font-data);font-size:11.5px;color:var(--ink-3)}
+.mc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.mc-x{width:30px;height:30px;flex:none;display:grid;place-items:center;background:var(--surface);border:2px solid var(--line-strong);
+  font-family:var(--font-pixel);font-size:9px}
+.mc-x:hover{background:var(--clay-soft);color:var(--clay)}
+.mc-body{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.mc-lbl{font-family:var(--font-pixel);font-size:8px;letter-spacing:.14em;color:var(--ink-3);text-transform:uppercase}
+.mc-body p{font-size:14px;color:var(--ink-2);line-height:1.8}
+.mc-days{display:flex;gap:6px;flex-wrap:wrap}
+.mc-day{padding:3px 9px;font-family:var(--font-data);font-size:11.5px;background:var(--surface-2);border:2px solid var(--line-strong)}
+
+/* ---------- 城市攻略 ---------- */
+.guides{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px}
+.gcard{border:2px solid var(--line-strong);background:var(--surface);box-shadow:var(--shadow-hard);display:flex;flex-direction:column}
+.gc-head{padding:14px 16px;border-bottom:2px solid var(--line);background:var(--surface-2);display:flex;gap:13px;align-items:center}
+.gc-ic{width:52px;height:52px;flex:none;background:var(--surface);border:2px solid var(--line-strong);display:grid;place-items:center}
+.gc-ic svg{display:block;shape-rendering:crispEdges}
+.gc-tt{flex:1;min-width:0}
+.gc-tt h3{font-size:18px;font-weight:800;line-height:1.25;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.gc-tt h3 small{font-family:var(--font-data);font-size:11px;color:var(--ink-3);font-weight:400}
+.gc-tt .gc-stay{font-family:var(--font-data);font-size:11.5px;color:var(--gold);font-weight:700}
+.gc-list{display:flex;flex-direction:column;padding:6px 16px 16px}
+.grow{display:grid;grid-template-columns:5.4em minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:2px dotted var(--line)}
+.grow:last-child{border-bottom:0}
+.grow .gth{font-size:11px;font-weight:800;color:var(--ink-3);letter-spacing:.04em;padding-top:2px;line-height:1.5}
+.grow .gth b{display:block;color:var(--nile);font-size:11.5px;letter-spacing:0}
+.grow .gpl{font-size:13.5px;font-weight:700;line-height:1.5;margin-bottom:2px}
+.grow .gtx{font-size:12.5px;color:var(--ink-2);line-height:1.7}
+.grow .gtx a{text-decoration:underline;text-underline-offset:3px;font-weight:700}
+
+/* ---------- 行李清单 ---------- */
+.pk-top{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:18px;
+  border:2px solid var(--line-strong);background:var(--surface);box-shadow:var(--shadow-hard);padding:14px 16px}
+.ring{width:74px;height:74px;flex:none}
+.ring circle{fill:none;stroke-width:9;stroke-linecap:butt}
+.ring .bgc{stroke:var(--surface-2)}
+.ring .fgc{stroke:var(--gold-bright);transition:stroke-dashoffset .5s cubic-bezier(.2,.8,.2,1)}
+.ring text{fill:var(--ink);font-family:var(--font-pixel);font-size:15px;text-anchor:middle}
+.pk-info{flex:1;min-width:200px}
+.pk-info b{font-size:15px}
+.pk-info p{font-size:12.5px;color:var(--ink-2);line-height:1.65;margin-top:3px}
+.pk-cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
+.pk-cat{border:2px solid var(--line-strong);background:var(--surface);box-shadow:var(--shadow-hard)}
+.pk-cat h4{font-size:12px;font-weight:800;letter-spacing:.05em;padding:9px 13px;border-bottom:2px solid var(--line);background:var(--surface-2);
+  display:flex;justify-content:space-between;gap:8px;align-items:center}
+.pk-cat h4 em{font-style:normal;font-family:var(--font-data);font-size:11px;color:var(--ink-3)}
+.pk-items{display:flex;flex-direction:column;padding:4px 13px 11px}
+.pitem{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:2px dotted var(--line);cursor:pointer}
+.pitem:last-child{border-bottom:0}
+.pitem .pi-tx{flex:1;min-width:0;font-size:13px;line-height:1.55}
+.pitem .pi-nt{display:block;font-size:11.5px;color:var(--ink-3);line-height:1.55;margin-top:1px}
+.pitem.done .pi-tx{color:var(--ink-3);text-decoration:line-through;text-decoration-thickness:2px}
+.pitem.miss .chk{border-color:var(--clay);box-shadow:0 0 0 2px var(--clay-soft)}
+.pitem.miss .pi-tx::after{content:"未准备";display:inline-block;margin-left:7px;padding:0 6px;font-size:10px;font-weight:800;
+  background:var(--clay-soft);color:var(--clay);border:2px solid var(--clay);vertical-align:1px}
+
+/* ---------- 须知 ---------- */
+.notes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.emg{border:2px solid var(--line-strong);background:var(--surface);box-shadow:var(--shadow-hard);padding:13px 15px}
+.emg .el{font-size:11.5px;color:var(--ink-3);font-weight:700}
+.emg b{display:block;font-family:var(--font-data);font-size:19px;color:var(--clay);letter-spacing:.01em;line-height:1.5}
+.emg.emb b{color:var(--nile)}
+.flag-box{border:3px solid var(--clay);background:var(--surface);box-shadow:var(--shadow-hard)}
+.flag-box h3{font-size:13px;font-weight:800;padding:11px 15px;border-bottom:2px solid var(--clay);background:var(--clay-soft);color:var(--clay);
+  display:flex;align-items:center;gap:9px;letter-spacing:.04em}
+.flags{display:flex;flex-direction:column;padding:6px 15px 15px}
+.flag{display:grid;grid-template-columns:auto minmax(0,1fr);gap:11px;padding:11px 0;border-bottom:2px dotted var(--line)}
+.flag:last-child{border-bottom:0}
+.flag .fn{font-family:var(--font-pixel);font-size:9px;color:var(--clay);padding-top:5px}
+.flag .ft{font-size:13px;line-height:1.7;color:var(--ink-2)}
+.flag .ft b{color:var(--ink)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:16px}
+.fact{border:2px solid var(--line-strong);background:var(--surface);box-shadow:var(--shadow-hard);padding:13px 15px}
+.fact h4{font-size:12px;font-weight:800;color:var(--ink-3);letter-spacing:.05em;margin-bottom:6px}
+.fact p{font-size:13px;color:var(--ink-2);line-height:1.7}
+.fact p b{color:var(--ink)}
+
+footer{border-top:2px solid var(--line-strong);padding-block:22px 34px;background:var(--surface-2)}
+.foot-in{display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;align-items:flex-start}
+footer p{font-size:11.5px;color:var(--ink-3);line-height:1.7;max-width:60ch}
+
+/* SVG 主题色（不用表现属性写 var()，保证 Safari 也生效） */
+#skyGrad .s1{stop-color:var(--sky-1)} #skyGrad .s2{stop-color:var(--sky-2)}
+#seaGrad .s1{stop-color:var(--sea)}   #seaGrad .s2{stop-color:var(--sea-2)}
+.s-sea{fill:var(--sea)} .s-sea2{fill:var(--sea-2)} .s-sea3{stroke:var(--sea-3)}
+.s-land{fill:var(--land)} .s-dune{fill:var(--land-2)} .s-dune2{fill:var(--land-3)}
+.s-node{fill:var(--node)}
+/* 图标统一高度 */
+.dc-ic svg,.side-card h3 svg{height:16px;width:auto;flex:none}
+.tk-ic svg{height:22px;width:auto}
+.dp-city svg{height:34px;width:auto;flex:none}
+.mc-ic svg,.gc-ic svg{height:38px;width:auto}
+.lg-chip svg{height:26px;width:auto;flex:none}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:1000px){
+  .hero-grid{grid-template-columns:1fr;align-items:start}
+  .day-panel{grid-template-columns:1fr}
+  .cost-grid{grid-template-columns:1fr}
+}
+@media (max-width:620px){
+  body{font-size:14px}
+  .topbar-in{gap:8px;padding-block:8px}
+  .countdown{order:3}
+  .progress-mini{display:none}
+  .dp-head{gap:10px;padding:13px 14px}
+  .dp-day{font-size:19px}
+  .dp-city{margin-left:0}
+  .dp-body{padding:4px 14px 14px}
+  .tk-time{width:64px}
+  .ticket{flex-wrap:wrap}
+  .hero h1{font-size:clamp(30px,10vw,44px)}
+  .stat{flex:1 1 40%}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .map-frame.is3d #map{transform:none}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <span class="brand-mark"><svg id="brandIcon" width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"></svg></span>
+      <span class="brand-txt">
+        <span class="brand-name">尼罗河十一日</span>
+        <span class="brand-sub">EGYPT · 2026.10.01—10.12</span>
+      </span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="countdown" id="countdown" title="距 2026 年 10 月 1 日出发"><b>—</b><span>天后出发</span></div>
+    <div class="progress-mini"><span id="progTxt">行程 0/12</span><span class="pbar"><i id="progBar" style="width:0"></i></span></div>
+    <button class="icon-btn" id="btn3d" aria-pressed="true"><span class="sw">3D</span>立体视角</button>
+    <button class="icon-btn" id="btnTheme"><span class="sw">◐</span><span id="themeTxt">跟随系统</span></button>
+  </div>
+</header>
+
+<main>
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Egypt · Nile Voyage · 国庆黄金周</p>
+      <h1>从三角洲<br>到<em>阿布辛贝</em></h1>
+      <p class="hero-lede">上海出发，经开罗、赫尔格达、卢克索、阿斯旺，最南抵达阿布辛贝。<b>4 段国际航班</b>串起南北，<b>4 段长途包车</b>沿尼罗河谷推进。点开地图上的城邦、或下方任意一天的行程，都能看到当天的安排与景点门道。</p>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+</section>
+
+<!-- ============ 地图 ============ -->
+<section class="atlas" id="atlas">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Route Map</p>
+      <h2 class="sec-title">路线图 · 尼罗河自南向北</h2>
+      <p class="sec-sub">按真实经纬度摆放的五座城邦；金色虚线为公路转场，点线为空中航段。移动鼠标可获得视差纵深，点击城邦查看该站攻略。</p>
+    </div>
+
+    <div class="map-shell">
+      <div class="map-frame is3d" id="mapFrame">
+        <svg id="map" viewBox="0 0 1000 680" role="img" aria-label="埃及行程路线图：开罗、赫尔格达、卢克索、阿斯旺、阿布辛贝">
+          <defs>
+            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" class="s1"/>
+              <stop offset="1" class="s2"/>
+            </linearGradient>
+            <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" class="s1"/>
+              <stop offset="1" class="s2"/>
+            </linearGradient>
+          </defs>
+
+          <g id="viewport">
+            <!-- 天空 / 星辰 -->
+            <g class="layer" style="--d:1.8" id="layer-sky">
+              <rect x="-60" y="-60" width="1120" height="800" fill="url(#skyGrad)"/>
+              <g class="stars" id="stars" shape-rendering="crispEdges"></g>
+              <g id="orb" shape-rendering="crispEdges"></g>
+            </g>
+
+            <!-- 陆地 -->
+            <g class="layer" style="--d:1.25" id="layer-land" shape-rendering="crispEdges">
+              <rect x="-60" y="-60" width="1120" height="800" class="s-land"/>
+              <g id="dunes"></g>
+            </g>
+
+            <!-- 水域 -->
+            <g class="layer" style="--d:1" id="layer-water">
+              <polygon points="0,0 1000,0 1000,74 700,88 530,100 492,106 390,92 250,97 62,117 0,122"
+                       fill="url(#seaGrad)"/>
+              <polygon points="520,124 592,220 672,292 778,336 866,404 908,484 932,572 902,632 1000,646 1000,116"
+                       fill="url(#seaGrad)"/>
+              <g id="shimmer" shape-rendering="crispEdges"></g>
+              <ellipse cx="606" cy="543" rx="62" ry="20" class="s-sea s-stroke3" stroke-width="3"/>
+              <text x="606" y="546" text-anchor="middle" font-size="9" class="mono s-node">LAKE NASSER</text>
+              <!-- 尼罗河干流 -->
+              <path d="M640,562 C654,548 660,530 668,512 C673,496 674,470 672,452 C668,424 662,396 655,368 C640,330 620,292 604,258 C594,232 586,212 578,198"
+                    class="s-sea" fill="none" stroke-width="15" stroke-linecap="round"/>
+              <path d="M640,562 C654,548 660,530 668,512 C673,496 674,470 672,452 C668,424 662,396 655,368 C640,330 620,292 604,258 C594,232 586,212 578,198"
+                    class="s-sea2" fill="none" stroke-width="5" stroke-linecap="round" opacity=".35"/>
+              <!-- 三角洲两汊 -->
+              <path d="M578,198 C548,178 500,150 448,124" class="s-sea" fill="none" stroke-width="9" stroke-linecap="round"/>
+              <path d="M578,198 C590,176 602,142 516,110" class="s-sea" fill="none" stroke-width="9" stroke-linecap="round"/>
+              <path class="flow" d="M655,455 C645,400 615,320 578,230 C560,192 545,160 500,128" stroke-width="2"/>
+              <!-- 苏伊士运河 -->
+              <rect x="503" y="98" width="5" height="30" class="s-sea"/>
+              <text x="250" y="60" font-size="11" class="mono s-node" opacity=".85">MEDITERRANEAN</text>
+              <text x="812" y="470" font-size="11" class="mono s-node" opacity=".85" transform="rotate(-72 812 470)">RED SEA</text>
+            </g>
+
+            <!-- 地表装饰 -->
+            <g class="layer" style="--d:1" id="layer-deco" shape-rendering="crispEdges"></g>
+            <!-- 路线 -->
+            <g class="layer" style="--d:.55" id="layer-route"><g id="legs" shape-rendering="crispEdges"></g></g>
+            <!-- 城邦节点 -->
+            <g class="layer" style="--d:1.9" shape-rendering="crispEdges"><g id="nodes"></g></g>
+            <!-- 行者标记 -->
+            <g class="layer" style="--d:2.4"><g id="traveler" shape-rendering="crispEdges"></g></g>
+          </g>
+        </svg>
+      </div>
+
+      <div class="map-tools">
+        <button class="icon-btn" id="btnReset" aria-pressed="false">全览地图</button>
+        <button class="icon-btn" id="btnPlay"><span class="sw">▶</span>自动走一遍</button>
+        <span class="map-hint">提示：← → 方向键可切换日期</span>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 当日安排 ============ -->
+<section id="day">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Day by Day</p>
+      <h2 class="sec-title">每日安排</h2>
+      <p class="sec-sub">点条目可以打勾记录完成情况；景点名可点开详情。行程内容全部转录自《2026.10埃及旅行行程.xlsx》。</p>
+    </div>
+    <div class="rail-wrap">
+      <div class="rail" id="rail" role="tablist" aria-label="十二天行程"></div>
+    </div>
+    <div class="day-panel" id="dayPanel"></div>
+  </div>
+</section>
+
+<!-- ============ 城市攻略 ============ -->
+<section id="guides">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">City Notes</p>
+      <h2 class="sec-title">五城攻略</h2>
+      <p class="sec-sub">表格里每座城市的"主题 — 地点 — 注意事项"原样搬来，含交通、项目取舍与安全提示。</p>
+    </div>
+    <div class="guides" id="guideCards"></div>
+  </div>
+</section>
+
+<!-- ============ 行李清单 ============ -->
+<section id="packing">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Checklist</p>
+      <h2 class="sec-title">行李清单</h2>
+      <p class="sec-sub">打勾状态只保存在本机浏览器；标红的是表格中仍写"未准备"的两项。</p>
+    </div>
+    <div class="pk-top" id="pkTop"></div>
+    <div class="pk-cats" id="pkCats"></div>
+  </div>
+</section>
+
+<!-- ============ 须知 ============ -->
+<section id="notes">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Before You Go</p>
+      <h2 class="sec-title">行前须知与待确认</h2>
+      <p class="sec-sub">阿斯旺 — 开罗国内段已确认为 <b>10/11 07:20</b>，原表里几处对不上的地方都按这个时间改齐了。剩下两件还需要你出发前定。</p>
+    </div>
+    <div class="facts" id="facts"></div>
+    <div class="notes-grid" id="emerg"></div>
+    <div class="flag-box">
+      <h3><svg width="12" height="12" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="1" width="4" height="10" fill="currentColor"/><path d="M6 2h4l-1 2 1 2H6z" fill="currentColor"/></svg>待确认 · 出发前还要定这两件事</h3>
+      <div class="flags" id="flags"></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <p>行程整理：《2026.10埃及旅行行程.xlsx》行程表与开罗 / 赫尔格达 / 卢克索 / 阿斯旺 / 阿布辛贝五城攻略。票价、开放时间与预约规则请以出行当日实际为准。</p>
+    <p class="mono" style="text-align:right">NILE VOYAGE · 12 DAYS<br>SHANGHAI ⇄ CAIRO<br><a href="/">← 返回主页</a></p>
+  </div>
+</footer>
+
+<!-- 景点详情弹层 -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mcTitle">
+  <div class="modal-bd" id="modalBd"></div>
+  <div class="modal-card" id="modalCard"></div>
+</div>
+<script>
+"use strict";
+/* ============================================================
+   1. 像素精灵
+   ============================================================ */
+const PAL={K:'#6A4E15',M:'#D3AE64',D:'#9C7327',L:'#FBF0D2',W:'#FFFAEC',Z:'#2A7E99',P:'#B44B2C',N:'#2B2312',G:'#3F7A4E'};
+const SPR={
+pyramid:{p:PAL,r:[
+'................','......KKK.......','.....KMMMK......','....KMMMMDK.....',
+'...KMMMDDMMK....','..KMMDDDDDMK....','.KMDDDDDDDMK....','KMDDDDDDDDDMK...',
+'KDDDDDDDDDDDK...','KKKKKKKKKKKKKK..']},
+pyramidS:{p:PAL,r:[
+'..........','....KKK...','...KMMMK..','..KMMDDK..','.KMDDDDK..','KDDDDDDDK.','KKKKKKKKKK']},
+mask:{p:PAL,r:[
+'...KKKKKKKK...','..KWWMMMMWWK..','.KWMMMMMMMMWK.','.KWMKMMMMKMWK.','.KWMKMMMMKMWK.',
+'.KWMKMMMMKMWK.','.KWMKMMMMKMWK.','.KWMMMMMMMMWK.','..KWWMMMMWWK..','...KKKKKKKK...']},
+column:{p:PAL,r:[
+'.KKKKKKKK.','KWMMMMMMWK','KWWMMMMWWK','KWMMMMMMWK','KWMKMMKMWK','.KMMMMMMK.',
+'..KMMMMK..','..KMMMMK..','..KMMMMK..','..KMMMMK..','..KMMMMK..','..KMMMMK..',
+'..KMDDMK..','..KMDDMK..','..KMDDMK..','.KKKKKKKK.']},
+felucca:{p:PAL,r:[
+'................','...........LLLK.','..........LLLLK.','.........LLLLLK.','........LLLLLLK.',
+'.......LLLLLLLK.','......LLLLLLLLK.','.....LLLLLLLLLK.','....LLLLLLLLLLK.','...LLLLLLLLLLLK.',
+'..LLLLLLLLLLLLK.','.LLLLLLLLLLLLLK.','LLLLLLLLLLLLLLK','KKKKKKKKKKKKKKKK','KDDDDDDDDDDDDDDK','.KKKKKKKKKKKKKK.']},
+statue:{p:PAL,r:[
+'....KKKKKK....','...KMMMMMMK...','...KMMMMMMK...','...KMKMMKMK...','...KMKMMKMK...',
+'...KMMMMMMK...','...KMMMMMMK...','...KMMMMMMK...','..KMMMMMMMMK..','..KMMMMMMMMK..',
+'..KMMMMMMMMK..','..KMMMMMMMMK..','..KMMMMMMMMK..','.KKKKKKKKKKKK.','KKKKKKKKKKKKKK']},
+boat:{p:PAL,r:[
+'............','.......LLL..','......LLLL..','.....LLLLL..','....LLLLLL..','...LLLLLLL..',
+'..LLLLLLLL..','.LLLLLLLLL..','LLLLLLLLLLK.','KKKKKKKKKKKK.','KDDDDDDDDDDDK.','.KKKKKKKKKKKK.']},
+car:{p:PAL,r:['...KKKK...','..KMMMMK..','.KMMMMMMK.','KMMMMMMMMK','KMMMMMMMMK','.KKKKKKKK.','..KK..KK..']},
+plane:{p:PAL,r:['.....KK.....','....KMMK....','....KMMK....','KKKKMMMMKKKK','KMMMMMMMMMMK','.KKKKKKKKKK.','....KMMK....','....KMMK....']},
+palm:{p:PAL,r:['....KK....','..KK.KK...','.K.KKK.K..','K..KKK..K.','...KKKK...','....K.....','....K.....','....K.....','...KDDK...','...KDDK...','..KKDDKK..','...KKKK...']},
+sun:{p:PAL,r:['K..K..K.','.KKKKKK.','KKMMMMKK','KMMMMMMK','KMMMMMMK','KKMMMMKK','.KKKKKK.','K..K..K.']},
+person:{p:PAL,r:['..KKKK..','.KMMMMK.','.KMKKMK.','.KMMMMK.','..KMMK..','.KKMMKK.','K.KMMK.K','K.KMMK.K','..KMMK..','..KDDK..','..KDDK..','.KKKKKK.']}
+};
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>Array.from((r||document).querySelectorAll(s));
+const NS='http://www.w3.org/2000/svg';
+function spr(name,x,y,s,cls){
+  const o=SPR[name]; if(!o) return '';
+  let out='<g'+(cls?' class="'+cls+'"':'')+'>';
+  for(let ry=0;ry<o.r.length;ry++){
+    const row=o.r[ry];
+    for(let rx=0;rx<row.length;rx++){
+      const c=row[rx]; if(c==='.'||c===' ') continue;
+      const f=o.p[c]; if(!f) continue;
+      out+='<rect x="'+(x+rx*s)+'" y="'+(y+ry*s)+'" width="'+s+'" height="'+s+'" fill="'+f+'"/>';
+    }
+  }
+  return out+'</g>';
+}
+/* ============================================================
+   2. 数据
+   ============================================================ */
+const CITIES={
+  cairo:    {name:'开罗',en:'Cairo',cx:563,cy:193,sprite:'pyramid',stay:'10.02 — 10.04',nights:'2 晚',hotel:'Malak Palace Cairo Hotel'},
+  hurghada: {name:'赫尔格达',en:'Hurghada',cx:765,cy:332,sprite:'mask',stay:'10.04 — 10.06',nights:'2 晚',hotel:'Hurghada Marriott Beach Resort'},
+  luxor:    {name:'卢克索',en:'Luxor',cx:663,cy:410,sprite:'column',stay:'10.06 — 10.08',nights:'2 晚',hotel:'Steigenberger Nile Palace Luxor - Convention Center'},
+  aswan:    {name:'阿斯旺',en:'Aswan',cx:682,cy:490,sprite:'felucca',stay:'10.08 — 10.11',nights:'3 晚',hotel:'Obelisk Nile Hotel'},
+  abusimbel:{name:'阿布辛贝',en:'Abu Simbel',cx:591,cy:578,sprite:'statue',stay:'10.09 当日往返',nights:'不过夜',hotel:'—'}
+};
+const LEGS=[
+  {id:'l1',d:'M563,193 C640,212 720,268 765,330',mode:'road',day:4},
+  {id:'l2',d:'M765,330 C730,354 700,374 663,405',mode:'road',day:6},
+  {id:'l3',d:'M663,405 C678,436 682,462 682,487',mode:'road',day:8},
+  {id:'l4',d:'M682,487 C654,524 620,553 600,574',mode:'road',day:9},
+  {id:'l5',d:'M682,487 C560,330 542,250 566,197',mode:'air',day:11}
+];
+const ATTR={
+  gem:{n:'大埃及博物馆',e:'Grand Egyptian Museum',c:'cairo',cat:'博物馆',d:[2],t:'安排在抵达日下午；建议提前购买分时门票。若入境延误，优先保留该项目，减少市场停留。'},
+  khan:{n:'哈利利市场',e:'Khan el-Khalili',c:'cairo',cat:'市集',d:[2],t:'体验老开罗市井文化，可与爱资哈尔一带同游；贵重物品贴身，购物先询价。'},
+  azhar:{n:'爱资哈尔',e:'Al-Azhar',c:'cairo',cat:'宗教',d:[2],t:'可与哈利利市场同片游览；进入宗教场所需遮肩遮膝，遵守现场脱鞋要求。'},
+  giza:{n:'吉萨金字塔群',e:'Giza Pyramids',c:'cairo',cat:'古迹',d:[3],t:'10/3 上午核心项目。若计划进入金字塔内部，需另购升级票并预留排队时间。'},
+  sphinx:{n:'狮身人面像',e:'Great Sphinx',c:'cairo',cat:'古迹',d:[3],t:'与金字塔群同一景区，一并游览；上午光线与气温都更适合步行。'},
+  citadel:{n:'萨拉丁城堡',e:'Saladin Citadel',c:'cairo',cat:'古迹',d:[3],t:'与穆罕默德·阿里清真寺同一区域，可组合游览，俯瞰全城。'},
+  mohamed:{n:'穆罕默德·阿里清真寺',e:'Mosque of Muhammad Ali',c:'cairo',cat:'宗教',d:[3],t:'进入清真寺需遮肩、遮膝并遵守现场脱鞋要求。'},
+  hanging:{n:'悬空教堂',e:'Hanging Church',c:'cairo',cat:'备选',d:[3],t:'开罗老城科普特区，时间允许再补，不必强塞。'},
+  hassan:{n:'苏丹哈桑清真寺',e:'Sultan Hassan Mosque',c:'cairo',cat:'备选',d:[3],t:'老城大型马穆鲁克清真寺；与悬空教堂、洞穴教堂同片，按落地时间择重点。'},
+  snorkel:{n:'红海出海浮潜',e:'Red Sea Snorkeling',c:'hurghada',cat:'出海',d:[5],t:'提前确认接送、装备、午餐和取消条款；出海受风浪影响。带泳衣、浴巾、防水手机袋、防晒和晕船药。'},
+  dolphin:{n:'追海豚',e:'Dolphin Watching',c:'hurghada',cat:'出海',d:[5],t:'红海常见线路，能否遇到取决于当日海况与船家安排。'},
+  giftun:{n:'橘子岛',e:'Giftun Island',c:'hurghada',cat:'海岛',d:[5],t:'半天出海线路，含午餐；风浪大时可能调整航线。'},
+  paradise:{n:'天堂岛',e:'Paradise Island',c:'hurghada',cat:'海岛',d:[5],t:'红海度假岛屿线路，与橘子岛二选一即可，不必一天塞两个长项目。'},
+  desert:{n:'超级沙漠',e:'Super Desert',c:'hurghada',cat:'沙漠',d:[5],t:'通常含越野摩托、吉普、贝都因村及骑骆驼；备头巾/护目、防晒，注意沙尘。不想下水时改为这个。'},
+  diving:{n:'体验潜水 / 持证潜水',e:'Diving',c:'hurghada',cat:'潜水',d:[5],t:'按潜水资质选择项目，确认教练、保险和设备；身体不适时不要下水。'},
+  carriage:{n:'马车夜游',e:'Carriage Night Tour',c:'hurghada',cat:'体验',d:[6],t:'入住卢克索后安排，与卢克索神庙夜景组合最合适。'},
+  balloon:{n:'热气球',e:'Hot Air Balloon',c:'luxor',cat:'可选',d:[7],t:'凌晨/清晨项目，受风况影响较大；提前预约并确认取消退款政策。参加的话当天会非常早起。'},
+  valley:{n:'帝王谷',e:'Valley of the Kings',c:'luxor',cat:'古迹',d:[7],t:'核心景点；基础票与热门墓室可能分开售票，按兴趣和体力取舍。'},
+  memnon:{n:'门农巨像',e:'Colossi of Memnon',c:'luxor',cat:'古迹',d:[7],t:'原旅行社方案所列，位于西岸，可与帝王谷串联。'},
+  habu:{n:'哈布城',e:'Medinet Habu',c:'luxor',cat:'古迹',d:[7],t:'原旅行社方案所列；如更偏好女性法老历史，可替换为哈特谢普苏特神庙。'},
+  hatshepsut:{n:'哈特谢普苏特神庙',e:'Hatshepsut Temple',c:'luxor',cat:'古迹',d:[7],t:'女法老葬祭庙，三层台地建筑；作为哈布城的替换项。'},
+  karnak:{n:'卡纳克神庙',e:'Karnak Temple',c:'luxor',cat:'古迹',d:[7],t:'原方案核心景点，建议安排充足时间并由中文导游讲解。'},
+  luxort:{n:'卢克索神庙',e:'Luxor Temple',c:'luxor',cat:'古迹',d:[6,7],t:'时间允许可补充，夜景适合与马车夜游组合；以实际开放时间为准。'},
+  philae:{n:'菲莱神庙（伊西斯神庙）',e:'Philae Temple',c:'aswan',cat:'古迹',d:[8],t:'需乘船上岛，提前协调车船接送与门票；上午参观更从容。'},
+  felucca:{n:'尼罗河风帆船',e:'Felucca Sunset',c:'aswan',cat:'体验',d:[8],t:'原方案为老瀑布酒店一带航段；风力不足时可能由机动船拖带。'},
+  nubian:{n:'努比亚村',e:'Nubian Village',c:'aswan',cat:'体验',d:[9],t:'下午乘摩托艇前往；商业化程度较高，不感兴趣可缩短停留。只在返程时间与体力允许时傍晚去。'},
+  ramses:{n:'拉美西斯二世大神庙',e:'Abu Simbel · Great Temple',c:'abusimbel',cat:'古迹',d:[9],t:'核心参观对象，预留安检、步行、参观与拍照时间；以现场开放安排为准。'},
+  nefertari:{n:'奈菲尔塔利小神庙',e:'Nefertari Temple',c:'abusimbel',cat:'古迹',d:[9],t:'与大神庙位于同一景区，按门票和现场动线一并参观。'}
+};
+function sp(id){return ATTR[id]?ATTR[id].n:id}
+const DAYS=[
+{d:1,date:'10月1日',week:'周四',city:'上海 — 北京',ck:null,ic:'plane',kind:'air',leg:null,
+ hotel:'夜间航班 / 机场',books:[],notes:['国际段联程前序；随身携带护照、现金与充电设备。'],
+ items:[
+  {t:'21:30',tx:'<b>中国国航 CA1510</b> 上海虹桥 T2 起飞',sub:'虹桥 T2 → 北京首都 T3'},
+  {t:'23:55',tx:'抵达北京首都 T3',sub:'机场内转机，不单独安排住宿'}],
+ spots:[]},
+{d:2,date:'10月2日',week:'周五',city:'北京 — 开罗',ck:'cairo',ic:'plane',kind:'air',leg:null,
+ hotel:'Malak Palace Cairo Hotel（开罗）',books:['大埃及博物馆分时门票'],
+ notes:['抵达日预留入境缓冲；若延误，优先保留大埃及博物馆，哈利利市场可缩短。'],
+ items:[
+  {t:'02:30',tx:'<b>中国国航 CA829</b> 北京首都 T3 起飞',sub:'北京首都 T3 → 开罗国际 T3'},
+  {t:'09:15',tx:'抵达开罗国际 T3',sub:'办理落地签、入境、取行李'},
+  {t:'',tx:'购买电话卡 + 换汇',sub:'开罗机场取行李后办理 Vodafone 或 Orange'},
+  {t:'',tx:'接机 · 午餐',sub:'，下午时段留给大埃及博物馆'},
+  {t:'',tx:'参观 <b>大埃及博物馆</b>',sub:'分时门票，需按预约时段入场'},
+  {t:'傍晚',tx:'哈利利市场 · 爱资哈尔一带',sub:'老开罗市井；贵重物品贴身，购物先询价'},
+  {t:'晚间',tx:'入住 Malak Palace Cairo Hotel',sub:'开罗'}],
+ spots:['gem','khan','azhar']},
+{d:3,date:'10月3日',week:'周六',city:'开罗',ck:'cairo',ic:'pyramid',kind:'city',leg:null,
+ hotel:'Malak Palace Cairo Hotel（开罗）',books:['金字塔入内票'],
+ notes:['取消亚历山大一日往返，把完整一天留给金字塔和开罗老城，减少长途折返。'],
+ items:[
+  {t:'上午',tx:'吉萨金字塔群 · 胡夫金字塔 · 狮身人面像',sub:'金字塔入内需另购升级票并预留排队时间'},
+  {t:'下午',tx:'萨拉丁城堡 · 穆罕默德·阿里清真寺',sub:'同一区域组合游览；清真寺需遮肩遮膝、遵守脱鞋要求'},
+  {t:'备选',tx:'悬空教堂 / 苏丹哈桑清真寺',sub:'时间允许再补，不必全部强塞'}],
+ spots:['giza','sphinx','citadel','mohamed','hanging','hassan']},
+{d:4,date:'10月4日',week:'周日',city:'开罗 — 赫尔格达',ck:'hurghada',ic:'car',kind:'transfer',leg:'l1',
+ hotel:'Hurghada Marriott Beach Resort（赫尔格达）',books:['长途包车'],
+ notes:['转场日不安排正式项目；红海酒店餐饮通常不含酒水。'],
+ items:[
+  {t:'上午',tx:'酒店早餐后包车出发',sub:'开罗 → 赫尔格达，车程约 5–6 小时'},
+  {t:'下午',tx:'抵达后入住红海酒店',sub:'Hurghada Marriott Beach Resort'},
+  {t:'',tx:'休息 · 海滩自由活动',sub:'不安排正式项目'}],
+ spots:[]},
+{d:5,date:'10月5日',week:'周一',city:'赫尔格达',ck:'hurghada',ic:'mask',kind:'city',leg:null,
+ hotel:'Hurghada Marriott Beach Resort（赫尔格达）',books:['红海出海 / 浮潜项目'],
+ notes:['提前确认接送、装备、午餐和取消条款；带泳衣、浴巾、防水袋、防晒及晕船药。'],
+ items:[
+  {t:'全天',tx:'红海出海浮潜',sub:'按兴趣选择追海豚 / 橘子岛 / 天堂岛线路'},
+  {t:'备选',tx:'超级沙漠项目',sub:'不想下水时改为越野摩托、吉普、贝都因村及骑骆驼'},
+  {t:'提醒',tx:'出海或沙漠二选一',sub:'只有一个完整自由日，避免一天塞多个长项目'}],
+ spots:['snorkel','dolphin','giftun','paradise','desert','diving']},
+{d:6,date:'10月6日',week:'周二',city:'赫尔格达 — 卢克索',ck:'luxor',ic:'car',kind:'transfer',leg:'l2',
+ hotel:'Steigenberger Nile Palace Luxor - Convention Center（卢克索）',books:['长途包车','马车夜游'],
+ notes:['关键古迹留到次日，避免长途转场后过度赶行程。'],
+ items:[
+  {t:'上午',tx:'自由活动',sub:'红海 hotel 附近'},
+  {t:'下午',tx:'包车前往卢克索',sub:'赫尔格达 → 卢克索，车程约 4–5 小时'},
+  {t:'晚间',tx:'马车夜游',sub:'入住后安排；体力允许可看卢克索神庙夜景'}],
+ spots:['carriage','luxort']},
+{d:7,date:'10月7日',week:'周三',city:'卢克索',ck:'luxor',ic:'column',kind:'city',leg:null,
+ hotel:'Steigenberger Nile Palace Luxor - Convention Center（卢克索）',books:['热气球','帝王谷热门墓室'],
+ notes:['热气球受天气影响；原旅行社方案包含卡纳克、门农巨像、帝王谷、哈布城。'],
+ items:[
+  {t:'清晨',tx:'可选热气球',sub:'受风况影响较大，提前预约并确认取消退款政策'},
+  {t:'西岸',tx:'帝王谷 · 门农巨像 · 哈布城',sub:'哈布城可按兴趣替换为哈特谢普苏特神庙'},
+  {t:'东岸',tx:'卡纳克神庙',sub:'原方案核心景点，建议留足时间并由中文导游讲解'},
+  {t:'可选',tx:'卢克索神庙',sub:'时间允许再补'}],
+ spots:['balloon','valley','memnon','habu','hatshepsut','karnak','luxort']},
+{d:8,date:'10月8日',week:'周四',city:'卢克索 — 阿斯旺',ck:'aswan',ic:'car',kind:'transfer',leg:'l3',
+ hotel:'Obelisk Nile Hotel（阿斯旺）',books:['菲莱神庙船票 / 接送','风帆船'],
+ notes:['当天行程较紧，需提前协调卢克索出发时间；如延误，优先菲莱神庙，帆船可缩短。'],
+ items:[
+  {t:'上午',tx:'早餐后尽早包车前往阿斯旺',sub:'卢克索 → 阿斯旺，车程约 3–4 小时'},
+  {t:'下午',tx:'菲莱神庙（伊西斯神庙）',sub:'需乘船上岛，提前协调车船接送与门票'},
+  {t:'傍晚',tx:'尼罗河风帆船看日落',sub:'老瀑布酒店一带航段；风力不足可能由机动船拖带'}],
+ spots:['philae','felucca']},
+{d:9,date:'10月9日',week:'周五',city:'阿斯旺 — 阿布辛贝 — 阿斯旺',ck:'abusimbel',ic:'statue',kind:'transfer',leg:'l4',
+ hotel:'Obelisk Nile Hotel（阿斯旺）',books:['阿布辛贝包车 / 小团及门票','努比亚村（可选）'],
+ notes:['这是长途早起日，努比亚村只作备选；提前确认车辆、集合时间、证件与取消条款。'],
+ items:[
+  {t:'清晨',tx:'包车前往阿布辛贝',sub:'公路单程约 3–4 小时；随身准备早餐、水、防晒用品及颈枕'},
+  {t:'上午',tx:'拉美西斯二世大神庙',sub:'核心参观对象，预留安检、步行、参观与拍照时间'},
+  {t:'上午',tx:'奈菲尔塔利小神庙',sub:'与大神庙同一景区，按门票和现场动线一并参观'},
+  {t:'午后',tx:'返回阿斯旺',sub:'当天往返较累，尽量减少临时加点'},
+  {t:'备选',tx:'傍晚努比亚村',sub:'只在返程时间和体力允许时前往，否则直接取消'}],
+ spots:['ramses','nefertari','nubian']},
+{d:10,date:'10月10日',week:'周六',city:'阿斯旺',ck:'aswan',ic:'sun',kind:'city',leg:null,
+ hotel:'Obelisk Nile Hotel（阿斯旺）',books:[],
+ notes:['表格原文只写了"可以安排去阿布辛贝，或者菲莱神庙"——但阿布辛贝在 10/9 已去、菲莱神庙在 10/8 已游。',
+        '优先选择时间稳妥、行李额度合适的航班，不再硬塞核心景点。'],
+ warn:['10/10 内容待定：表格原文只写"可以安排去阿布辛贝，或者菲莱神庙"——但阿布辛贝 10/9 已去、菲莱神庙 10/8 已游。国内段已确认在 10/11 07:20，因此 10/10 是阿斯旺完整空档，仍无既定安排。'],
+ items:[
+  {t:'',tx:'阿斯旺缓冲日',sub:'表格仅写"可以安排去阿布辛贝，或者菲莱神庙"，两处均已在前面去过'},
+  {t:'建议',tx:'10/10 不另排核心景点',sub:'返程国内段已确认 10/11 07:20 阿斯旺起飞，早睡早起比赶景点更现实'}],
+ spots:[]},
+{d:11,date:'10月11日',week:'周日',city:'阿斯旺 — 开罗 — 北京',ck:'aswan',ic:'plane',kind:'air',leg:'l5',
+ hotel:'夜间航班',books:['送机'],
+ notes:['当天不安排景点。'],
+ warn:['国内段已确认为 <b>07:20</b> 起飞：按 2 小时提前量倒推，约 <b>04:30</b> 离开阿斯旺酒店、05:20 前完成值机。原表备注的"09:00–09:30 离店、最迟 11:15 到机场"对不上，已按实际起飞时间重排。'],
+ items:[
+  {t:'04:30',tx:'离开 Obelisk Nile Hotel 前往阿斯旺机场',sub:'按 07:20 起飞倒推，预留值机与安检时间'},
+  {t:'07:20',tx:'阿斯旺起飞',sub:'阿斯旺 → 开罗国际 T3'},
+  {t:'08:40',tx:'抵达开罗',sub:'国内段衔接'},
+  {t:'14:15',tx:'<b>中国国航 CA830</b> 开罗国际 T3 起飞',sub:'开罗国际 T3 → 北京首都 T3，次日 05:00 抵达'},
+  {t:'',tx:'送机',sub:'当天不安排景点'}],
+ spots:[]},
+{d:12,date:'10月12日',week:'周一',city:'北京 — 上海',ck:null,ic:'plane',kind:'air',leg:null,
+ hotel:'—',books:[],notes:['预留国际转国内及行李衔接时间。'],
+ items:[
+  {t:'07:30',tx:'<b>中国国航 CA1507</b> 北京首都 T3 起飞',sub:'北京首都 T3 → 上海虹桥 T2'},
+  {t:'10:00',tx:'抵达上海虹桥 T2',sub:'行程结束'}],
+ spots:[]}
+];
+const ROUTE=[
+ ['10/01 上海 → 北京','CA1510 21:30–23:55 虹桥 T2 → 首都 T3；机场内转机，联程前序'],
+ ['10/02 北京 → 开罗','CA829 02:30–09:15 首都 T3 → 开罗 T3；落地签、入境、取行李'],
+ ['开罗 — 赫尔格达','包车约 5–6 小时；转场日只安排入住、休息与海滩'],
+ ['赫尔格达 — 卢克索','包车约 4–5 小时；抵达后只安排马车夜游或神庙夜景'],
+ ['卢克索 — 阿斯旺','包车约 3–4 小时；抵达后傍晚安排尼罗河风帆船'],
+ ['阿斯旺 — 阿布辛贝','包车约 3–4 小时单程；清晨出发、午后返回'],
+ ['10/11 阿斯旺 → 开罗','国内段 07:20–08:40；同日下午接 CA830 14:15 开罗 → 北京'],
+ ['10/11–12 开罗 → 上海','CA830 14:15 → 北京 05:00；次日 CA1507 07:30 → 虹桥 T2']
+];
+const GUIDES=[
+{ck:'cairo',rows:[
+ ['抵达','开罗国际机场 T3','落地后依次办理落地签、入境、取行李、电话卡与换汇。签证贴纸资料标注 25 美元，不要自行粘贴；护照、签证贴纸和入境卡一起交海关。'],
+ ['博物馆','大埃及博物馆','安排在抵达日下午；建议提前购买分时门票。若入境延误，优先保留该项目，减少市场停留。'],
+ ['市集','哈利利市场','体验老开罗市井文化，可与爱资哈尔一带同游；贵重物品贴身，购物先询价。'],
+ ['古迹','吉萨金字塔群、胡夫金字塔、狮身人面像','10/3 上午核心项目。国内段已确认为 10/11 08:40 抵达开罗 T3，距 CA830 14:15 起飞仅约 5.5 小时，不再插入金字塔。若计划进入金字塔内部，需另购升级票并预留排队时间。'],
+ ['宗教建筑','萨拉丁城堡、穆罕默德·阿里清真寺','同一区域可组合游览；进入清真寺需遮肩、遮膝并遵守现场脱鞋要求。'],
+ ['备选','悬空教堂、苏丹哈桑清真寺、洞穴教堂、爱资哈尔清真寺、扎维亚门','10/3 下午按当天落地时间择重点，不要全部强塞；爱资哈尔可并入抵达日 10/2 傍晚。'],
+ ['安全','紧急联络','报警 +202-122；旅游警察 +202-126；急救 +202-123；交通事故 +2-01221110000；中国驻埃及使馆领保 +202-27363556。']]},
+{ck:'hurghada',rows:[
+ ['交通','开罗 — 赫尔格达','包车约 5–6 小时；抵达日只安排入住、休息和海滩活动。'],
+ ['出海','追海豚 / 橘子岛 / 天堂岛 / 玻璃船','提前确认接送、装备、午餐和取消条款；出海受风浪影响，带泳衣、浴巾、防水手机袋、防晒和晕船药。'],
+ ['潜水','体验潜水 / 持证潜水','按潜水资质选择项目，确认教练、保险和设备；身体不适时不要下水。'],
+ ['沙漠','超级沙漠','通常含越野摩托、吉普、贝都因村及骑骆驼；备头巾/护目、防晒，注意沙尘。'],
+ ['酒店','红海酒店','原方案含早餐、午餐、晚餐，但酒水饮料通常另付；部分酒店房间可能无免费 Wi-Fi。'],
+ ['选择','出海或沙漠二选一','仅有一个完整自由日，优先选择最感兴趣的一项，避免一天塞多个长项目。']]},
+{ck:'luxor',rows:[
+ ['交通','赫尔格达 — 卢克索','包车约 4–5 小时；抵达后只安排马车夜游或卢克索神庙夜景。'],
+ ['可选','热气球','凌晨/清晨项目，受风况影响较大；提前预约并确认取消退款政策。'],
+ ['西岸','帝王谷','核心景点；基础票与热门墓室可能分开售票，按兴趣和体力取舍。'],
+ ['西岸','门农巨像、哈布城','原旅行社方案所列，可与帝王谷串联；如更偏好女性法老历史，可将哈布城替换为哈特谢普苏特神庙。'],
+ ['东岸','卡纳克神庙','原方案核心景点，建议安排充足时间并由中文导游讲解。'],
+ ['东岸','卢克索神庙','时间允许可补充，夜景适合与马车夜游组合；以实际开放时间为准。'],
+ ['节奏','一日东西岸','若参加热气球会非常早起，午间留出用餐和休息，避免高温时段过度步行。']]},
+{ck:'aswan',rows:[
+ ['交通','卢克索 — 阿斯旺','包车约 3–4 小时；到达后入住，傍晚安排尼罗河风帆船。'],
+ ['体验','尼罗河风帆船','原方案为老瀑布酒店一带航段；风力不足时可能由机动船拖带。'],
+ ['古迹','菲莱神庙（伊西斯神庙）','需乘船上岛，提前协调车船接送与门票；上午参观更从容。'],
+ ['体验','努比亚村','下午乘摩托艇前往；商业化程度较高，不感兴趣可缩短停留。'],
+ ['返程','阿斯旺 — 开罗国内航班','已确认 <b>10/11 07:20</b> 早班机，08:40 抵达开罗国际 T3；确认托运行李额度。距 CA830 14:15 起飞约 5.5 小时，不再另排开罗景点。'],
+ ['行程边界','阿布辛贝','行程表 10/9 已含阿布辛贝当日往返；本表"未安排"为旧记录，以行程表为准。']]},
+{ck:'abusimbel',rows:[
+ ['交通','阿斯旺 — 阿布辛贝','通常清晨出发，公路单程约 3–4 小时；优先由地接安排车辆、集合时间及所需证件。'],
+ ['核心','拉美西斯二世大神庙','核心参观对象，预留安检、步行、参观与拍照时间；以现场开放安排为准。'],
+ ['核心','奈菲尔塔利小神庙','与大神庙位于同一景区，按门票和现场动线一并参观。'],
+ ['节奏','早出发、午后返阿斯旺','当天往返较累，尽量减少临时加点；随身准备早餐、水、防晒用品及颈枕。'],
+ ['备选','努比亚村','只在返程时间和体力允许时傍晚前往；否则直接取消，不影响本次核心行程。'],
+ ['衔接','次日阿斯旺 — 开罗','已确认 <b>10/11 07:20</b> 乘机返回开罗，08:40 抵达 T3，接当日 <b>14:15</b> 的 CA830；行李额度按国内段规定确认。']]}
+];
+const PACKING=[
+ {c:'证件',i:'护照、身份证、机票 / 酒店',ok:true,n:'护照已更换；有效期和空白页需满足入境要求，保存电子版和纸质备份。'},
+ {c:'入境',i:'中性笔、入境卡信息',ok:true,n:'机上可能发入境卡，需英文填写。'},
+ {c:'现金支付',i:'美元现金、埃镑零钱、Visa 信用卡',ok:false,n:'落地签资料标注 25 美元；小费场景多，准备零钱。'},
+ {c:'通信',i:'离线地图、手机漫游 / 电话卡',ok:false,n:'机场可办理 Vodafone 或 Orange；提前下载离线地图。'},
+ {c:'电器',i:'德标 / 欧标双圆孔转换插头',ok:true,n:'当地电压 220V；建议多国通用转换插头。'},
+ {c:'电器',i:'手机、充电线、充电宝、自拍杆',ok:true,n:'充电宝不超过 20000mAh，按航司要求随身携带。'},
+ {c:'洗漱',i:'牙膏、牙刷、毛巾、洗护、拖鞋、蒸汽眼罩、面膜、头枕',ok:true,n:'多数酒店不提供一次性牙刷、牙膏和拖鞋。'},
+ {c:'饮水',i:'便携热水壶 / 保温杯',ok:true,n:'酒店自来水不可直接饮用；习惯喝热水可自备便携水壶。'},
+ {c:'防晒',i:'高倍防晒、太阳镜、帽子、防晒衣 / 伞',ok:true,n:'10 月南部城市仍炎热，户外和船上需及时补涂。'},
+ {c:'衣物',i:'轻薄衣物、长袖外套、舒适鞋',ok:true,n:'昼夜温差及海边风大；古迹步行多。'},
+ {c:'宗教场所',i:'遮肩遮膝衣物、头巾 / 披肩',ok:true,n:'参观清真寺等宗教场所避免暴露，遵守现场着装要求。'},
+ {c:'红海',i:'泳衣、浴巾、防水手机袋',ok:true,n:'出海潜水 / 游泳使用；酒店是否提供浴巾需确认。'},
+ {c:'药品',i:'常用药、肠胃药、止泻药、感冒退烧药',ok:true,n:'按个人健康状况准备并保留原包装。'},
+ {c:'药品',i:'晕车 / 晕船药、清凉油、藿香正气类',ok:true,n:'长途包车、红海出海及高温环境备用。'},
+ {c:'卫生',i:'免洗洗手液、酒精湿巾、纸巾',ok:true,n:'随身小包装，注意航空液体限制。'},
+ {c:'保险',i:'境外旅行保险',ok:true,n:'建议覆盖医疗救援、潜水 / 热气球等高风险活动（若参加）、行李及航延。'},
+ {c:'紧急电话',i:'报警 / 旅游警察 / 急救 / 使馆领保',ok:true,n:'报警 +202-122；旅游警察 +202-126；急救 +202-123；使馆领保 +202-27363556。'}
+];
+const EMERG=[
+ {l:'报警',v:'+202-122'},
+ {l:'旅游警察',v:'+202-126'},
+ {l:'急救',v:'+202-123'},
+ {l:'中国驻埃及使馆领保',v:'+202-27363556'},
+ {l:'交通事故',v:'+2-0122-1110000'}
+];
+const FACTS=[
+ {h:'落地签',p:'资料标注 <b>25 美元</b>。贴纸<b>不要自行粘贴</b>，与护照、入境卡一起交海关。'},
+ {h:'电话卡',p:'开罗机场取行李后购买 <b>Vodafone 或 Orange</b>；离线地图提前下载。'},
+ {h:'货币与汇率',p:'备<b>埃镑零钱</b>付小费；表格内汇率参考 <b>6.91</b>，Visa 信用卡可用。'},
+ {h:'电压与插头',p:'当地 <b>220V</b>，插头为<b>德标 / 欧标双圆孔</b>；建议多国通用转换插头。'},
+ {h:'充电宝',p:'不超过 <b>20000mAh</b>，并按航司要求随身携带。'},
+ {h:'清真寺着装',p:'需<b>遮肩、遮膝</b>，遵守现场脱鞋要求；头巾 / 披肩随身。'},
+ {h:'阿斯旺 — 开罗国内段（已确认）',p:'<b>10/11 07:20</b> 阿斯旺起飞，<b>08:40</b> 抵达开罗国际 T3；同日 <b>14:15</b> CA830 飞北京。全程只有约 5.5 小时间隔，不再另排开罗景点。'}
+];
+const FLAGS=[
+ {t:'10/10 当天没有实质安排',p:'"行程"表 10/10 只写"可以安排去阿布辛贝，或者菲莱神庙"——但<b>阿布辛贝 10/9 已去、菲莱神庙 10/8 已游</b>。国内段已确认是 10/11 07:20，所以 10/10 是阿斯旺的完整空档，仍待你定怎么用（休息 / 努比亚村 / 集市都可以）。'},
+ {t:'红海酒店酒水与 Wi-Fi 需再确认',p:'资料写红海酒店含三餐，但<b>酒水饮料通常另付</b>，部分房间可能<b>没有免费 Wi-Fi</b>。订房时确认一次，免得落地后加价。'}
+];
+const TK={
+ 1:{m:'plane',r:'上海虹桥 T2 → 北京首都 T3',c:'CA1510',a:'21:30',b:'23:55',x:'夜间航班 · 机场内转机'},
+ 2:{m:'plane',r:'北京首都 T3 → 开罗国际 T3',c:'CA829',a:'02:30',b:'09:15',x:'次日 09:15 抵达 · 落地签入境'},
+ 4:{m:'car',r:'开罗 → 赫尔格达',c:'长途包车',x:'车程约 5–6 小时 · 抵达日仅入住与海滩'},
+ 6:{m:'car',r:'赫尔格达 → 卢克索',c:'长途包车',x:'车程约 4–5 小时 · 抵达后马车夜游'},
+ 8:{m:'car',r:'卢克索 → 阿斯旺',c:'长途包车',x:'车程约 3–4 小时 · 当日衔接菲莱神庙'},
+ 9:{m:'car',r:'阿斯旺 ⇄ 阿布辛贝',c:'包车 / 小团',x:'单程约 3–4 小时 · 当日往返'},
+ 11:{m:'plane',r:'阿斯旺 → 开罗 → 北京首都 T3',c:'国内段 + CA830',a:'07:20',b:'05:00+1',x:'国内段 07:20–08:40 · CA830 14:15 起飞 · 当天不安排景点'},
+ 12:{m:'plane',r:'北京首都 T3 → 上海虹桥 T2',c:'CA1507',a:'07:30',b:'10:00',x:'行程结束 · 预留行李衔接时间'}
+};
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+const state={day:3,play:0,checks:store.get('nv-checks',{}),theme:store.get('nv-theme','sys')};
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function svgEl(t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e}
+function pixelRect(x,y,w,h,c){
+  return 'M'+(x+c)+','+y+'H'+(x+w-c)+'L'+(x+w)+','+(y+c)+'V'+(y+h-c)+'L'+(x+w-c)+','+(y+h)+
+         'H'+(x+c)+'L'+x+','+(y+h-c)+'V'+(y+c)+'L'+(x+c)+','+y+'Z';
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* ---------- 地图 ---------- */
+function buildMap(){
+  $('#brandIcon').innerHTML=spr('pyramid',0,3,1);
+
+  // 星空
+  let seed=7,st='';
+  const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff};
+  for(let i=0;i<70;i++){
+    const x=20+rnd()*960, y=8+rnd()*100, s=rnd()>.78?3:2;
+    st+='<rect class="s-node" x="'+x.toFixed(0)+'" y="'+y.toFixed(0)+'" width="'+s+'" height="'+s+'" opacity="'+(0.35+rnd()*0.5).toFixed(2)+'"/>';
+  }
+  $('#stars').innerHTML=st;
+  $('#orb').innerHTML=spr('sun',104,42,6);
+
+  // 沙丘
+  const dn=[[110,252,52,20],[190,322,66,24],[96,404,58,22],[242,456,76,26],[152,548,66,22],
+            [772,470,54,20],[850,542,60,22],[704,586,66,20],[864,258,48,18],[340,214,58,20],[430,600,60,20]];
+  let dh='';
+  dn.forEach(d=>{dh+='<path class="s-dune" d="M'+d[0]+','+d[1]+' q'+d[2]+','+(-d[3])+' '+(d[2]*2)+',0 q'+(-d[2])+','+d[3]+' '+(-d[2]*2)+',0"/>'});
+  dh+='<path class="s-dune2" d="M120,286 q52,-20 104,0 q-52,20 -104,0" opacity=".5"/>';
+  dh+='<path class="s-dune2" d="M250,490 q76,-26 152,0 q-76,26 -152,0" opacity=".5"/>';
+  $('#dunes').innerHTML=dh;
+
+  // 海面反光
+  let sh='';
+  [[70,52,54],[210,40,40],[330,60,46],[96,78,40],[250,84,52],[392,66,34],
+   [600,140,40],[648,196,46],[700,250,52],[754,300,44],[806,352,50],[856,420,54],[896,500,58],[914,570,50]].forEach(p=>{
+    sh+='<rect x="'+p[0]+'" y="'+p[1]+'" width="'+p[2]+'" height="2" fill="#fff" opacity=".22"/>';
+  });
+  $('#shimmer').innerHTML=sh;
+
+  // 地表装饰
+  let dc='';
+  dc+=spr('pyramid',424,174,3)+spr('pyramid',470,156,3)+spr('pyramidS',484,192,3);
+  dc+=spr('palm',700,306,3)+spr('palm',726,320,3)+spr('palm',678,330,3);
+  dc+=spr('felucca',636,452,2)+spr('felucca',620,350,2)+spr('boat',500,142,2);
+  dc+='<g><rect class="s-dune2" x="788" y="298" width="30" height="11"/><rect class="s-dune2" x="796" y="286" width="4" height="13"/>';
+  dc+=spr('palm',794,268,2)+'</g>';
+  dc+='<g><rect class="s-dune2" x="822" y="292" width="24" height="9"/>'+spr('palm',828,264,2)+'</g>';
+  dc+='<rect class="s-dune2" x="300" y="330" width="14" height="6" opacity=".7"/>';
+  dc+='<rect class="s-dune2" x="286" y="352" width="18" height="6" opacity=".7"/>';
+  $('#layer-deco').innerHTML=dc;
+
+  // 路线
+  let lg='';
+  LEGS.forEach(l=>{lg+='<path id="'+l.id+'" class="leg'+(l.mode==='air'?' air':'')+'" d="'+l.d+'"/>'});
+  $('#legs').innerHTML=lg;
+
+  // 城邦
+  let nd='';
+  Object.keys(CITIES).forEach(k=>{
+    const c=CITIES[k];
+    nd+='<g class="city-node" data-city="'+k+'" role="button" tabindex="0" aria-label="'+c.name+' '+c.en+'">'
+      +'<path class="ext" d="'+pixelRect(c.cx-50,c.cy+3,100,38,6)+'"/>'
+      +'<circle class="pulse" cx="'+c.cx+'" cy="'+(c.cy+13)+'" r="30"/>'
+      +'<path class="plate" d="'+pixelRect(c.cx-50,c.cy-6,100,38,6)+'"/>'
+      +spr(c.sprite,c.cx-16,c.cy-52,3)
+      +'<text class="cn" x="'+c.cx+'" y="'+(c.cy+15)+'">'+c.name+'</text>'
+      +'<text class="cd" x="'+c.cx+'" y="'+(c.cy+27)+'">'+c.stay+'</text>'
+      +'</g>';
+  });
+  $('#nodes').innerHTML=nd;
+  $$('.city-node').forEach(n=>{
+    n.addEventListener('click',()=>openCity(n.dataset.city));
+    n.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openCity(n.dataset.city)}});
+  });
+}
+/* ---------- 顶栏 / 统计 ---------- */
+function buildStats(){
+  const nAtt=Object.keys(ATTR).length;
+  const rows=[
+    {v:'12',l:'天',h:0},{v:'5',l:'座城',h:0},
+    {v:String(nAtt),l:'处景点 / 项目',h:0},
+    {v:'9',l:'晚酒店（另 2 段夜航）',h:0}
+  ];
+  $('#stats').innerHTML=rows.map(r=>'<div class="stat'+(r.h?' hl':'')+'"><b>'+r.v+'</b><span>'+r.l+'</span></div>').join('');
+  const dep=new Date(2026,9,1), now=new Date(); now.setHours(0,0,0,0);
+  const d=Math.round((dep-now)/864e5);
+  $('#countdown').innerHTML='<b>'+(d>0?d:0)+'</b><span>'+(d>0?'天后出发':'已出发')+'</span>';
+}
+function setProg(){
+  $('#progTxt').textContent='行程 '+state.day+'/12';
+  $('#progBar').style.width=(state.day/12*100)+'%';
+}
+/* ---------- 行程轴 ---------- */
+function buildRail(){
+  $('#rail').innerHTML=DAYS.map(d=>{
+    return '<button class="day-chip" data-day="'+d.d+'" role="tab" aria-selected="false">'
+      +'<span class="dc-top"><span class="dc-num">'+String(d.d).padStart(2,'0')+'</span>'
+      +'<span class="dc-ic">'+sprBox(d.ic,2)+'</span></span>'
+      +'<span class="dc-dt">'+d.date+' '+d.week+'</span>'
+      +'<span class="dc-city">'+d.city+'</span></button>';
+  }).join('');
+  $$('#rail .day-chip').forEach(b=>b.addEventListener('click',()=>setDay(+b.dataset.day)));
+}
+/* ---------- 当日安排 ---------- */
+function renderDay(){
+  const d=DAYS[state.day-1], c=d.ck?CITIES[d.ck]:null;
+  const tk=TK[d.d];
+  let ticket='';
+  if(tk){
+    ticket='<div class="ticket"><span class="tk-ic">'+sprBox(tk.m==='plane'?'plane':'car',3)+'</span>'
+      +'<span class="tk-main"><span class="tk-route">'+esc(tk.r)+' <code>'+esc(tk.c)+'</code></span>'
+      +'<span class="tk-meta">'+esc(tk.x)+'</span></span>'
+      +(tk.a?'<span class="tk-times"><span><b>'+tk.a+'</b><span>出发</span></span><span><b>'+tk.b+'</b><span>抵达</span></span></span>':'')
+      +'</div>';
+  }
+  const items=d.items.map((it,i)=>{
+    const id='tk-'+d.d+'-'+i, done=!!state.checks[id];
+    return '<div class="task'+(done?' done':'')+'" data-id="'+id+'" role="checkbox" aria-checked="'+done+'" tabindex="0">'
+      +'<span class="chk"></span>'
+      +(it.t?'<span class="tk-time">'+esc(it.t)+'</span>':'<span class="tk-time"></span>')
+      +'<span class="tk-tx">'+it.tx+(it.sub?'<span class="sub">'+esc(it.sub)+'</span>':'')+'</span></div>';
+  }).join('');
+  const warns=(d.warn||[]).map(w=>'<div class="note-item warn"><i></i><span>'+w+'</span></div>').join('');
+  const spots=d.spots.length
+    ?'<div class="side-card"><h3>'+sprBox('sun',1)+'当日景点</h3><div class="side-body"><div class="spots">'
+      +d.spots.map(s=>'<button class="spot-btn" data-spot="'+s+'">'+ATTR[s].n+'</button>').join('')+'</div></div></div>'
+    :'';
+  $('#dayPanel').innerHTML=
+   '<div class="dp-main">'
+   +'<div class="dp-head"><span class="dp-day">D'+String(d.d).padStart(2,'0')+'</span>'
+   +'<span class="dp-when"><span class="dp-date">'+d.date+'</span><span class="dp-week">'+d.week+'</span></span>'
+   +(c?'<span class="dp-city">'+sprBox(c.sprite,2)+'<span><b>'+c.name+'</b><small>'+c.hotel+'</small></span></span>'
+      :'<span class="dp-city"><span><b>'+d.city+'</b><small>'+(d.hotel||'')+'</small></span></span>')
+   +'</div>'
+   +'<div class="dp-body">'+ticket
+   +'<p class="dp-sub">当日安排</p><div class="tasks">'+(items||'<p style="color:var(--ink-3);font-size:13px">当日无安排条目。</p>')+'</div>'
+   +'</div></div>'
+   +'<div class="dp-side">'
+   +'<div class="side-card"><h3>'+sprBox('person',1)+'住宿</h3><div class="side-body"><dl class="kv"><dt>住处</dt><dd>'+esc(d.hotel)+'</dd></dl>'
+   +(c?'<dl class="kv"><dt>晚数</dt><dd>'+c.nights+'（'+c.stay+'）</dd></dl>':'')+'</div></div>'
+   +'<div class="side-card"><h3>'+sprBox('column',1)+'景点预约</h3><div class="side-body">'
+   +(d.books.length?'<div class="spots">'+d.books.map(b=>'<span class="tag gold">'+esc(b)+'</span>').join('')+'</div>'
+     :'<span style="color:var(--ink-3);font-size:12.5px">当日无预约项目。</span>')+'</div></div>'
+   +spots
+   +'<div class="side-card"><h3>'+sprBox('sun',1)+'备注</h3><div class="side-body"><div class="note-list">'
+   +d.notes.map(n=>'<div class="note-item"><i></i><span>'+esc(n)+'</span></div>').join('')+warns
+   +'</div></div></div>'
+   +'</div>';
+  $$('#dayPanel .task').forEach(t=>{
+    const go=()=>{const id=t.dataset.id;state.checks[id]=!state.checks[id];
+      if(!state.checks[id])delete state.checks[id];
+      store.set('nv-checks',state.checks);t.classList.toggle('done',!!state.checks[id]);
+      t.setAttribute('aria-checked',String(!!state.checks[id]))};
+    t.addEventListener('click',go);
+    t.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}});
+  });
+  $$('#dayPanel .spot-btn').forEach(b=>b.addEventListener('click',()=>openSpot(b.dataset.spot)));
+  // 同步地图
+  $$('.city-node').forEach(n=>n.classList.toggle('on',!!(d.ck&&n.dataset.city===d.ck)));
+  $$('.leg').forEach(l=>l.classList.remove('on'));
+  if(d.leg) $('#'+d.leg).classList.add('on');
+  moveTraveler();
+  // 同步行程轴
+  $$('#rail .day-chip').forEach(b=>{
+    const on=+b.dataset.day===state.day;
+    b.classList.toggle('on',on);b.setAttribute('aria-selected',String(on));
+    if(on){
+      // 只横向滚动行程轴本身，不要把整页往下拽
+      const rail=$('#rail'),left=b.offsetLeft-(rail.clientWidth-b.offsetWidth)/2;
+      rail.scrollTo({left:Math.max(0,left),behavior:REDUCED?'auto':'smooth'});
+    }
+  });
+  setProg();
+}
+function moveTraveler(){
+  const d=DAYS[state.day-1],trav=$('#traveler');trav.innerHTML='';
+  if(d.leg){
+    const leg=LEGS.find(l=>l.id===d.leg),p=$('#'+leg.id);
+    if(p) animateAlong(p,leg.mode==='air'?'plane':'car',d.d===9);
+  }else if(d.ck){
+    const c=CITIES[d.ck];
+    trav.innerHTML=spr('person',c.cx-12,c.cy+38,3);
+  }
+}
+function animateAlong(path,icon,round){
+  const L=path.getTotalLength(),trav=$('#traveler'),o=SPR[icon],w=o.r[0].length*2,h=o.r.length*2;
+  const draw=u=>{const pt=path.getPointAtLength(L*u);
+    trav.innerHTML='<g transform="translate('+(pt.x-w/2).toFixed(1)+','+(pt.y-h/2).toFixed(1)+')">'+spr(icon,0,0,2)+'</g>'};
+  if(REDUCED){draw(round?1:0.5);return}
+  const dur=1200;let s=null,phase=0;
+  (function frame(ts){
+    if(s===null)s=ts;
+    const e=Math.min(1,(ts-s)/dur);
+    draw(phase===0?e:1-e);
+    if(e<1)requestAnimationFrame(frame);
+    else if(round&&phase===0){phase=1;s=null;requestAnimationFrame(frame)}
+  })(performance.now());
+}
+/* ---------- 攻略 ---------- */
+function linkify(text){
+  for(const k in ATTR){
+    const n=ATTR[k].n;
+    if(text.indexOf(n)>=0) return esc(text).replace(esc(n),'<button class="spot-btn" data-spot="'+k+'">'+esc(n)+'</button>');
+  }
+  return esc(text);
+}
+function buildGuides(){
+  const routeCard='<article class="gcard"><div class="gc-head"><span class="gc-ic">'+sprBox('car',3)+'</span>'
+    +'<div class="gc-tt"><h3>全程移动 <small>Getting Around</small></h3><span class="gc-stay">9 段 · 5 飞 4 车</span>'
+    +'<div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">上海 → 开罗 → 赫尔格达 → 卢克索 → 阿斯旺 → 阿布辛贝 → 上海</div></div></div>'
+    +'<div class="gc-list">'+ROUTE.map(r=>'<div class="grow"><div class="gth">'+esc(r[0])+'</div>'
+      +'<div><p class="gtx" style="font-size:13px;color:var(--ink);font-weight:600">'+esc(r[1])+'</p></div></div>').join('')+'</div></article>';
+  $('#guideCards').innerHTML=GUIDES.map(g=>{
+    const c=CITIES[g.ck];
+    return '<article class="gcard"><div class="gc-head"><span class="gc-ic">'+sprBox(c.sprite,3)+'</span>'
+      +'<div class="gc-tt"><h3>'+c.name+' <small>'+c.en+'</small></h3><span class="gc-stay">'+c.stay+' · '+c.nights+'</span>'
+      +'<div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">'+esc(c.hotel)+'</div></div></div>'
+      +'<div class="gc-list">'+g.rows.map(r=>'<div class="grow"><div class="gth">'+esc(r[0])+'</div>'
+        +'<div><p class="gpl">'+linkify(r[1])+'</p><p class="gtx">'+esc(r[2])+'</p></div></div>').join('')+'</div></article>';
+  }).join('')+routeCard;
+  $$('#guideCards .spot-btn').forEach(b=>b.addEventListener('click',()=>openSpot(b.dataset.spot)));
+}
+/* ---------- 行李 ---------- */
+function buildPacking(){
+  const cats={};PACKING.forEach((p,i)=>{if(!cats[p.c])cats[p.c]=[];cats[p.c].push(Object.assign({i:i},p))});
+  const n=PACKING.length;
+  const done=()=>PACKING.filter((p,i)=>state.checks['pk-'+i]).length;
+  function draw(){
+    const c=done(),R=32,C=2*Math.PI*R;
+    $('#pkTop').innerHTML='<svg class="ring" viewBox="0 0 80 80"><circle class="bgc" cx="40" cy="40" r="'+R+'"/>'
+      +'<circle class="fgc" cx="40" cy="40" r="'+R+'" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+(C*(1-c/n)).toFixed(1)+'"/>'
+      +'<text x="40" y="46">'+c+'/'+n+'</text></svg>'
+      +'<div class="pk-info"><b>已备 '+c+' / '+n+' 项</b>'
+      +'<p>勾选状态保存在本机浏览器，换设备不会同步。红框标出的两项在表里仍写"未准备"。'
+      +(n-c?' 还剩 '+(n-c)+' 项待办。':' 全部就绪。')+'</p></div>'
+      +'<div style="margin-left:auto;display:flex;gap:8px"><button class="icon-btn" id="pkAll">全部标记</button>'
+      +'<button class="icon-btn" id="pkNone">清空</button></div>';
+    $('#pkAll').onclick=()=>{PACKING.forEach((p,i)=>state.checks['pk-'+i]=1);store.set('nv-checks',state.checks);draw();mark()};
+    $('#pkNone').onclick=()=>{PACKING.forEach((p,i)=>delete state.checks['pk-'+i]);store.set('nv-checks',state.checks);draw();mark()};
+  }
+  function mark(){
+    $$('#pkCats .pitem').forEach(el=>{
+      const i=+el.dataset.i,on=!!state.checks['pk-'+i];
+      el.classList.toggle('done',on);
+      el.querySelector('.chk').setAttribute('role','checkbox');
+      el.setAttribute('aria-checked',String(on));
+    });
+  }
+  $('#pkCats').innerHTML=Object.keys(cats).map(cat=>{
+    const its=cats[cat];
+    return '<div class="pk-cat"><h4>'+esc(cat)+'<em>'+its.filter(p=>state.checks['pk-'+p.i]).length+'/'+its.length+'</em></h4>'
+      +'<div class="pk-items">'+its.map(p=>'<div class="pitem'+(p.ok?'':' miss')+(state.checks['pk-'+p.i]?' done':'')+'" data-i="'+p.i+'" role="checkbox" tabindex="0" aria-checked="'+(!!state.checks['pk-'+p.i])+'">'
+        +'<span class="chk"></span><span class="pi-tx">'+esc(p.i)+'<span class="pi-nt">'+esc(p.n)+'</span></span></div>').join('')+'</div></div>';
+  }).join('');
+  $$('#pkCats .pitem').forEach(el=>{
+    const go=()=>{const i=+el.dataset.i;
+      if(state.checks['pk-'+i])delete state.checks['pk-'+i];else state.checks['pk-'+i]=1;
+      store.set('nv-checks',state.checks);draw();mark()};
+    el.addEventListener('click',go);
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}});
+  });
+  draw();
+}
+/* ---------- 须知 ---------- */
+function buildNotes(){
+  $('#facts').innerHTML=FACTS.map(f=>'<div class="fact"><h4>'+esc(f.h)+'</h4><p>'+f.p+'</p></div>').join('');
+  $('#emerg').innerHTML=EMERG.map((e,i)=>'<div class="emg'+(i===3?' emb':'')+'"><span class="el">'+esc(e.l)+'</span><b>'+esc(e.v)+'</b></div>').join('');
+  $('#flags').innerHTML=FLAGS.map((f,i)=>'<div class="flag"><span class="fn">'+String(i+1).padStart(2,'0')+'</span><p class="ft">'+f.p+'</p></div>').join('');
+}
+function sprBox(name,scale){
+  const o=SPR[name],w=o.r[0].length*scale,h=o.r.length*scale;
+  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" aria-hidden="true">'+spr(name,0,0,scale)+'</svg>';
+}
+/* ---------- 弹层 ---------- */
+function openModal(html){
+  $('#modalCard').innerHTML=html;
+  $('#modal').classList.add('open');
+  document.body.style.overflow='hidden';
+  const x=$('#modalCard .mc-x'); if(x) x.focus();
+}
+function closeModal(){
+  $('#modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function openSpot(id){
+  const a=ATTR[id],c=CITIES[a.c];
+  const catCls={博物馆:'nile',市集:'gold',宗教:'gold',古迹:'gold',备选:'clay',出海:'nile',海岛:'nile',
+    沙漠:'clay',潜水:'nile',体验:'nile',可选:'clay'}[a.cat]||'';
+  openModal(
+   '<div class="mc-head"><span class="mc-ic">'+sprBox(c.sprite,3)+'</span>'
+   +'<div class="mc-tt"><h3 id="mcTitle">'+esc(a.n)+'</h3><div class="mc-en">'+esc(a.e)+'</div>'
+   +'<div class="mc-tags"><span class="tag gold">'+esc(c.name)+'</span><span class="tag '+catCls+'">'+esc(a.cat)+'</span></div></div>'
+   +'<button class="mc-x" id="mcX" aria-label="关闭">✕</button></div>'
+   +'<div class="mc-body"><div><p class="mc-lbl">门道与注意事项</p><p style="margin-top:6px">'+esc(a.t)+'</p></div>'
+   +'<div><p class="mc-lbl">出现在</p><div class="mc-days" style="margin-top:6px">'
+   +a.d.map(d=>'<span class="mc-day">10/'+String(d).padStart(2,'0')+' · D'+d+'</span>').join('')+'</div></div>'
+   +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+   +'<button class="icon-btn" data-goday="'+a.d[0]+'">跳到 D'+a.d[0]+' 看当天安排</button>'
+   +'<button class="icon-btn" data-gocity="'+a.c+'">看'+esc(c.name)+'全攻略</button></div></div>');
+  bindModal();
+}
+function openCity(ck){
+  const c=CITIES[ck],g=GUIDES.find(x=>x.ck===ck);
+  focusCity(ck,true);
+  openModal(
+   '<div class="mc-head"><span class="mc-ic">'+sprBox(c.sprite,3)+'</span>'
+   +'<div class="mc-tt"><h3 id="mcTitle">'+esc(c.name)+'</h3><div class="mc-en">'+esc(c.en)+'</div>'
+   +'<div class="mc-tags"><span class="tag gold">'+esc(c.stay)+'</span><span class="tag">'+esc(c.nights)+'</span></div></div>'
+   +'<button class="mc-x" id="mcX" aria-label="关闭">✕</button></div>'
+   +'<div class="mc-body"><div><p class="mc-lbl">住处</p><p style="margin-top:6px">'+esc(c.hotel)+'</p></div>'
+   +'<div><p class="mc-lbl">本站景点 / 项目</p><div class="mc-days" style="margin-top:6px">'
+   +Object.keys(ATTR).filter(k=>ATTR[k].c===ck).map(k=>'<button class="spot-btn" data-spot="'+k+'">'+esc(ATTR[k].n)+'</button>').join('')+'</div></div>'
+   +'<div><p class="mc-lbl">攻略要点</p>'+g.rows.map(r=>'<div class="grow" style="grid-template-columns:4.6em minmax(0,1fr)"><div class="gth">'+esc(r[0])+'</div><div><p class="gpl">'+esc(r[1])+'</p><p class="gtx">'+esc(r[2])+'</p></div></div>').join('')+'</div>'
+   +'</div>');
+  bindModal();
+}
+function bindModal(){
+  $('#mcX').addEventListener('click',closeModal);
+  $$('#modalCard .spot-btn').forEach(b=>b.addEventListener('click',()=>openSpot(b.dataset.spot)));
+  $$('#modalCard [data-goday]').forEach(b=>b.addEventListener('click',()=>{closeModal();setDay(+b.dataset.goday)}));
+  $$('#modalCard [data-gocity]').forEach(b=>b.addEventListener('click',()=>{
+    const ck=b.dataset.gocity,d=DAYS.find(x=>x.ck===ck);
+    closeModal();if(d)setDay(d.d);else openCity(ck);
+  }));
+}
+$('#modalBd').addEventListener('click',closeModal);
+/* ---------- 视角 / 主题 / 播放 ---------- */
+const frame=$('#mapFrame'),map=$('#map');
+function focusCity(ck,on){
+  const vp=$('#viewport'),c=on&&ck?CITIES[ck]:null;
+  vp.style.transformOrigin=c?c.cx+'px '+c.cy+'px':'0 0';
+  vp.style.transform=c?'scale(1.5)':'scale(1)';
+  $('#btnReset').setAttribute('aria-pressed',String(!!c));
+}
+frame.addEventListener('mousemove',e=>{
+  if(!frame.classList.contains('is3d'))return;
+  const r=frame.getBoundingClientRect();
+  const nx=(e.clientX-r.left)/r.width*2-1, ny=(e.clientY-r.top)/r.height*2-1;
+  map.style.setProperty('--mx',(nx*7).toFixed(2));
+  map.style.setProperty('--my',(ny*5).toFixed(2));
+});
+frame.addEventListener('mouseleave',()=>{map.style.setProperty('--mx',0);map.style.setProperty('--my',0)});
+$('#btn3d').addEventListener('click',()=>{
+  const on=frame.classList.toggle('is3d');
+  $('#btn3d').setAttribute('aria-pressed',String(on));
+  if(!on){map.style.setProperty('--mx',0);map.style.setProperty('--my',0);focusCity(null,false)}
+});
+$('#btnReset').addEventListener('click',()=>focusCity(null,false));
+function applyTheme(){
+  const t=state.theme,root=document.documentElement;
+  if(t==='sys')root.removeAttribute('data-theme');else root.setAttribute('data-theme',t);
+  $('#themeTxt').textContent=t==='sys'?'跟随系统':(t==='light'?'白天':'夜晚');
+}
+$('#btnTheme').addEventListener('click',()=>{
+  state.theme=state.theme==='sys'?'light':(state.theme==='light'?'dark':'sys');
+  store.set('nv-theme',state.theme);applyTheme();
+});
+let playT=null;
+$('#btnPlay').addEventListener('click',()=>{
+  if(playT){clearInterval(playT);playT=null;$('#btnPlay').innerHTML='<span class="sw">▶</span>自动走一遍';return}
+  $('#btnPlay').innerHTML='<span class="sw">■</span>停止';
+  setDay(1);
+  playT=setInterval(()=>{
+    if(state.day>=12){clearInterval(playT);playT=null;$('#btnPlay').innerHTML='<span class="sw">▶</span>自动走一遍';return}
+    setDay(state.day+1);
+  },2300);
+});
+document.addEventListener('keydown',e=>{
+  if($('#modal').classList.contains('open')){if(e.key==='Escape')closeModal();return}
+  if(e.target.matches('input,textarea,select'))return;
+  if(e.key==='ArrowRight'){e.preventDefault();setDay(state.day<12?state.day+1:1)}
+  if(e.key==='ArrowLeft'){e.preventDefault();setDay(state.day>1?state.day-1:12)}
+});
+/* ---------- 启动 ---------- */
+function setDay(n){state.day=n;renderDay()}
+function buildLegend(){
+  $('#legend').innerHTML=Object.keys(CITIES).map(k=>{const c=CITIES[k];
+    return '<button class="lg-chip" data-city="'+k+'">'+sprBox(c.sprite,2)+esc(c.name)+'<small>'+esc(c.stay)+'</small></button>'}).join('');
+  $$('#legend .lg-chip').forEach(b=>b.addEventListener('click',()=>openCity(b.dataset.city)));
+}
+applyTheme();
+buildMap();
+buildStats();
+buildRail();
+buildLegend();
+renderDay();
+buildGuides();
+buildPacking();
+buildNotes();
+
+</script>
+</body>
+</html>
