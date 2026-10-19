@@ -40,6 +40,8 @@
       comments: [],
       recurring: [],
       settings: { theme: 'system', defaultCurrency: 'USD', notifications: { email: true, push: false, comments: true } },
+      sync: { mode: 'local', url: '', headerName: '', headerValue: '', lastSyncAt: null, status: 'idle', lastError: '' },
+      updatedAt: new Date(0).toISOString(),
     };
   }
 
@@ -64,7 +66,13 @@
     }, 60);
   }
 
-  function commit() { save(); render(); renderSheetRoot(); }
+  function commit() {
+    save();
+    state.updatedAt = new Date().toISOString();
+    render();
+    renderSheetRoot();
+    scheduleAutoSync();
+  }
 
   /* ================================================================== *
    * Demo seed data — a trip, an apartment and friends, mixed currencies
@@ -1018,6 +1026,30 @@
       '</div>' +
 
       '<div class="card">' +
+        '<div class="card-title">Data sync</div>' +
+        '<form data-form="sync" class="card-pad" style="padding-top:0">' +
+          '<div class="field"><label>Storage mode</label>' +
+            '<select class="select" data-field="sync-mode">' +
+              '<option value="local"' + (state.sync.mode !== 'rest' ? ' selected' : '') + '>Local only (this browser)</option>' +
+              '<option value="rest"' + (state.sync.mode === 'rest' ? ' selected' : '') + '>Cloud REST endpoint</option>' +
+            '</select>' +
+            '<div class="field-hint">Cloud mode keeps a copy on the endpoint; every add / edit / delete syncs automatically.</div></div>' +
+          '<div class="field" id="sync-url-field"' + (state.sync.mode !== 'rest' ? ' hidden' : '') + '><label>Endpoint URL</label>' +
+            '<input class="input" placeholder="https://script.google.com/macros/s/\u2026/exec" value="' + h(state.sync.url) + '" data-field="sync-url" />' +
+            '<div class="field-hint">GET (JSONP) returns your ledger; POST saves it. Free backend: see the Apps Script file in the project README.</div></div>' +
+          '<div class="field" id="sync-header-fields"' + (state.sync.mode !== 'rest' ? ' hidden' : '') + '><label>Custom header (optional)</label>' +
+            '<div class="flex gap8"><input class="input" placeholder="Header name" value="' + h(state.sync.headerName) + '" data-field="sync-header-name" />' +
+            '<input class="input" type="password" placeholder="Value" value="' + h(state.sync.headerValue) + '" data-field="sync-header-value" /></div>' +
+            '<div class="field-hint">For services that need a key header (e.g. LeanCloud). Leave empty for Apps Script.</div></div>' +
+          '<button class="btn btn-primary btn-block" type="submit">Save sync settings</button>' +
+        '</form>' +
+        '<div class="rows">' +
+          '<button class="row" data-act="sync-now"' + (state.sync.mode !== 'rest' || !state.sync.url ? ' hidden' : '') + ' id="sync-now-row"><div class="row-main"><div class="row-title">Sync now</div><div class="row-sub">Pull from the cloud, then push local changes</div></div><span class="row-chevron">' + icon('repeat') + '</span></button>' +
+        '</div>' +
+        '<div class="card-pad" style="padding-top:0" id="sync-status" aria-live="polite">' + syncStatusHtml() + '</div>' +
+      '</div>' +
+
+      '<div class="card">' +
         '<div class="card-title">Data</div>' +
         '<div class="rows">' +
           '<button class="row" data-act="export-csv"><div class="row-main"><div class="row-title">Export expenses as CSV</div><div class="row-sub">Spreadsheet-friendly expense list</div></div><span class="row-chevron">' + icon('download') + '</span></button>' +
@@ -1885,12 +1917,19 @@
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 100);
   }
 
-  // validate + restore a backup; keeps the current session/name
-  function importBackup(parsed) {
-    if (!parsed || typeof parsed !== 'object') return { ok: false, error: 'Not a valid backup file.' };
+  // shared shape check for backups and cloud payloads
+  function validateBackup(parsed) {
+    if (!parsed || typeof parsed !== 'object') return { ok: false, error: 'Not a valid backup.' };
     if (parsed.version !== 1) return { ok: false, error: 'Unsupported backup version.' };
     if (!parsed.users || typeof parsed.users !== 'object') return { ok: false, error: 'Backup has no users.' };
     if (!Array.isArray(parsed.groups) || !Array.isArray(parsed.expenses)) return { ok: false, error: 'Backup is missing groups or expenses.' };
+    return { ok: true };
+  }
+
+  // validate + restore a backup; keeps the current session/name
+  function importBackup(parsed) {
+    const v = validateBackup(parsed);
+    if (!v.ok) return v;
     const session = state.session;
     const settings = state.settings;
     state.users = parsed.users;
@@ -1911,6 +1950,179 @@
     }
     commit();
     return { ok: true };
+  }
+
+  /* ================================================================== *
+   * Cloud sync — localStorage stays the cache; an optional REST endpoint
+   * becomes the source of truth. GET = JSONP pull, POST = push.
+   * Works with the bundled Apps Script backend, LeanCloud, or any URL
+   * that returns the ledger JSON and accepts a POST of it.
+   * ================================================================== */
+
+  const SYNC_DEBOUNCE_MS = 1200;
+  let syncTimer = null;
+  let syncInFlight = false;
+  let syncSeq = 0;
+
+  function syncEnabled() {
+    return !!(state.sync && state.sync.mode === 'rest' && state.sync.url);
+  }
+
+  function syncPayload() {
+    const copy = backupObject();
+    copy.meId = state.meId;
+    copy.updatedAt = state.updatedAt;
+    return copy;
+  }
+
+  function setSyncStatus(status, err) {
+    if (!state.sync) return;
+    state.sync.status = status;
+    state.sync.lastError = err || '';
+    save();
+    updateSyncStatusDom();
+  }
+
+  function updateSyncStatusDom() {
+    const el = document.getElementById('sync-status');
+    if (el) el.innerHTML = syncStatusHtml();
+  }
+
+  function syncStatusHtml() {
+    const sy = state.sync;
+    if (!sy || sy.mode !== 'rest' || !sy.url) {
+      return '<div class="muted small">Local only &mdash; data lives in this browser. Add an endpoint to sync across phone and desktop.</div>';
+    }
+    const tag = sy.status === 'syncing' ? '<span class="tag tag-gray">syncing&hellip;</span>'
+      : sy.status === 'ok' ? '<span class="tag tag-green">synced</span>'
+      : sy.status === 'error' ? '<span class="tag tag-orange">sync error</span>' : '';
+    const short = sy.url.length > 58 ? sy.url.slice(0, 58) + '\u2026' : sy.url;
+    return '<div class="flex between items-center"><div>' + tag + '</div>' +
+      '<div class="muted tiny">' + (sy.lastSyncAt ? 'last sync ' + C.formatDate(sy.lastSyncAt.slice(0, 10), { relative: true }) + ' ' + C.formatTime(sy.lastSyncAt) : 'never synced') + '</div></div>' +
+      (sy.lastError ? '<div class="field-err">' + h(sy.lastError) + '</div>' : '') +
+      '<div class="field-hint truncate" title="' + h(sy.url) + '">' + h(short) + '</div>';
+  }
+
+  function syncHeaders() {
+    const hdrs = {};
+    if (state.sync.headerName && state.sync.headerValue) hdrs[state.sync.headerName] = state.sync.headerValue;
+    return hdrs;
+  }
+
+  // push the whole ledger; no-cors keeps simple endpoints (Apps Script) happy
+  async function syncPush() {
+    if (!syncEnabled() || typeof fetch !== 'function') return { ok: false, error: 'not configured' };
+    if (syncInFlight) return { ok: false, error: 'busy' };
+    syncInFlight = true;
+    const my = ++syncSeq;
+    setSyncStatus('syncing');
+    try {
+      const body = JSON.stringify(syncPayload());
+      if (body.length > 900000) {
+        setSyncStatus('error', 'ledger is ' + Math.round(body.length / 1024) + ' KB — too large for this endpoint; remove big receipt images');
+        syncInFlight = false;
+        return { ok: false, error: 'payload too large' };
+      }
+      const hasHeader = state.sync.headerName && state.sync.headerValue;
+      await fetch(state.sync.url, {
+        method: 'POST',
+        mode: hasHeader ? 'cors' : 'no-cors',
+        headers: syncHeaders(),
+        body: body,
+      });
+      if (my !== syncSeq) { syncInFlight = false; return { ok: true }; }
+      state.sync.lastSyncAt = new Date().toISOString();
+      setSyncStatus('ok');
+      return { ok: true };
+    } catch (e) {
+      if (my === syncSeq) setSyncStatus('error', String((e && e.message) || e));
+      return { ok: false, error: String((e && e.message) || e) };
+    } finally {
+      syncInFlight = false;
+    }
+  }
+
+  // JSONP GET: script-tag loads are not blocked by CORS
+  function jsonpGet(url, timeoutMs) {
+    return new Promise((resolve, reject) => {
+      const cb = '__splitPull_' + Math.random().toString(36).slice(2, 10);
+      const script = document.createElement('script');
+      let done = false;
+      const timer = setTimeout(() => {
+        if (done) return;
+        done = true; cleanup(); reject(new Error('pull timeout'));
+      }, timeoutMs || 12000);
+      function cleanup() {
+        try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+      window[cb] = data => {
+        if (done) return;
+        done = true; clearTimeout(timer); cleanup();
+        resolve(data);
+      };
+      script.onerror = () => {
+        if (done) return;
+        done = true; clearTimeout(timer); cleanup();
+        reject(new Error('could not load endpoint'));
+      };
+      const sep = url.indexOf('?') >= 0 ? '&' : '?';
+      script.src = url + sep + 'callback=' + cb + '&t=' + Date.now();
+      (document.head || document.body || document.documentElement).appendChild(script);
+    });
+  }
+
+  // adopt a remote snapshot, keeping the current session
+  function applyBackup(remote) {
+    const session = state.session;
+    state.users = remote.users;
+    state.groups = remote.groups;
+    state.expenses = remote.expenses;
+    state.payments = remote.payments || [];
+    state.comments = remote.comments || [];
+    state.recurring = remote.recurring || [];
+    if (remote.settings) state.settings = remote.settings;
+    state.meId = remote.meId || state.meId;
+    state.updatedAt = remote.updatedAt || state.updatedAt;
+    state.session = session;
+    commit();
+  }
+
+  async function syncPull() {
+    if (!syncEnabled()) return { ok: false, error: 'sync not configured' };
+    if (typeof fetch !== 'function') return { ok: false, error: 'fetch unavailable' };
+    setSyncStatus('syncing');
+    try {
+      const remote = await jsonpGet(state.sync.url);
+      const v = validateBackup(remote);
+      if (!v.ok) { setSyncStatus('error', v.error); return v; }
+      if (remote.updatedAt && remote.updatedAt > state.updatedAt) {
+        applyBackup(remote);
+        state.sync.lastSyncAt = new Date().toISOString();
+        setSyncStatus('ok');
+        return { ok: true, adopted: true };
+      }
+      const pushed = await syncPush();
+      return pushed.ok ? { ok: true, adopted: false } : pushed;
+    } catch (e) {
+      const msg = String((e && e.message) || e);
+      setSyncStatus('error', msg);
+      return { ok: false, error: msg };
+    }
+  }
+
+  function scheduleAutoSync() {
+    if (!syncEnabled()) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(() => { syncPush(); }, SYNC_DEBOUNCE_MS);
+  }
+
+  function saveSyncSettings(fields) {
+    state.sync.mode = fields.mode === 'rest' ? 'rest' : 'local';
+    state.sync.url = (fields.url || '').trim();
+    state.sync.headerName = (fields.headerName || '').trim();
+    state.sync.headerValue = fields.headerValue || '';
+    commit();
   }
 
   function exportCsv() {
@@ -2138,6 +2350,12 @@
       case 'activity-filter': ui.activityFilter = t.dataset.filter; render(); return;
       case 'all-exp-group': ui.allExpFilter.groupId = id; render(); return;
 
+      case 'sync-now':
+        showToast('Syncing\u2026');
+        syncPull().then(r => {
+          showToast(r.ok ? (r.adopted ? 'Synced from cloud' : 'Cloud is up to date') : 'Sync failed: ' + r.error);
+        });
+        return;
       case 'export-csv': exportCsv(); return;
       case 'export-json':
         downloadJson(backupObject(), 'splitwise-backup.json');
@@ -2276,6 +2494,11 @@
     }
     if (f === 'draft-date' && ui.draft) { ui.draft.date = el.value; replaceTopBody(expenseFormHtml()); return; }
 
+    if (f === 'sync-mode') {
+      state.sync.mode = el.value === 'rest' ? 'rest' : 'local';
+      commit();
+      return;
+    }
     if (f === 'default-currency') { state.settings.defaultCurrency = el.value; commit(); return; }
     if (f === 'group-currency' && el.dataset.id) {
       const g = group(el.dataset.id);
@@ -2348,7 +2571,15 @@
   });
 
   function readImage(file, cb) {
-    if (file.size > 1.5 * 1024 * 1024) { showToast('Image too large (max 1.5 MB)'); return; }
+    // with cloud sync the whole ledger (receipts included) is pushed on every
+    // change, so keep attachments small enough for the endpoint's limits
+    const limit = syncEnabled() ? 150 * 1024 : 1.5 * 1024 * 1024;
+    if (file.size > limit) {
+      showToast(syncEnabled()
+        ? 'Image too large for cloud sync (max 150 KB)'
+        : 'Image too large (max 1.5 MB)');
+      return;
+    }
     const r = new FileReader();
     r.onload = () => cb(r.result);
     r.onerror = () => showToast('Could not read that image');
@@ -2365,6 +2596,23 @@
 
     if (kind === 'name') {
       enterApp('demo');
+      return;
+    }
+
+    if (kind === 'sync') {
+      const g = n => { const x = form.querySelector('[data-field="' + n + '"]'); return x ? x.value : ''; };
+      const mode = g('sync-mode') === 'rest' ? 'rest' : 'local';
+      const url = g('sync-url').trim();
+      if (mode === 'rest' && !/^https?:\/\//.test(url)) { showToast('Endpoint must start with http(s)://'); return; }
+      saveSyncSettings({ mode, url, headerName: g('sync-header-name'), headerValue: g('sync-header-value') });
+      if (mode === 'rest') {
+        showToast('Settings saved \u2014 testing endpoint\u2026');
+        syncPull().then(r => {
+          showToast(r.ok ? (r.adopted ? 'Synced from cloud' : 'Cloud is up to date') : 'Sync failed: ' + r.error);
+        });
+      } else {
+        showToast('Sync settings saved');
+      }
       return;
     }
 
@@ -2439,6 +2687,12 @@
       if (mq.addEventListener) mq.addEventListener('change', () => { if (state.settings.theme === 'system') { applyTheme(); render(); } });
     }
     render();
+    // cloud sync: pull on startup so a new phone/browser gets the ledger
+    if (syncEnabled()) {
+      setTimeout(() => {
+        syncPull().then(r => { if (!r.ok && r.error) showToast('Cloud sync unavailable: ' + r.error); });
+      }, 400);
+    }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
@@ -2469,6 +2723,12 @@
     exportCsv,
     backupObject,
     importBackup,
+    syncPush,
+    syncPull,
+    syncPayload,
+    applyBackup,
+    saveSyncSettings,
+    syncStatusHtml,
     groupBalances: gid => C.groupBalances(state, gid),
     simplifyDebts: bal => C.simplifyDebts(bal),
     activityEntries,

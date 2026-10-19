@@ -25,6 +25,13 @@ GitHub Pages 和 StepPage 一样是**静态托管，没有后台数据库**。�
 - **换设备迁移**：Account → Export full backup (JSON) 导出备份，在新设备上 Import backup (JSON) 导入
 - **清缓存会丢数据**，重要账目请及时导出备份（或 Export expenses as CSV）
 
+## 云同步（数据固定到云端，换设备不丢）
+
+Account → **Data sync** → Storage mode 选 `Cloud REST endpoint`，填 Endpoint URL 保存后点
+**Sync now**。之后每次新增 / 修改 / 删除支出、结算、评论都会自动推送，打开页面自动拉取。
+免费后端部署教程（Google Apps Script 现成代码 / LeanCloud / 自建 REST）见
+[`backend/README.md`](backend/README.md)。不配云同步则保持纯本地，随时可 JSON 备份迁移。
+
 ## 功能
 
 - **入口**：只问名字，无账号无密码；可选「带演示数据进入」或「空白账本开始」
