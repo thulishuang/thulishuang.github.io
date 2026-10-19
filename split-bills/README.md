@@ -12,6 +12,9 @@ splitwise.com 的移动端 App（底部标签栏 + 悬浮添加按钮 + 全屏�
 https://thulishuang.github.io/split-bills/
 ```
 
+已于 2026-10-20 从构建机 curl 验证：index.html 与 assets/ 下 4 个文件全部返回 200。
+首次推送后 GitHub Pages 构建排队约 20 分钟才生效，之后推送一般 1-2 分钟。
+
 ## 数据存在哪里（重要）
 
 GitHub Pages 和 StepPage 一样是**静态托管，没有后台数据库**。本页面的全部数据只存在
