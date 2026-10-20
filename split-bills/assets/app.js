@@ -1091,6 +1091,9 @@
             '<div class="field"><label>Ledger passphrase (optional)</label>' +
               '<input class="input" type="password" placeholder="Leave empty to store plaintext" value="' + h(state.sync.ghPass) + '" data-field="gh-pass" />' +
               '<div class="field-hint">Set one and the ledger is <b>encrypted (AES-256-GCM)</b> before it is committed \u2014 a public repo then only ever holds ciphertext. Everyone who joins enters the same passphrase. <b>There is no recovery: lose it and the ledger is unreadable.</b></div></div>' +
+            '<div class="field" id="gh-pass-confirm-field"' + (state.sync.ghPass ? '' : ' hidden') + '><label>Confirm passphrase</label>' +
+              '<input class="input" type="password" placeholder="Type it again" data-field="gh-pass-confirm" />' +
+              '<div class="field-hint">A typo here would encrypt the file with the wrong passphrase, so we check it twice.</div></div>' +
           '</div>' +
           '<div class="field" id="sync-url-field"' + (state.sync.mode !== 'rest' ? ' hidden' : '') + '><label>Endpoint URL</label>' +
             '<input class="input" placeholder="https://script.google.com/macros/s/\u2026/exec" value="' + h(state.sync.url) + '" data-field="sync-url" />' +
@@ -3068,6 +3071,12 @@
       commit();
       return;
     }
+    if (f === 'gh-pass') {
+      // reveal the confirm field while a passphrase is being entered
+      const cf = document.getElementById('gh-pass-confirm-field');
+      if (cf) cf.hidden = !el.value;
+      return;
+    }
     if (f === 'sync-room') {
       state.sync.room = el.value.trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40);
       save();
@@ -3175,9 +3184,14 @@
 
     if (kind === 'sync') {
       const g = n => { const x = form.querySelector('[data-field="' + n + '"]'); return x ? x.value : ''; };
-      const mode = g('sync-mode') === 'rest' ? 'rest' : 'local';
+      const rawMode = g('sync-mode');
+      const mode = (rawMode === 'rest' || rawMode === 'github') ? rawMode : 'local';
       const url = g('sync-url').trim();
       if (mode === 'rest' && !/^https?:\/\//.test(url)) { showToast('Endpoint must start with http(s)://'); return; }
+      if (mode === 'github' && g('gh-pass') && g('gh-pass') !== g('gh-pass-confirm')) {
+        showToast('Passphrases do not match');
+        return;
+      }
       saveSyncSettings({
         mode, url, room: g('sync-room'),
         headerName: g('sync-header-name'), headerValue: g('sync-header-value'),

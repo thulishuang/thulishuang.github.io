@@ -3,6 +3,10 @@
 **这是 Splitwise 分账网站的"后台数据库"。** 网页通过 GitHub Contents API 直接读写这里的
 `ledger.jsonl`——不需要云服务、不需要翻墙、免费、每一次同步都是一个可回滚的 commit。
 
+> 仓库里**现在没有 `ledger.jsonl`**：本仓库是公开的，所以不留任何账本明文。
+> 第一次在网页里点 **Sync now** 时文件会自动创建——如果你在 Data sync 填了
+> Ledger passphrase，创建出来的就是**加密**文件；没填则是明文（公开仓库下不推荐）。
+
 配套网站：<https://thulishuang.github.io/split-bills/>
 
 ## 常见问题：改成 private 还能用吗？
