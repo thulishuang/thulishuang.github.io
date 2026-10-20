@@ -45,7 +45,7 @@
               // change these if you host the ledger somewhere else
               ghRepo: 'thulishuang/thulishuang.github.io',
               ghPath: 'split-bills-data/ledger.jsonl',
-              ghBranch: 'main', ghToken: '', ghPrivate: null, ghVisibilityAt: 0, ghPass: '', ghShareToken: false },
+              ghBranch: 'main', ghToken: '', ghPrivate: null, ghVisibilityAt: 0, ghPass: '', ghShareToken: false, ghPathMigrated: false },
       updatedAt: new Date(0).toISOString(),
     };
   }
@@ -3302,8 +3302,24 @@
     if (meta) meta.setAttribute('content', currentTheme() === 'dark' ? '#202224' : '#1CC29F');
   }
 
+  // Older builds defaulted the ledger file to data/ledger.jsonl. Move those
+  // saved settings to the documented location once, so the repo stays tidy.
+  // Local data is untouched: the app simply creates the file at the new path
+  // on the next sync (the old file can then be deleted).
+  function migrateLedgerPath() {
+    const sy = state.sync;
+    if (sy && sy.mode === 'github' && sy.ghPath === 'data/ledger.jsonl' && !sy.ghPathMigrated) {
+      sy.ghPath = 'split-bills-data/ledger.jsonl';
+      sy.ghPathMigrated = true;
+      save();
+      return true;
+    }
+    return false;
+  }
+
   function init() {
     load();
+    const migrated = migrateLedgerPath();
     applySharedLink();
     applyTheme();
     window.addEventListener('hashchange', render);
@@ -3317,6 +3333,9 @@
       if (mq.addEventListener) mq.addEventListener('change', () => { if (state.settings.theme === 'system') { applyTheme(); render(); } });
     }
     render();
+    if (migrated) {
+      showToast('Ledger moved to split-bills-data/ledger.jsonl \u2014 sync now to write it there');
+    }
     // remote sync on startup so a new phone/browser gets the ledger
     if (syncEnabled()) {
       setTimeout(() => {
@@ -3418,6 +3437,7 @@
     toJsonl,
     ghConfigured,
     ghCheckVisibility,
+    migrateLedgerPath,
     ghEncryptJsonl,
     ghDecryptBlob,
     isEncryptedBlob,
