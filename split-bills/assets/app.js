@@ -45,7 +45,7 @@
               // change these if you host the ledger somewhere else
               ghRepo: 'thulishuang/thulishuang.github.io',
               ghPath: 'split-bills-data/ledger.jsonl',
-              ghBranch: 'main', ghToken: '' },
+              ghBranch: 'main', ghToken: '', ghPrivate: null, ghVisibilityAt: 0 },
       updatedAt: new Date(0).toISOString(),
     };
   }
@@ -2109,18 +2109,37 @@
 
   function syncStatusHtml() {
     const sy = state.sync;
-    if (!sy || sy.mode !== 'rest' || !sy.url) {
-      return '<div class="muted small">Local only &mdash; data lives in this browser. Add an endpoint to sync across phone and desktop.</div>';
+    const local = '<div class="muted small">Local only &mdash; data lives in this browser. ' +
+      'Pick a storage mode above to sync across phone and desktop.</div>';
+    if (!sy || (sy.mode !== 'rest' && sy.mode !== 'github')) return local;
+    if (sy.mode === 'rest' && !sy.url) return local;
+    if (sy.mode === 'github' && !ghConfigured()) return local;
+
+    let html = '';
+    if (sy.mode === 'github' && sy.ghPrivate === false) {
+      html += '<div class="field-err" style="background:var(--owe-tint);border-radius:var(--radius-sm);padding:8px 10px;margin-bottom:8px">' +
+        '<b>This repository is public</b> \u2014 anyone with the URL can read your ledger. ' +
+        'Switch Repository to a private repo before recording real expenses.</div>';
     }
+
     const tag = sy.status === 'syncing' ? '<span class="tag tag-gray">syncing&hellip;</span>'
       : sy.status === 'ok' ? '<span class="tag tag-green">synced</span>'
       : sy.status === 'error' ? '<span class="tag tag-orange">sync error</span>' : '';
-    const short = sy.url.length > 58 ? sy.url.slice(0, 58) + '\u2026' : sy.url;
-    let html = '<div class="flex between items-center"><div>' + tag + '</div>' +
+    html += '<div class="flex between items-center"><div>' + tag + '</div>' +
       '<div class="muted tiny">' + (sy.lastSyncAt ? 'last sync ' + C.formatDate(sy.lastSyncAt.slice(0, 10), { relative: true }) + ' ' + C.formatTime(sy.lastSyncAt) : 'never synced') + '</div></div>' +
-      (sy.lastError ? '<div class="field-err">' + h(sy.lastError) + '</div>' : '') +
-      '<div class="field-hint truncate" title="' + h(sy.url) + '">' + h(short) + '</div>' +
-      '<div class="field-hint">room: <b>' + h(syncRoom()) + '</b> &middot; auto-syncs on every change, checks the cloud every 60s</div>';
+      (sy.lastError ? '<div class="field-err">' + h(sy.lastError) + '</div>' : '');
+
+    if (sy.mode === 'github') {
+      html += '<div class="field-hint truncate" title="' + h(sy.ghRepo + ' / ' + sy.ghPath) + '">' +
+        h(sy.ghRepo + ' \u2192 ' + sy.ghPath + ' (' + (sy.ghBranch || 'main') + ')') + '</div>' +
+        '<div class="field-hint">' + (sy.ghPrivate === true ? 'private repo \u2713' : sy.ghPrivate === false ? '<b style="color:var(--owe)">public repo</b>' : 'visibility unknown') +
+        ' &middot; auto-syncs on every change, checks the repo every ' + (sy.ghToken ? '60s' : '5min') + '</div>';
+    } else {
+      const short = sy.url.length > 58 ? sy.url.slice(0, 58) + '\u2026' : sy.url;
+      html += '<div class="field-hint truncate" title="' + h(sy.url) + '">' + h(short) + '</div>' +
+        '<div class="field-hint">room: <b>' + h(syncRoom()) + '</b> &middot; auto-syncs on every change, checks the cloud every 60s</div>';
+    }
+
     if (sy.log && sy.log.length) {
       html += '<div class="mt8" style="border-top:1px solid var(--line);padding-top:8px">';
       for (const line of sy.log) {
@@ -2378,6 +2397,27 @@
       bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
     }
     return btoa(bin);
+  }
+
+  // Ask GitHub whether the ledger repo is public. A public repo means anyone
+  // with the URL can read the ledger, so the UI says so out loud.
+  async function ghCheckVisibility(force) {
+    const sy = state.sync;
+    if (!ghConfigured()) return null;
+    const now = Date.now();
+    if (!force && sy.ghVisibilityAt && now - sy.ghVisibilityAt < 600000) return sy.ghPrivate;
+    try {
+      const res = await fetch(GH_API + '/repos/' + sy.ghRepo, { headers: ghHeaders() });
+      if (!res.ok) return sy.ghPrivate;
+      const d = await res.json();
+      sy.ghPrivate = !!d.private;
+      sy.ghVisibilityAt = now;
+      save();
+      updateSyncStatusDom();
+      return sy.ghPrivate;
+    } catch (e) {
+      return sy.ghPrivate;
+    }
   }
 
   function ghConfigured() {
@@ -2780,6 +2820,7 @@
       case 'sync-now':
         showToast('Syncing\u2026');
         if (state.sync.mode === 'github') {
+          ghCheckVisibility(true);
           ghSync({ force: true }).then(r => {
             showToast(r.ok ? (r.adopted ? 'Merged from the repo' : r.readOnly ? 'Repo is up to date (read-only)' : 'Repo is up to date') : 'Sync failed: ' + r.error);
           });
@@ -3050,6 +3091,7 @@
       });
       if (mode === 'github') {
         showToast('Settings saved \u2014 testing the repo\u2026');
+        ghCheckVisibility(true);
         ghSync({ force: true }).then(r => {
           showToast(r.ok
             ? (r.adopted ? 'Merged from the repo' : r.readOnly ? 'Repo is up to date (read-only)' : 'Repo is up to date')
@@ -3228,6 +3270,7 @@
     parseJsonl,
     toJsonl,
     ghConfigured,
+    ghCheckVisibility,
     applySharedLink,
     groupBalances: gid => C.groupBalances(state, gid),
     simplifyDebts: bal => C.simplifyDebts(bal),
