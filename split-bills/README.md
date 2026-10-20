@@ -26,36 +26,27 @@ GitHub Pages 是**静态托管，没有后台数据库**。默认数据存在**�
 - **清缓存会丢数据**，重要账目请及时导出备份（或 Export expenses as CSV）
 - **要真正的云端固定存储**：见下方「云同步」——配好端点后数据就在云端，换设备不丢
 
-## 云同步（数据固定到云端，换设备不丢）
+## 云同步（数据存 Git 仓库，换设备不丢）
 
-Account → **Data sync** → Storage mode 选 `Cloud REST endpoint`，填 Endpoint URL 保存后点
-**Sync now**。之后每次新增 / 修改 / 删除支出、结算、评论都会自动推送（1.2 秒防抖，界面不卡），
-打开页面自动拉取；页面开着时每 60 秒检查一次云端，朋友的改动约 1 分钟内出现，不用刷新。
+Account → **Data sync** → Storage mode 选 `GitHub repo (JSONL file)`，Repository /
+File path / Branch 已预填好（就是本仓库的 `split-bills-data/ledger.jsonl`），
+**只需粘贴一个 GitHub token**，保存后点 Sync now。
 
-**别人不需要填 URL**：在 Data sync 里填好 Endpoint 和 Room（房间名）后，点
-**Copy share link**，把生成的 `…/#endpoint=…&room=…` 链接发给朋友——他们打开链接就自动
-配好同步，直接看到同一本账。不同朋友圈用不同 Room 即可各存各的。
+之后每次新增 / 修改 / 删除支出、结算、评论都会在 1.2 秒内自动提交到仓库；
+打开网页自动拉取；页面开着时每 60 秒检查一次，朋友的改动约 1 分钟内自动出现。
+同步日志（push / pull / retry / error 带时间和数据量）就在 Data sync 卡片底部。
 
-Data sync 卡片里有**同步日志**（push / pull / skip / error 带时间和数据量），
-同步正不正常直接看那里。免费后端部署教程（Google Apps Script 现成代码 / LeanCloud /
-自建 REST）见 [`backend/README.md`](backend/README.md)。不配云同步则保持纯本地，
-随时可 JSON 备份迁移。
+- **不需要云服务、不需要翻墙**：走 GitHub Contents API，国内可直连
+- **多设备不丢**：记录级合并——两台设备各记各的，同步后两边的记录都在
+- **可回滚**：每次同步都是一个 commit，改坏了回滚即可
+- **token 怎么来**：github.com/settings/tokens → classic token → 勾选 `repo`，
+  只存在你自己浏览器的 localStorage 里
+- **给朋友用**：Data sync → Copy share link 生成不含 token 的链接，朋友打开即配好
+- **隐私**：账本文件默认在公开仓库里（目前是演示数据）。要放真实数据，
+  建议建一个 Private 仓库，把 Repository / File path 改过去即可
 
-## 功能
-
-- **身份**：没有账号系统。**名字 + 邮箱就是身份**——同一对输入在任何设备上都推导出
-  同一个用户 ID（FNV-1a 哈希），你加的朋友用他们的名字+邮箱，他们加入同一个房间时
-  数据自动对上。没有邀请链接，加人就是直接录入名字+邮箱
-- **入口**：只问名字和邮箱；可选「带演示数据进入」或「空白账本开始」
-- **分账**：五种方式——平均分摊 / 精确金额 / 百分比 / 份额 / 调整；平均分摊余数逐分分配
-- **账本与好友**：建群（名称 / emoji / 货币 / 成员）、加好友（双人账本）、邀请链接
-- **结算**：Settle up（方向、金额、支付方式）、Simplify debts 最小转账笔数算法
-- **查询**：总余额仪表盘、群组 / 好友余额、Activity 动态流（按日分组、类型过滤）、
-  All expenses 搜索 + 筛选、Charts & totals（近 6 个月柱状图 / 分类占比）、周期账
-- **多人同步**：记录级合并——两台设备各记各的，同步后两边的记录都在
-  （按记录 ID 取并集、按时间戳取较新、删除优先），不会互相覆盖
-- **货币**：14 种货币，群级货币 + 默认货币，总余额自动换算（静态参考汇率）
-- **其他**：21 个分类图标、支出评论、收据图片（本地）、深色模式、CSV / JSON 导出导入
+详细说明（含文件格式、合并规则、多账本）见
+[`split-bills-data/README.md`](../split-bills-data/README.md)。
 
 ## 本地预览
 

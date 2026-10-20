@@ -40,7 +40,12 @@
       comments: [],
       recurring: [],
       settings: { theme: 'system', defaultCurrency: 'USD', notifications: { email: true, push: false, comments: true } },
-      sync: { mode: 'local', url: '', room: '', headerName: '', headerValue: '', lastSyncAt: null, status: 'idle', lastError: '', log: [] },
+      sync: { mode: 'local', url: '', room: '', headerName: '', headerValue: '', lastSyncAt: null, status: 'idle', lastError: '', log: [],
+              // deployment default for this GitHub Pages site (thulishuang's own repo);
+              // change these if you host the ledger somewhere else
+              ghRepo: 'thulishuang/thulishuang.github.io',
+              ghPath: 'split-bills-data/ledger.jsonl',
+              ghBranch: 'main', ghToken: '' },
       updatedAt: new Date(0).toISOString(),
     };
   }
@@ -329,6 +334,9 @@
     for (const pm of state.payments) { pm.from = rm(pm.from); pm.to = rm(pm.to); }
     for (const c of state.comments) c.userId = rm(c.userId);
     for (const r of state.recurring) r.paidBy = rm(r.paidBy);
+    // drop the placeholder record itself: every reference now points at the
+    // real identity, and leaving it behind would duplicate the person
+    if (uid !== 'u_me') delete state.users.u_me;
   }
   function me() { return user(state.meId); }
   function group(gid) { return state.groups.find(g => g.id === gid); }
@@ -1063,10 +1071,24 @@
         '<form data-form="sync" class="card-pad" style="padding-top:0">' +
           '<div class="field"><label>Storage mode</label>' +
             '<select class="select" data-field="sync-mode">' +
-              '<option value="local"' + (state.sync.mode !== 'rest' ? ' selected' : '') + '>Local only (this browser)</option>' +
-              '<option value="rest"' + (state.sync.mode === 'rest' ? ' selected' : '') + '>Cloud REST endpoint</option>' +
+              '<option value="local"' + (state.sync.mode === 'local' ? ' selected' : '') + '>Local only (this browser)</option>' +
+              '<option value="github"' + (state.sync.mode === 'github' ? ' selected' : '') + '>GitHub repo (JSONL file)</option>' +
+              '<option value="rest"' + (state.sync.mode === 'rest' ? ' selected' : '') + '>REST endpoint (advanced)</option>' +
             '</select>' +
-            '<div class="field-hint">Cloud mode keeps a copy on the endpoint; every add / edit / delete syncs automatically.</div></div>' +
+            '<div class="field-hint">GitHub mode stores your ledger as a JSONL file in a repo \u2014 no cloud service, works in China without a VPN.</div></div>' +
+
+          '<div id="gh-fields"' + (state.sync.mode !== 'github' ? ' hidden' : '') + '>' +
+            '<div class="field"><label>Repository</label>' +
+              '<input class="input" placeholder="owner/repo (e.g. thulishuang/split-bills-data)" value="' + h(state.sync.ghRepo) + '" data-field="gh-repo" />' +
+              '<div class="field-hint">A repo you own. Use a <b>private</b> repo so your ledger stays private.</div></div>' +
+            '<div class="field"><label>File path</label>' +
+              '<input class="input" placeholder="data/ledger.jsonl" value="' + h(state.sync.ghPath) + '" data-field="gh-path" /></div>' +
+            '<div class="field"><label>Branch</label>' +
+              '<input class="input" placeholder="main" value="' + h(state.sync.ghBranch) + '" data-field="gh-branch" /></div>' +
+            '<div class="field"><label>Access token (classic PAT)</label>' +
+              '<input class="input" type="password" placeholder="ghp_... or github_pat_..." value="' + h(state.sync.ghToken) + '" data-field="gh-token" />' +
+              '<div class="field-hint">github.com/settings/tokens \u2192 classic token, scope <b>repo</b>. Read-only works without a token for public repos. The token is stored only in this browser.</div></div>' +
+          '</div>' +
           '<div class="field" id="sync-url-field"' + (state.sync.mode !== 'rest' ? ' hidden' : '') + '><label>Endpoint URL</label>' +
             '<input class="input" placeholder="https://script.google.com/macros/s/\u2026/exec" value="' + h(state.sync.url) + '" data-field="sync-url" />' +
             '<div class="field-hint">GET (JSONP) returns your ledger; POST saves it. Free backend: see the Apps Script file in the project README.</div></div>' +
@@ -2045,7 +2067,10 @@
   let syncSeq = 0;
 
   function syncEnabled() {
-    return !!(state.sync && state.sync.mode === 'rest' && state.sync.url);
+    if (!state.sync) return false;
+    if (state.sync.mode === 'rest') return !!state.sync.url;
+    if (state.sync.mode === 'github') return ghConfigured();
+    return false;
   }
 
   function syncRoom() {
@@ -2273,26 +2298,247 @@
     }
   }
 
+  // push after a local change (mode-aware)
+  function autoSync() {
+    if (state.sync.mode === 'github') ghSync();
+    else if (state.sync.mode === 'rest') syncPush();
+  }
+
+  // how often to re-check the remote (mode-aware)
+  function syncPollMs() {
+    if (state.sync.mode === 'github') return state.sync.ghToken ? 60000 : 300000;
+    return 60000;
+  }
+
+  function remoteSync(opts) {
+    return state.sync.mode === 'github' ? ghSync(opts) : syncPull(opts);
+  }
+
   function scheduleAutoSync() {
     if (!syncEnabled()) return;
     clearTimeout(syncTimer);
-    syncTimer = setTimeout(() => { syncPush(); }, SYNC_DEBOUNCE_MS);
+    syncTimer = setTimeout(() => { autoSync(); }, SYNC_DEBOUNCE_MS);
   }
 
   function saveSyncSettings(fields) {
-    state.sync.mode = fields.mode === 'rest' ? 'rest' : 'local';
+    state.sync.mode = (fields.mode === 'rest' || fields.mode === 'github') ? fields.mode : 'local';
     state.sync.url = (fields.url || '').trim();
     state.sync.room = (fields.room || '').trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40);
     state.sync.headerName = (fields.headerName || '').trim();
     state.sync.headerValue = fields.headerValue || '';
+    if (fields.ghRepo !== undefined) {
+      state.sync.ghRepo = (fields.ghRepo || '').trim()
+        .replace(/^https?:\/\/github\.com\//, '')
+        .replace(/\/+$/, '')
+        .replace(/\.git$/, '');
+    }
+    if (fields.ghPath !== undefined) state.sync.ghPath = (fields.ghPath || 'data/ledger.jsonl').trim().replace(/^\/+/, '');
+    if (fields.ghBranch !== undefined) state.sync.ghBranch = (fields.ghBranch || 'main').trim();
+    if (fields.ghToken !== undefined) state.sync.ghToken = (fields.ghToken || '').trim();
     commit();
   }
 
   // link that pre-configures sync for whoever opens it
   function shareLink() {
     const base = location.origin + location.pathname;
+    if (state.sync.mode === 'github') {
+      // never put the token in a link: friends paste their own token
+      return base + '#ghrepo=' + encodeURIComponent(state.sync.ghRepo) +
+        '&ghpath=' + encodeURIComponent(state.sync.ghPath) +
+        '&ghbranch=' + encodeURIComponent(state.sync.ghBranch);
+    }
     return base + '#endpoint=' + encodeURIComponent(state.sync.url) +
       '&room=' + encodeURIComponent(syncRoom());
+  }
+
+  /* ================================================================== *
+   * GitHub-as-database mode — no cloud service, no VPN.
+   * The ledger lives in the repo as one JSON object per line (JSONL):
+   *   {"t":"expense","id":"e_1",...,"updatedAt":"..."}
+   * Folding the file = union by id, newest updatedAt wins, deletions win.
+   * Reads are plain GETs (public repos need no token at all); writes use
+   * the Contents API with the blob sha, so a stale sha is rejected (409)
+   * and we re-read, merge, and retry instead of clobbering a friend's edit.
+   * ================================================================== */
+
+  const GH_API = 'https://api.github.com';
+
+  function b64ToUtf8(b64) {
+    const bin = atob(String(b64 || '').replace(/\n/g, ''));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+
+  function utf8ToB64(str) {
+    const bytes = new TextEncoder().encode(str);
+    let bin = '';
+    const CHUNK = 0x8000;
+    for (let i = 0; i < bytes.length; i += CHUNK) {
+      bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+    }
+    return btoa(bin);
+  }
+
+  function ghConfigured() {
+    const sy = state.sync;
+    return sy.mode === 'github' && /^[^/\s]+\/[^/\s]+$/.test(sy.ghRepo || '') && !!sy.ghPath;
+  }
+
+  function ghHeaders(extra) {
+    const hdrs = Object.assign({ Accept: 'application/vnd.github+json' }, extra || {});
+    if (state.sync.ghToken) hdrs.Authorization = 'Bearer ' + state.sync.ghToken;
+    return hdrs;
+  }
+
+  function ghUrl(suffix) {
+    const sy = state.sync;
+    return GH_API + '/repos/' + sy.ghRepo + '/contents/' +
+      sy.ghPath.replace(/^\/+/, '') + (suffix || '');
+  }
+
+  // fold JSONL lines into a state-shaped object (collections + users)
+  // record type ("expense") -> state collection ("expenses")
+  const GH_TYPES = {
+    user: 'users', group: 'groups', expense: 'expenses',
+    payment: 'payments', comment: 'comments', recurring: 'recurring',
+  };
+
+  function parseJsonl(text) {
+    const out = { users: {}, groups: [], expenses: [], payments: [], comments: [], recurring: [] };
+    const seen = {};
+    for (const line of String(text || '').split('\n')) {
+      const t = line.trim();
+      if (!t || t[0] !== '{') continue;
+      let rec;
+      try { rec = JSON.parse(t); } catch (e) { continue; }
+      if (!rec || !rec.t || !rec.id || !GH_TYPES[rec.t]) continue;
+      const key = rec.t + ':' + rec.id;
+      const prev = seen[key];
+      if (prev && (prev.updatedAt || '') >= (rec.updatedAt || '')) continue;
+      seen[key] = rec;
+    }
+    for (const rec of Object.values(seen)) {
+      const coll = GH_TYPES[rec.t];
+      if (coll === 'users') out.users[rec.id] = rec;
+      else out[coll].push(rec);
+    }
+    return out;
+  }
+
+  function toJsonl(stateObj) {
+    const lines = [];
+    for (const u of Object.values(stateObj.users || {})) {
+      lines.push(JSON.stringify(Object.assign({ t: 'user' }, u)));
+    }
+    for (const type of Object.keys(GH_TYPES)) {
+      const coll = GH_TYPES[type];
+      if (coll === 'users') continue;
+      for (const rec of (stateObj[coll] || [])) {
+        lines.push(JSON.stringify(Object.assign({ t: type }, rec)));
+      }
+    }
+    return lines.join('\n') + '\n';
+  }
+
+  // GET the file; returns { ok, sha, state } (404 = brand-new ledger)
+  async function ghGet() {
+    let res;
+    try {
+      res = await fetch(ghUrl('?ref=' + encodeURIComponent(state.sync.ghBranch || 'main')), { headers: ghHeaders() });
+    } catch (e) {
+      return { ok: false, error: 'network error: ' + ((e && e.message) || e) };
+    }
+    if (res.status === 404) return { ok: true, sha: null, state: parseJsonl('') };
+    if (res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0') {
+      const reset = res.headers.get('x-ratelimit-reset');
+      const when = reset ? new Date(reset * 1000).toLocaleTimeString() : 'later';
+      return { ok: false, error: 'GitHub API rate limit reached, resets at ' + when };
+    }
+    if (!res.ok) return { ok: false, error: 'GitHub GET ' + res.status + ' ' + res.statusText };
+    let data;
+    try { data = await res.json(); } catch (e) { return { ok: false, error: 'bad GitHub response' }; }
+    if (data.type !== 'file') return { ok: false, error: 'path is not a file' };
+    const text = data.content ? b64ToUtf8(data.content) : '';
+    return { ok: true, sha: data.sha, state: parseJsonl(text) };
+  }
+
+  async function ghPut(sha, jsonl, message) {
+    const body = {
+      message: message || 'split-bills: sync ledger',
+      content: utf8ToB64(jsonl),
+      branch: state.sync.ghBranch || 'main',
+    };
+    if (sha) body.sha = sha;
+    let res;
+    try {
+      res = await fetch(ghUrl(), {
+        method: 'PUT',
+        headers: ghHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify(body),
+      });
+    } catch (e) {
+      return { ok: false, error: 'network error: ' + ((e && e.message) || e) };
+    }
+    if (res.status === 409) return { ok: false, conflict: true };
+    if (res.status === 403 || res.status === 401) {
+      let msg = 'GitHub rejected the write (' + res.status + ')';
+      if (res.status === 401) msg = 'Token invalid or expired (401)';
+      if (res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0') {
+        const reset = res.headers.get('x-ratelimit-reset');
+        msg = 'GitHub API rate limit reached, resets at ' + (reset ? new Date(reset * 1000).toLocaleTimeString() : 'later');
+      }
+      return { ok: false, error: msg };
+    }
+    if (!res.ok) {
+      let detail = '';
+      try { const j = await res.json(); detail = j.message || ''; } catch (e) {}
+      return { ok: false, error: 'GitHub PUT ' + res.status + ' ' + (detail || res.statusText) };
+    }
+    return { ok: true };
+  }
+
+  // full sync cycle: read -> merge -> write, retrying on sha conflicts
+  async function ghSync(opts) {
+    const force = opts && opts.force;
+    if (!ghConfigured()) return { ok: false, error: 'GitHub sync not configured' };
+    if (typeof fetch !== 'function' || typeof btoa !== 'function') return { ok: false, error: 'browser APIs unavailable' };
+    if (!force && syncBusy()) {
+      setSyncStatus('ok');
+      syncLog('skip', 'repo checked while you were busy \u2014 will apply when you stop typing');
+      setTimeout(() => { if (!syncBusy()) ghSync({ force: true }); }, 4000);
+      return { ok: true, deferred: true };
+    }
+    setSyncStatus('syncing');
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const got = await ghGet();
+      if (!got.ok) { setSyncStatus('error', got.error); syncLog('error', got.error); return got; }
+      const changed = mergeBackup(got.state);
+      state.updatedAt = new Date().toISOString();
+      state.sync.lastSyncAt = new Date().toISOString();
+      if (changed) { commit(); syncLog('pull', 'merged repo changes'); }
+      else { save(); }
+      if (!state.sync.ghToken) {
+        // read-only without a token: keep the repo as the source of truth for others
+        setSyncStatus('ok');
+        syncLog('pull', changed ? 'merged repo changes (read-only, no token)' : 'repo up to date (read-only, no token)');
+        return { ok: true, adopted: changed, readOnly: true };
+      }
+      const put = await ghPut(got.sha, toJsonl(state));
+      if (put.ok) {
+        setSyncStatus('ok');
+        syncLog('push', toJsonl(state).split('\n').length + ' lines committed');
+        return { ok: true, adopted: changed };
+      }
+      if (put.conflict && attempt < 3) {
+        syncLog('retry', 'someone else committed first \u2014 merging and retrying');
+        continue;
+      }
+      setSyncStatus('error', put.error);
+      syncLog('error', put.error);
+      return put;
+    }
+    return { ok: false, error: 'could not commit after 3 attempts' };
   }
 
   function exportCsv() {
@@ -2533,9 +2779,15 @@
 
       case 'sync-now':
         showToast('Syncing\u2026');
-        syncPull({ force: true }).then(r => {
-          showToast(r.ok ? (r.adopted ? 'Synced from cloud' : r.deferred ? 'Cloud is newer \u2014 will apply shortly' : 'Cloud is up to date') : 'Sync failed: ' + r.error);
-        });
+        if (state.sync.mode === 'github') {
+          ghSync({ force: true }).then(r => {
+            showToast(r.ok ? (r.adopted ? 'Merged from the repo' : r.readOnly ? 'Repo is up to date (read-only)' : 'Repo is up to date') : 'Sync failed: ' + r.error);
+          });
+        } else {
+          syncPull({ force: true }).then(r => {
+            showToast(r.ok ? (r.adopted ? 'Synced from cloud' : r.deferred ? 'Cloud is newer \u2014 will apply shortly' : 'Cloud is up to date') : 'Sync failed: ' + r.error);
+          });
+        }
         return;
       case 'copy-share-link':
         copyText(shareLink(), 'Share link copied \u2014 send it to your friends');
@@ -2677,7 +2929,7 @@
     if (f === 'draft-date' && ui.draft) { ui.draft.date = el.value; replaceTopBody(expenseFormHtml()); return; }
 
     if (f === 'sync-mode') {
-      state.sync.mode = el.value === 'rest' ? 'rest' : 'local';
+      state.sync.mode = el.value === 'rest' || el.value === 'github' ? el.value : 'local';
       commit();
       return;
     }
@@ -2791,8 +3043,19 @@
       const mode = g('sync-mode') === 'rest' ? 'rest' : 'local';
       const url = g('sync-url').trim();
       if (mode === 'rest' && !/^https?:\/\//.test(url)) { showToast('Endpoint must start with http(s)://'); return; }
-      saveSyncSettings({ mode, url, room: g('sync-room'), headerName: g('sync-header-name'), headerValue: g('sync-header-value') });
-      if (mode === 'rest') {
+      saveSyncSettings({
+        mode, url, room: g('sync-room'),
+        headerName: g('sync-header-name'), headerValue: g('sync-header-value'),
+        ghRepo: g('gh-repo'), ghPath: g('gh-path'), ghBranch: g('gh-branch'), ghToken: g('gh-token'),
+      });
+      if (mode === 'github') {
+        showToast('Settings saved \u2014 testing the repo\u2026');
+        ghSync({ force: true }).then(r => {
+          showToast(r.ok
+            ? (r.adopted ? 'Merged from the repo' : r.readOnly ? 'Repo is up to date (read-only)' : 'Repo is up to date')
+            : 'Sync failed: ' + r.error);
+        });
+      } else if (mode === 'rest') {
         showToast('Settings saved \u2014 testing endpoint\u2026');
         syncPull().then(r => {
           showToast(r.ok ? (r.adopted ? 'Synced from cloud' : 'Cloud is up to date') : 'Sync failed: ' + r.error);
@@ -2869,20 +3132,36 @@
       if (mq.addEventListener) mq.addEventListener('change', () => { if (state.settings.theme === 'system') { applyTheme(); render(); } });
     }
     render();
-    // cloud sync: pull on startup so a new phone/browser gets the ledger
+    // remote sync on startup so a new phone/browser gets the ledger
     if (syncEnabled()) {
       setTimeout(() => {
-        syncPull({ force: true }).then(r => { if (!r.ok && r.error) showToast('Cloud sync unavailable: ' + r.error); });
+        remoteSync({ force: true }).then(r => { if (!r.ok && r.error) showToast('Sync unavailable: ' + r.error); });
       }, 400);
       // light polling so a friend's new expense shows up without a refresh
       setInterval(() => {
-        if (syncEnabled() && document.visibilityState !== 'hidden') syncPull();
-      }, 60000);
+        if (syncEnabled() && document.visibilityState !== 'hidden') remoteSync();
+      }, syncPollMs());
     }
   }
 
-  // a shared link (#endpoint=...&room=...) pre-configures sync on first open
+  // a shared link pre-configures sync on first open
   function applySharedLink() {
+    const gm = /[#&]ghrepo=([^&]+)/.exec(location.hash);
+    if (gm) {
+      const repo = decodeURIComponent(gm[1]);
+      const pm = /[#&]ghpath=([^&]+)/.exec(location.hash);
+      const bm = /[#&]ghbranch=([^&]+)/.exec(location.hash);
+      if (/^[^/\s]+\/[^/\s]+$/.test(repo)) {
+        state.sync.mode = 'github';
+        state.sync.ghRepo = repo;
+        if (pm) state.sync.ghPath = decodeURIComponent(pm[1]).replace(/^\/+/, '');
+        if (bm) state.sync.ghBranch = decodeURIComponent(bm[1]);
+        commit();
+        showToast('Repo sync configured \u2014 paste your token in Account \u2192 Data sync');
+      }
+      cleanHash();
+      return;
+    }
     const m = /[#&]endpoint=([^&]+)/.exec(location.hash);
     if (!m) return;
     const url = decodeURIComponent(m[1]).replace(/\/+$/, '');
@@ -2895,7 +3174,10 @@
       commit();
       showToast('Cloud sync configured \u2014 room "' + syncRoom() + '"');
     }
-    // drop the params so the address bar stays clean
+    cleanHash();
+  }
+
+  function cleanHash() {
     try {
       if (history.replaceState) history.replaceState(null, '', location.pathname + location.search + '#/home');
       else location.hash = '#/home';
@@ -2940,6 +3222,12 @@
     mergeBackup,
     upsertUser,
     identityId,
+    ghSync,
+    ghGet,
+    ghPut,
+    parseJsonl,
+    toJsonl,
+    ghConfigured,
     applySharedLink,
     groupBalances: gid => C.groupBalances(state, gid),
     simplifyDebts: bal => C.simplifyDebts(bal),
