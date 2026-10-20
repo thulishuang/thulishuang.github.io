@@ -40,7 +40,7 @@
       comments: [],
       recurring: [],
       settings: { theme: 'system', defaultCurrency: 'USD', notifications: { email: true, push: false, comments: true } },
-      sync: { mode: 'local', url: '', headerName: '', headerValue: '', lastSyncAt: null, status: 'idle', lastError: '' },
+      sync: { mode: 'local', url: '', room: '', headerName: '', headerValue: '', lastSyncAt: null, status: 'idle', lastError: '', log: [] },
       updatedAt: new Date(0).toISOString(),
     };
   }
@@ -1037,6 +1037,9 @@
           '<div class="field" id="sync-url-field"' + (state.sync.mode !== 'rest' ? ' hidden' : '') + '><label>Endpoint URL</label>' +
             '<input class="input" placeholder="https://script.google.com/macros/s/\u2026/exec" value="' + h(state.sync.url) + '" data-field="sync-url" />' +
             '<div class="field-hint">GET (JSONP) returns your ledger; POST saves it. Free backend: see the Apps Script file in the project README.</div></div>' +
+          '<div class="field" id="sync-room-field"' + (state.sync.mode !== 'rest' ? ' hidden' : '') + '><label>Room (ledger name)</label>' +
+            '<input class="input" placeholder="default" value="' + h(state.sync.room) + '" data-field="sync-room" />' +
+            '<div class="field-hint">Everyone using the same room shares one ledger. Different friend circles use different rooms.</div></div>' +
           '<div class="field" id="sync-header-fields"' + (state.sync.mode !== 'rest' ? ' hidden' : '') + '><label>Custom header (optional)</label>' +
             '<div class="flex gap8"><input class="input" placeholder="Header name" value="' + h(state.sync.headerName) + '" data-field="sync-header-name" />' +
             '<input class="input" type="password" placeholder="Value" value="' + h(state.sync.headerValue) + '" data-field="sync-header-value" /></div>' +
@@ -1045,6 +1048,7 @@
         '</form>' +
         '<div class="rows">' +
           '<button class="row" data-act="sync-now"' + (state.sync.mode !== 'rest' || !state.sync.url ? ' hidden' : '') + ' id="sync-now-row"><div class="row-main"><div class="row-title">Sync now</div><div class="row-sub">Pull from the cloud, then push local changes</div></div><span class="row-chevron">' + icon('repeat') + '</span></button>' +
+          '<button class="row" data-act="copy-share-link"' + (state.sync.mode !== 'rest' || !state.sync.url ? ' hidden' : '') + ' id="share-link-row"><div class="row-main"><div class="row-title">Copy share link</div><div class="row-sub">Friends open it and sync starts automatically \u2014 no URL typing</div></div><span class="row-chevron">' + icon('link') + '</span></button>' +
         '</div>' +
         '<div class="card-pad" style="padding-top:0" id="sync-status" aria-live="polite">' + syncStatusHtml() + '</div>' +
       '</div>' +
@@ -1968,11 +1972,25 @@
     return !!(state.sync && state.sync.mode === 'rest' && state.sync.url);
   }
 
+  function syncRoom() {
+    return (state.sync.room || '').trim() || 'default';
+  }
+
   function syncPayload() {
     const copy = backupObject();
     copy.meId = state.meId;
+    copy.room = syncRoom();
     copy.updatedAt = state.updatedAt;
     return copy;
+  }
+
+  // append a line to the visible sync log (kept short, newest first)
+  function syncLog(kind, detail) {
+    if (!state.sync.log) state.sync.log = [];
+    state.sync.log.unshift({ at: new Date().toISOString(), kind: kind, detail: detail || '' });
+    if (state.sync.log.length > 8) state.sync.log.length = 8;
+    save();
+    updateSyncStatusDom();
   }
 
   function setSyncStatus(status, err) {
@@ -1997,10 +2015,21 @@
       : sy.status === 'ok' ? '<span class="tag tag-green">synced</span>'
       : sy.status === 'error' ? '<span class="tag tag-orange">sync error</span>' : '';
     const short = sy.url.length > 58 ? sy.url.slice(0, 58) + '\u2026' : sy.url;
-    return '<div class="flex between items-center"><div>' + tag + '</div>' +
+    let html = '<div class="flex between items-center"><div>' + tag + '</div>' +
       '<div class="muted tiny">' + (sy.lastSyncAt ? 'last sync ' + C.formatDate(sy.lastSyncAt.slice(0, 10), { relative: true }) + ' ' + C.formatTime(sy.lastSyncAt) : 'never synced') + '</div></div>' +
       (sy.lastError ? '<div class="field-err">' + h(sy.lastError) + '</div>' : '') +
-      '<div class="field-hint truncate" title="' + h(sy.url) + '">' + h(short) + '</div>';
+      '<div class="field-hint truncate" title="' + h(sy.url) + '">' + h(short) + '</div>' +
+      '<div class="field-hint">room: <b>' + h(syncRoom()) + '</b> &middot; auto-syncs on every change, checks the cloud every 60s</div>';
+    if (sy.log && sy.log.length) {
+      html += '<div class="mt8" style="border-top:1px solid var(--line);padding-top:8px">';
+      for (const line of sy.log) {
+        const t = C.formatTime(line.at);
+        const color = line.kind === 'error' ? 'var(--error)' : line.kind === 'skip' ? 'var(--owe)' : 'var(--text-3)';
+        html += '<div class="tiny" style="color:' + color + ';font-family:var(--font-head)">' + h(t) + ' &middot; ' + h(line.kind) + (line.detail ? ' &middot; ' + h(line.detail) : '') + '</div>';
+      }
+      html += '</div>';
+    }
+    return html;
   }
 
   function syncHeaders() {
@@ -2033,9 +2062,10 @@
       if (my !== syncSeq) { syncInFlight = false; return { ok: true }; }
       state.sync.lastSyncAt = new Date().toISOString();
       setSyncStatus('ok');
+      syncLog('push', Math.round(body.length / 1024) + ' KB sent');
       return { ok: true };
     } catch (e) {
-      if (my === syncSeq) setSyncStatus('error', String((e && e.message) || e));
+      if (my === syncSeq) { setSyncStatus('error', String((e && e.message) || e)); syncLog('error', 'push failed'); }
       return { ok: false, error: String((e && e.message) || e) };
     } finally {
       syncInFlight = false;
@@ -2067,7 +2097,7 @@
         reject(new Error('could not load endpoint'));
       };
       const sep = url.indexOf('?') >= 0 ? '&' : '?';
-      script.src = url + sep + 'callback=' + cb + '&t=' + Date.now();
+      script.src = url + sep + 'callback=' + cb + '&t=' + Date.now() + '&room=' + encodeURIComponent(syncRoom());
       (document.head || document.body || document.documentElement).appendChild(script);
     });
   }
@@ -2088,25 +2118,44 @@
     commit();
   }
 
-  async function syncPull() {
+  // never yank the screen away while the user is typing or a sheet is open
+  function syncBusy() {
+    if (ui.sheets && ui.sheets.length) return true;
+    const ae = document.activeElement;
+    if (ae && ae.tagName && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) return true;
+    return false;
+  }
+
+  async function syncPull(opts) {
     if (!syncEnabled()) return { ok: false, error: 'sync not configured' };
     if (typeof fetch !== 'function') return { ok: false, error: 'fetch unavailable' };
+    const force = opts && opts.force;
     setSyncStatus('syncing');
     try {
       const remote = await jsonpGet(state.sync.url);
       const v = validateBackup(remote);
-      if (!v.ok) { setSyncStatus('error', v.error); return v; }
+      if (!v.ok) { setSyncStatus('error', v.error); syncLog('error', v.error); return v; }
       if (remote.updatedAt && remote.updatedAt > state.updatedAt) {
+        if (!force && syncBusy()) {
+          // busy: remember it and retry shortly instead of interrupting
+          setSyncStatus('ok');
+          syncLog('skip', 'cloud has newer data — will apply when you stop typing');
+          setTimeout(() => { if (!syncBusy()) syncPull({ force: true }); }, 4000);
+          return { ok: true, deferred: true };
+        }
         applyBackup(remote);
         state.sync.lastSyncAt = new Date().toISOString();
         setSyncStatus('ok');
+        syncLog('pull', 'adopted newer cloud snapshot');
         return { ok: true, adopted: true };
       }
       const pushed = await syncPush();
+      if (pushed.ok) syncLog('pull', 'cloud already up to date');
       return pushed.ok ? { ok: true, adopted: false } : pushed;
     } catch (e) {
       const msg = String((e && e.message) || e);
       setSyncStatus('error', msg);
+      syncLog('error', msg);
       return { ok: false, error: msg };
     }
   }
@@ -2120,9 +2169,17 @@
   function saveSyncSettings(fields) {
     state.sync.mode = fields.mode === 'rest' ? 'rest' : 'local';
     state.sync.url = (fields.url || '').trim();
+    state.sync.room = (fields.room || '').trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40);
     state.sync.headerName = (fields.headerName || '').trim();
     state.sync.headerValue = fields.headerValue || '';
     commit();
+  }
+
+  // link that pre-configures sync for whoever opens it
+  function shareLink() {
+    const base = location.origin + location.pathname;
+    return base + '#endpoint=' + encodeURIComponent(state.sync.url) +
+      '&room=' + encodeURIComponent(syncRoom());
   }
 
   function exportCsv() {
@@ -2352,9 +2409,12 @@
 
       case 'sync-now':
         showToast('Syncing\u2026');
-        syncPull().then(r => {
-          showToast(r.ok ? (r.adopted ? 'Synced from cloud' : 'Cloud is up to date') : 'Sync failed: ' + r.error);
+        syncPull({ force: true }).then(r => {
+          showToast(r.ok ? (r.adopted ? 'Synced from cloud' : r.deferred ? 'Cloud is newer \u2014 will apply shortly' : 'Cloud is up to date') : 'Sync failed: ' + r.error);
         });
+        return;
+      case 'copy-share-link':
+        copyText(shareLink(), 'Share link copied \u2014 send it to your friends');
         return;
       case 'export-csv': exportCsv(); return;
       case 'export-json':
@@ -2499,6 +2559,11 @@
       commit();
       return;
     }
+    if (f === 'sync-room') {
+      state.sync.room = el.value.trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40);
+      save();
+      return;
+    }
     if (f === 'default-currency') { state.settings.defaultCurrency = el.value; commit(); return; }
     if (f === 'group-currency' && el.dataset.id) {
       const g = group(el.dataset.id);
@@ -2604,7 +2669,7 @@
       const mode = g('sync-mode') === 'rest' ? 'rest' : 'local';
       const url = g('sync-url').trim();
       if (mode === 'rest' && !/^https?:\/\//.test(url)) { showToast('Endpoint must start with http(s)://'); return; }
-      saveSyncSettings({ mode, url, headerName: g('sync-header-name'), headerValue: g('sync-header-value') });
+      saveSyncSettings({ mode, url, room: g('sync-room'), headerName: g('sync-header-name'), headerValue: g('sync-header-value') });
       if (mode === 'rest') {
         showToast('Settings saved \u2014 testing endpoint\u2026');
         syncPull().then(r => {
@@ -2675,6 +2740,7 @@
 
   function init() {
     load();
+    applySharedLink();
     applyTheme();
     window.addEventListener('hashchange', render);
     window.addEventListener('popstate', render);
@@ -2690,9 +2756,34 @@
     // cloud sync: pull on startup so a new phone/browser gets the ledger
     if (syncEnabled()) {
       setTimeout(() => {
-        syncPull().then(r => { if (!r.ok && r.error) showToast('Cloud sync unavailable: ' + r.error); });
+        syncPull({ force: true }).then(r => { if (!r.ok && r.error) showToast('Cloud sync unavailable: ' + r.error); });
       }, 400);
+      // light polling so a friend's new expense shows up without a refresh
+      setInterval(() => {
+        if (syncEnabled() && document.visibilityState !== 'hidden') syncPull();
+      }, 60000);
     }
+  }
+
+  // a shared link (#endpoint=...&room=...) pre-configures sync on first open
+  function applySharedLink() {
+    const m = /[#&]endpoint=([^&]+)/.exec(location.hash);
+    if (!m) return;
+    const url = decodeURIComponent(m[1]).replace(/\/+$/, '');
+    const rm = /[#&]room=([^&]+)/.exec(location.hash);
+    const room = rm ? decodeURIComponent(rm[1]).replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40) : '';
+    if (/^https?:\/\//.test(url)) {
+      state.sync.mode = 'rest';
+      state.sync.url = url;
+      if (room) state.sync.room = room;
+      commit();
+      showToast('Cloud sync configured \u2014 room "' + syncRoom() + '"');
+    }
+    // drop the params so the address bar stays clean
+    try {
+      if (history.replaceState) history.replaceState(null, '', location.pathname + location.search + '#/home');
+      else location.hash = '#/home';
+    } catch (e) { location.hash = '#/home'; }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
@@ -2729,6 +2820,9 @@
     applyBackup,
     saveSyncSettings,
     syncStatusHtml,
+    shareLink,
+    syncLog,
+    applySharedLink,
     groupBalances: gid => C.groupBalances(state, gid),
     simplifyDebts: bal => C.simplifyDebts(bal),
     activityEntries,
