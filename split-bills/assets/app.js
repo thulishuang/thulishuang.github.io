@@ -1088,6 +1088,9 @@
             '<div class="field"><label>Access token (classic PAT)</label>' +
               '<input class="input" type="password" placeholder="ghp_... or github_pat_..." value="' + h(state.sync.ghToken) + '" data-field="gh-token" />' +
               '<div class="field-hint">github.com/settings/tokens \u2192 classic token, scope <b>repo</b>. Read-only works without a token for public repos. The token is stored only in this browser.</div></div>' +
+            '<div class="field"><label>Ledger passphrase (optional)</label>' +
+              '<input class="input" type="password" placeholder="Leave empty to store plaintext" value="' + h(state.sync.ghPass) + '" data-field="gh-pass" />' +
+              '<div class="field-hint">Set one and the ledger is <b>encrypted (AES-256-GCM)</b> before it is committed \u2014 a public repo then only ever holds ciphertext. Everyone who joins enters the same passphrase. <b>There is no recovery: lose it and the ledger is unreadable.</b></div></div>' +
           '</div>' +
           '<div class="field" id="sync-url-field"' + (state.sync.mode !== 'rest' ? ' hidden' : '') + '><label>Endpoint URL</label>' +
             '<input class="input" placeholder="https://script.google.com/macros/s/\u2026/exec" value="' + h(state.sync.url) + '" data-field="sync-url" />' +
