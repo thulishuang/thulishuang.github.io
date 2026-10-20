@@ -45,7 +45,7 @@
               // change these if you host the ledger somewhere else
               ghRepo: 'thulishuang/thulishuang.github.io',
               ghPath: 'split-bills-data/ledger.jsonl',
-              ghBranch: 'main', ghToken: '', ghPrivate: null, ghVisibilityAt: 0, ghPass: '' },
+              ghBranch: 'main', ghToken: '', ghPrivate: null, ghVisibilityAt: 0, ghPass: '', ghShareToken: false },
       updatedAt: new Date(0).toISOString(),
     };
   }
@@ -1109,7 +1109,8 @@
         '</form>' +
         '<div class="rows">' +
           '<button class="row" data-act="sync-now"' + (state.sync.mode !== 'rest' || !state.sync.url ? ' hidden' : '') + ' id="sync-now-row"><div class="row-main"><div class="row-title">Sync now</div><div class="row-sub">Pull from the cloud, then push local changes</div></div><span class="row-chevron">' + icon('repeat') + '</span></button>' +
-          '<button class="row" data-act="copy-share-link"' + (state.sync.mode !== 'rest' || !state.sync.url ? ' hidden' : '') + ' id="share-link-row"><div class="row-main"><div class="row-title">Copy share link</div><div class="row-sub">Friends open it and sync starts automatically \u2014 no URL typing</div></div><span class="row-chevron">' + icon('link') + '</span></button>' +
+          '<button class="row" data-act="copy-share-link"' + (shareRowVisible() ? '' : ' hidden') + ' id="share-link-row"><div class="row-main"><div class="row-title">Copy one-click link</div><div class="row-sub">Includes your token \u2014 friends open it and can record immediately</div></div><span class="row-chevron">' + icon('link') + '</span></button>' +
+          '<button class="row" data-act="copy-share-link-plain"' + (shareRowVisible() ? '' : ' hidden') + '><div class="row-main"><div class="row-title">Copy plain link</div><div class="row-sub">No token \u2014 friends read right away and add their own token to record</div></div><span class="row-chevron">' + icon('link') + '</span></button>' +
         '</div>' +
         '<div class="card-pad" style="padding-top:0" id="sync-status" aria-live="polite">' + syncStatusHtml() + '</div>' +
       '</div>' +
@@ -2113,6 +2114,13 @@
     if (el) el.innerHTML = syncStatusHtml();
   }
 
+  // the share rows make sense whenever a remote is configured
+  function shareRowVisible() {
+    if (state.sync.mode === 'github') return !!state.sync.ghRepo;
+    if (state.sync.mode === 'rest') return !!state.sync.url;
+    return false;
+  }
+
   function syncStatusHtml() {
     const sy = state.sync;
     const local = '<div class="muted small">Local only &mdash; data lives in this browser. ' +
@@ -2369,10 +2377,16 @@
   function shareLink() {
     const base = location.origin + location.pathname;
     if (state.sync.mode === 'github') {
-      // never put the token in a link: friends paste their own token
-      return base + '#ghrepo=' + encodeURIComponent(state.sync.ghRepo) +
+      let link = base + '#ghrepo=' + encodeURIComponent(state.sync.ghRepo) +
         '&ghpath=' + encodeURIComponent(state.sync.ghPath) +
         '&ghbranch=' + encodeURIComponent(state.sync.ghBranch);
+      // The token rides along only when the user explicitly asks for a
+      // one-click link. It is a credential, so the UI warns first and the
+      // README recommends a token scoped to the ledger repo only.
+      if (state.sync.ghToken && state.sync.ghShareToken) {
+        link += '&ghtoken=' + encodeURIComponent(state.sync.ghToken);
+      }
+      return link;
     }
     return base + '#endpoint=' + encodeURIComponent(state.sync.url) +
       '&room=' + encodeURIComponent(syncRoom());
@@ -2928,7 +2942,27 @@
         }
         return;
       case 'copy-share-link':
-        copyText(shareLink(), 'Share link copied \u2014 send it to your friends');
+        if (state.sync.mode === 'github' && state.sync.ghToken && !state.sync.ghShareToken) {
+          confirmSheet({
+            title: 'Include your access token?',
+            message: 'A plain link only sets the repo and file path \u2014 friends still need their own token to record. ' +
+              'Including the token makes the link one-click (they can record immediately), but the link then IS a credential: ' +
+              'anyone who gets it can write to your repo. Only send it to people you trust, and prefer a token scoped to this repo only.',
+            confirmLabel: 'Include token',
+          }).then(yes => {
+            if (!yes) return;
+            state.sync.ghShareToken = true;
+            save();
+            copyText(shareLink(), 'One-click link copied (contains your token)');
+          });
+          return;
+        }
+        copyText(shareLink(), state.sync.ghShareToken ? 'One-click link copied (contains your token)' : 'Share link copied \u2014 send it to your friends');
+        return;
+      case 'copy-share-link-plain':
+        state.sync.ghShareToken = false;
+        save();
+        copyText(shareLink(), 'Share link copied \u2014 friends add their own token');
         return;
       case 'export-csv': exportCsv(); return;
       case 'export-json':
@@ -3302,13 +3336,17 @@
       const repo = decodeURIComponent(gm[1]);
       const pm = /[#&]ghpath=([^&]+)/.exec(location.hash);
       const bm = /[#&]ghbranch=([^&]+)/.exec(location.hash);
+      const tm = /[#&]ghtoken=([^&]+)/.exec(location.hash);
       if (/^[^/\s]+\/[^/\s]+$/.test(repo)) {
         state.sync.mode = 'github';
         state.sync.ghRepo = repo;
         if (pm) state.sync.ghPath = decodeURIComponent(pm[1]).replace(/^\/+/, '');
         if (bm) state.sync.ghBranch = decodeURIComponent(bm[1]);
+        if (tm) state.sync.ghToken = decodeURIComponent(tm[1]).trim();
         commit();
-        showToast('Repo sync configured \u2014 paste your token in Account \u2192 Data sync');
+        showToast(tm
+          ? 'Sync configured from the link \u2014 you can record right away'
+          : 'Repo sync configured \u2014 paste your token in Account \u2192 Data sync');
       }
       cleanHash();
       return;

@@ -83,9 +83,24 @@ Data sync 里的 **Ledger passphrase**（可选）填上后，账本在提交前
 
 **换设备**：新设备上填同样四项即可（token 存在各设备自己的浏览器里，不随账本同步）。
 
-**给朋友用**：Account → Data sync → **Copy share link** 生成
-`…/#ghrepo=…&ghpath=…&ghbranch=…` 链接（**不含 token**），朋友打开就配好了仓库，
-粘贴他自己的 token 就能一起记账。
+### 给朋友用：两种链接，都不用他们填 token
+
+Account → Data sync 里现在有两个按钮：
+
+| 按钮 | 链接内容 | 朋友打开后 |
+| --- | --- | --- |
+| **Copy one-click link** | 仓库 + 路径 + 分支 + **你的 token** | 直接就能记账，零输入 |
+| **Copy plain link** | 仓库 + 路径 + 分支 | 能马上看账本；要记账得自己贴一个 token |
+
+**一键链接会把 token 放进 URL**，所以：
+
+- 只发给你信任的人（链接等于凭据，谁拿到谁能写你的仓库）
+- 建议专门给这个账本建一个 **fine-grained token**：GitHub → Settings → Developer
+  settings → Fine-grained tokens → 只选 `split-bills-data` 这一个仓库、
+  只给 **Contents: Read and write**。这样即使链接泄露，影响范围也只有这一个文件，
+  而且随时可以 Revoke
+- 网页会自动把 token 从地址栏清掉（朋友浏览器的历史里不会留）
+- 账本有口令加密时，拿到链接也看不懂内容，只能覆盖——所以**口令要一起告诉朋友**
 
 ## 多个账本（互不干扰）
 

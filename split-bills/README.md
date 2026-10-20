@@ -41,7 +41,10 @@ File path / Branch 已预填好（就是本仓库的 `split-bills-data/ledger.js
 - **可回滚**：每次同步都是一个 commit，改坏了回滚即可
 - **token 怎么来**：github.com/settings/tokens → classic token → 勾选 `repo`，
   只存在你自己浏览器的 localStorage 里
-- **给朋友用**：Data sync → Copy share link 生成不含 token 的链接，朋友打开即配好
+- **给朋友用**：Data sync 有两个分享按钮——**Copy one-click link**（链接里带上你的
+  token，朋友打开就能记账，零输入）和 **Copy plain link**（不带 token，朋友只能读，
+  要记账得自己贴 token）。一键链接等于凭据，只发给信任的人，并建议用只授权这一个
+  仓库的 fine-grained token
 - **隐私 / private 仓库**：账本文件默认在公开仓库 `thulishuang.github.io` 里
   （目前只有演示数据）。**放真实数据前请建一个 Private 仓库**——数据仓库不需要
   Pages，靠 GitHub API 读写，私有仓库完全正常；而托管网页的
