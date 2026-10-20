@@ -45,7 +45,7 @@
               // change these if you host the ledger somewhere else
               ghRepo: 'thulishuang/thulishuang.github.io',
               ghPath: 'split-bills-data/ledger.jsonl',
-              ghBranch: 'main', ghToken: '', ghPrivate: null, ghVisibilityAt: 0 },
+              ghBranch: 'main', ghToken: '', ghPrivate: null, ghVisibilityAt: 0, ghPass: '' },
       updatedAt: new Date(0).toISOString(),
     };
   }
@@ -2133,6 +2133,7 @@
       html += '<div class="field-hint truncate" title="' + h(sy.ghRepo + ' / ' + sy.ghPath) + '">' +
         h(sy.ghRepo + ' \u2192 ' + sy.ghPath + ' (' + (sy.ghBranch || 'main') + ')') + '</div>' +
         '<div class="field-hint">' + (sy.ghPrivate === true ? 'private repo \u2713' : sy.ghPrivate === false ? '<b style="color:var(--owe)">public repo</b>' : 'visibility unknown') +
+        (ghEncryptOn() ? ' &middot; <b style="color:var(--owed-strong)">encrypted \u2713</b>' : '') +
         ' &middot; auto-syncs on every change, checks the repo every ' + (sy.ghToken ? '60s' : '5min') + '</div>';
     } else {
       const short = sy.url.length > 58 ? sy.url.slice(0, 58) + '\u2026' : sy.url;
@@ -2354,6 +2355,7 @@
     if (fields.ghPath !== undefined) state.sync.ghPath = (fields.ghPath || 'data/ledger.jsonl').trim().replace(/^\/+/, '');
     if (fields.ghBranch !== undefined) state.sync.ghBranch = (fields.ghBranch || 'main').trim();
     if (fields.ghToken !== undefined) state.sync.ghToken = (fields.ghToken || '').trim();
+    if (fields.ghPass !== undefined) state.sync.ghPass = fields.ghPass || '';
     commit();
   }
 
@@ -2481,6 +2483,78 @@
     return lines.join('\n') + '\n';
   }
 
+  /* ---------------- optional at-rest encryption ----------------
+   * With a passphrase set, the JSONL is encrypted (AES-256-GCM, key derived
+   * with PBKDF2-SHA256) before it is committed, so even a PUBLIC repo only
+   * ever holds ciphertext. The file stays self-describing:
+   *   {"enc":1,"salt":"...","iv":"...","data":"<base64 ciphertext>"}
+   * Losing the passphrase loses the ledger — there is no recovery.
+   * ----------------------------------------------------------- */
+
+  function ghEncryptOn() { return !!state.sync.ghPass; }
+
+  // raw bytes -> base64 (btoa takes a binary string). utf8ToB64 must NOT be
+  // used here: it would re-encode every byte >127 as multi-byte UTF-8.
+  function bytesToB64(bytes) {
+    let bin = '';
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+  }
+
+  function b64ToBytes(b64) {
+    const bin = atob(String(b64 || '').replace(/\n/g, ''));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+
+  function subtle() {
+    return (window.crypto && window.crypto.subtle) ? window.crypto.subtle : null;
+  }
+
+  async function ghDeriveKey(saltBytes) {
+    const ct = subtle();
+    if (!ct) throw new Error('WebCrypto unavailable');
+    const material = await ct.importKey(
+      'raw', new TextEncoder().encode(state.sync.ghPass), 'PBKDF2', false, ['deriveKey']);
+    return ct.deriveKey(
+      { name: 'PBKDF2', salt: saltBytes, iterations: 150000, hash: 'SHA-256' },
+      material, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  }
+
+  async function ghEncryptJsonl(text) {
+    const ct = subtle();
+    if (!ct) throw new Error('WebCrypto unavailable');
+    const salt = window.crypto.getRandomValues(new Uint8Array(16));
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+    const key = await ghDeriveKey(salt);
+    const cipher = new Uint8Array(await ct.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(text)));
+    return JSON.stringify({
+      enc: 1, kdf: 'pbkdf2-sha256', iter: 150000,
+      salt: bytesToB64(salt),
+      iv: bytesToB64(iv),
+      data: bytesToB64(cipher),
+    });
+  }
+
+  function isEncryptedBlob(text) {
+    const t = String(text || '').trim();
+    if (!t || t[0] !== '{') return false;
+    try { const o = JSON.parse(t.split('\n')[0]); return o && o.enc === 1 && !!o.data; } catch (e) { return false; }
+  }
+
+  async function ghDecryptBlob(text) {
+    const ct = subtle();
+    if (!ct) throw new Error('WebCrypto unavailable');
+    const wrapper = JSON.parse(String(text).trim().split('\n')[0]);
+    const salt = b64ToBytes(wrapper.salt);
+    const iv = b64ToBytes(wrapper.iv);
+    const data = b64ToBytes(wrapper.data);
+    const key = await ghDeriveKey(salt);
+    const plain = await ct.decrypt({ name: 'AES-GCM', iv: iv }, key, data);
+    return new TextDecoder().decode(plain);
+  }
+
   // GET the file; returns { ok, sha, state } (404 = brand-new ledger)
   async function ghGet() {
     let res;
@@ -2499,7 +2573,17 @@
     let data;
     try { data = await res.json(); } catch (e) { return { ok: false, error: 'bad GitHub response' }; }
     if (data.type !== 'file') return { ok: false, error: 'path is not a file' };
-    const text = data.content ? b64ToUtf8(data.content) : '';
+    let text = data.content ? b64ToUtf8(data.content) : '';
+    if (isEncryptedBlob(text)) {
+      if (!ghEncryptOn()) {
+        return { ok: false, error: 'This ledger is encrypted \u2014 enter the ledger passphrase in Data sync.' };
+      }
+      try {
+        text = await ghDecryptBlob(text);
+      } catch (e) {
+        return { ok: false, error: 'Could not decrypt \u2014 wrong passphrase?' };
+      }
+    }
     return { ok: true, sha: data.sha, state: parseJsonl(text) };
   }
 
@@ -2564,10 +2648,17 @@
         syncLog('pull', changed ? 'merged repo changes (read-only, no token)' : 'repo up to date (read-only, no token)');
         return { ok: true, adopted: changed, readOnly: true };
       }
-      const put = await ghPut(got.sha, toJsonl(state));
+      let body;
+      try {
+        body = ghEncryptOn() ? await ghEncryptJsonl(toJsonl(state)) : toJsonl(state);
+      } catch (e) {
+        setSyncStatus('error', 'encryption failed: ' + ((e && e.message) || e));
+        return { ok: false, error: 'encryption failed' };
+      }
+      const put = await ghPut(got.sha, body);
       if (put.ok) {
         setSyncStatus('ok');
-        syncLog('push', toJsonl(state).split('\n').length + ' lines committed');
+        syncLog('push', toJsonl(state).split('\n').length + ' lines committed' + (ghEncryptOn() ? ' (encrypted)' : ''));
         return { ok: true, adopted: changed };
       }
       if (put.conflict && attempt < 3) {
@@ -3088,6 +3179,7 @@
         mode, url, room: g('sync-room'),
         headerName: g('sync-header-name'), headerValue: g('sync-header-value'),
         ghRepo: g('gh-repo'), ghPath: g('gh-path'), ghBranch: g('gh-branch'), ghToken: g('gh-token'),
+        ghPass: g('gh-pass'),
       });
       if (mode === 'github') {
         showToast('Settings saved \u2014 testing the repo\u2026');
@@ -3271,6 +3363,9 @@
     toJsonl,
     ghConfigured,
     ghCheckVisibility,
+    ghEncryptJsonl,
+    ghDecryptBlob,
+    isEncryptedBlob,
     applySharedLink,
     groupBalances: gid => C.groupBalances(state, gid),
     simplifyDebts: bal => C.simplifyDebts(bal),
