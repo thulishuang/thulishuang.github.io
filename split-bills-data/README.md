@@ -5,13 +5,28 @@
 
 配套网站：<https://thulishuang.github.io/split-bills/>
 
-> **隐私提醒**：这个文件在 `thulishuang.github.io` 仓库里，而该仓库是公开的，
-> 意味着**任何人打开这个 URL 都能读到你的账本**。目前里面只有演示数据，没有真实账目。
+## 常见问题：改成 private 还能用吗？
+
+**能，而且应该这么做。** 关键是分清两个仓库，它们互不相干：
+
+| 仓库 | 用途 | 能不能 private |
+| --- | --- | --- |
+| `thulishuang/thulishuang.github.io` | 托管**网页本身**（GitHub Pages） | **不能**。GitHub 免费版的 Pages 只支持公开仓库（私有仓库的 Pages 需要 GitHub Pro/Team 付费版）。好在它只放代码，没有私人数据 |
+| `split-bills-data`（数据仓库） | 存放**账本 JSONL** | **能，而且推荐**。它**不需要 Pages**——网页是通过 GitHub Contents API 读写的，只要有 token，私有仓库照样能读写 |
+
+> **隐私提醒**：目前账本文件放在 `thulishuang.github.io`（公开仓库）里，
+> 意味着**任何人打开那个 URL 都能读到账本内容**。现在只有演示数据，没有真实账目。
 >
-> 要放真实数据，请建一个 **私有仓库**（GitHub → New repository → **Private** →
-> 名字如 `split-bills-data`），然后把网页 Account → Data sync 里的 Repository 改成
-> `你的用户名/split-bills-data`、File path 改成 `ledger.jsonl`，保存后点 Sync now，
-> 网页会把账本写进私有仓库。token 用同一个即可。
+> **放真实数据前，请按下面步骤切到私有仓库**（2 分钟）：
+>
+> 1. GitHub → New repository → 名字 `split-bills-data` → 选 **Private** → 创建
+> 2. 网页 Account → Data sync → Repository 改成 `你的用户名/split-bills-data`，
+>    File path 改成 `ledger.jsonl`
+> 3. 保存后点 **Sync now**，网页会把账本写进私有仓库（首次写入会自动创建文件）
+>
+> token 用同一个即可（classic token 的 `repo` scope 同时覆盖公开和私有仓库）。
+> 网页会自动检测仓库可见性：如果 Repository 指向的是公开仓库，
+> Data sync 卡片里会显示橙色警告 **"This repository is public"**。
 
 ## 文件格式
 

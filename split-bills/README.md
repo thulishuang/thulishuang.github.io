@@ -42,8 +42,14 @@ File path / Branch 已预填好（就是本仓库的 `split-bills-data/ledger.js
 - **token 怎么来**：github.com/settings/tokens → classic token → 勾选 `repo`，
   只存在你自己浏览器的 localStorage 里
 - **给朋友用**：Data sync → Copy share link 生成不含 token 的链接，朋友打开即配好
-- **隐私**：账本文件默认在公开仓库里（目前是演示数据）。要放真实数据，
-  建议建一个 Private 仓库，把 Repository / File path 改过去即可
+- **隐私 / private 仓库**：账本文件默认在公开仓库 `thulishuang.github.io` 里
+  （目前只有演示数据）。**放真实数据前请建一个 Private 仓库**——数据仓库不需要
+  Pages，靠 GitHub API 读写，私有仓库完全正常；而托管网页的
+  `thulishuang.github.io` 必须保持公开（GitHub 免费版 Pages 只支持公开仓库，
+  私有仓库的 Pages 要付费版），但它只放代码没有私人数据。
+  网页会自动检测：Repository 指向公开仓库时，Data sync 卡片会显示
+  **"This repository is public"** 警告。切换步骤见
+  [`split-bills-data/README.md`](../split-bills-data/README.md)
 
 详细说明（含文件格式、合并规则、多账本）见
 [`split-bills-data/README.md`](../split-bills-data/README.md)。
