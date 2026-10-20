@@ -87,6 +87,10 @@ html[data-theme='dark'] {
 
 * { box-sizing: border-box; }
 
+/* safety net: an SVG without explicit dimensions must never blow up a row */
+svg:not([width]):not([height]) { width: 24px; height: 24px; flex: none; }
+.row svg, .side-item svg, .tabbar svg, .icon-btn svg { flex: none; }
+
 html, body {
   margin: 0;
   padding: 0;
@@ -247,6 +251,8 @@ a { color: var(--green-deep); text-decoration: none; }
  * Desktop layout (≥960px) — Splitwise web app with left sidebar
  * ------------------------------------------------------------------ */
 
+.sidebar { display: none; }
+
 @media (min-width: 960px) {
   body { background: var(--bg-2); }
   .screen { flex-direction: row; }
@@ -350,6 +356,8 @@ a { color: var(--green-deep); text-decoration: none; }
   width: 44px; height: 44px; border-radius: var(--radius); flex: none;
   display: flex; align-items: center; justify-content: center; font-size: 22px;
   background: var(--bg-2);
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', sans-serif;
+  line-height: 1;
 }
 
 /* category chip */

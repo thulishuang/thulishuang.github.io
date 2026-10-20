@@ -52,9 +52,8 @@
         const parsed = JSON.parse(raw);
         if (parsed && parsed.version === 1) { state = parsed; return; }
       }
-    } catch (e) { /* corrupted store -> reseed */ }
+    } catch (e) { /* corrupted store -> start fresh */ }
     state = blankState();
-    seedDemo();
     save();
   }
 
@@ -280,6 +279,57 @@
   }
 
   function user(uid) { return state.users[uid] || { id: uid, name: 'Unknown', color: '#95A0AA' }; }
+
+  /* ------------------------------------------------------------------ *
+   * Identity — no accounts, no invites. The pair (name, email) IS the
+   * account: the same inputs always derive the same id, on every device,
+   * so a friend you add here and the same friend joining the shared room
+   * resolve to one person. (FNV-1a over the normalized pair.)
+   * ------------------------------------------------------------------ */
+
+  function identityId(name, email) {
+    const key = String(email || '').trim().toLowerCase() + '|' + String(name || '').trim().toLowerCase();
+    let h = 0x811c9dc5;
+    for (let i = 0; i < key.length; i++) {
+      h ^= key.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return 'u_' + h.toString(36);
+  }
+
+  const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+  // create-or-update the user record for an identity; returns the id
+  function upsertUser(name, email) {
+    const uid = identityId(name, email);
+    const existing = state.users[uid];
+    if (existing) {
+      if (name) existing.name = name;
+      if (email) existing.email = email;
+      return uid;
+    }
+    state.users[uid] = { id: uid, name: name || 'Me', email: email || '', color: C.avatarColor(uid) };
+    return uid;
+  }
+
+  // stamp a record as modified (used by the sync merge to pick winners)
+  function touch(rec) {
+    if (rec) rec.updatedAt = new Date().toISOString();
+    return rec;
+  }
+
+  // remap the demo ledger's placeholder "me" onto the real identity
+  function adoptDemoAsMe(uid) {
+    const rm = v => (v === 'u_me' ? uid : v);
+    for (const g of state.groups) g.members = g.members.map(rm);
+    for (const e of state.expenses) {
+      e.paidBy = rm(e.paidBy);
+      e.splits = e.splits.map(sp => ({ userId: rm(sp.userId), cents: sp.cents }));
+    }
+    for (const pm of state.payments) { pm.from = rm(pm.from); pm.to = rm(pm.to); }
+    for (const c of state.comments) c.userId = rm(c.userId);
+    for (const r of state.recurring) r.paidBy = rm(r.paidBy);
+  }
   function me() { return user(state.meId); }
   function group(gid) { return state.groups.find(g => g.id === gid); }
 
@@ -424,7 +474,7 @@
           ).join('') +
         '</nav></div>' +
         '<nav class="side-nav mt8">' +
-          sideItem('#/invite', 'userPlus', 'Invite friends', r === 'invite') +
+          sideItem('#/all-expenses', 'search', 'All expenses', r === 'all-expenses') +
         '</nav>' +
         '<div class="side-foot"><nav class="side-nav">' +
           sideItem('#/account', 'sliders', 'Account settings', r === 'account') +
@@ -482,7 +532,6 @@
       case 'activity': return { title: 'Activity', body: activityScreen() };
       case 'account': return { title: 'Account', body: accountScreen() };
       case 'all-expenses': return { title: 'All expenses', body: allExpensesScreen() };
-      case 'invite': return { title: 'Invite friends', back: true, body: inviteScreen() };
       case 'expense': {
         const e = state.expenses.find(x => x.id === parts[1] && !x.deleted);
         return e ? { title: 'Expense', back: true, actions: expenseActions(e), body: expenseDetailScreen(e) }
@@ -551,6 +600,13 @@
           '<div><div class="k">You are owed</div><div class="v amt-pos">' + C.formatMoney(sum.owed, cur) + '</div></div>' +
           '<div><div class="k">You owe</div><div class="v amt-neg">' + C.formatMoney(sum.owe, cur) + '</div></div>' +
         '</div>' +
+      '</div>' +
+      '<div class="rows" style="border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:4px;background:var(--bg)">' +
+        '<a class="row" href="#/all-expenses">' +
+          '<div class="cat-chip sm" style="background:var(--green-tint-strong);color:var(--green-dark)">' + icon('search') + '</div>' +
+          '<div class="row-main"><div class="row-title">All expenses</div>' +
+          '<div class="row-sub">Search, filter and export everything</div></div>' +
+          '<span class="row-chevron">' + icon('chevron') + '</span></a>' +
       '</div>' +
       '<div class="section-head"><h2>Groups</h2><button class="link-btn" data-act="new-group">Create</button></div>' +
       groupsHtml +
@@ -957,29 +1013,6 @@
       '<span class="tag tag-gray">' + exps.length + ' expenses</span></div>';
   }
 
-  /* ---------------- Invite ---------------- */
-
-  function inviteScreen() {
-    const link = 'https://splitwise.example/join/' + String(state.meId).slice(-6) + Math.random().toString(36).slice(2, 6);
-    return '' +
-      '<div class="card card-pad">' +
-        '<div class="field-label">Invite link</div>' +
-        '<div class="flex gap8"><input class="input" readonly value="' + h(link) + '" id="invite-link" />' +
-        '<button class="btn btn-primary" data-act="copy-invite">' + icon('copy') + ' Copy</button></div>' +
-        '<div class="field-hint">Anyone with this link can join your groups. Links are fake in this demo.</div>' +
-      '</div>' +
-      '<div class="card"><div class="card-title">Invite by email</div>' +
-        '<form data-form="invite-email" class="card-pad" style="padding-top:0">' +
-          '<div class="field"><input class="input" type="email" placeholder="friend@example.com" data-field="invite-email" /></div>' +
-          '<button class="btn btn-primary btn-block" type="submit">' + icon('mail') + ' Send invite</button>' +
-        '</form></div>' +
-      '<div class="card"><div class="rows">' +
-        '<button class="row" data-act="copy-invite"><div class="row-main"><div class="row-title">Copy link</div></div><span class="row-chevron">' + icon('link') + '</span></button>' +
-        '<button class="row" data-act="fake-share" data-what="Email"><div class="row-main"><div class="row-title">Email</div></div><span class="row-chevron">' + icon('mail') + '</span></button>' +
-        '<button class="row" data-act="fake-share" data-what="Messages"><div class="row-main"><div class="row-title">Messages</div></div><span class="row-chevron">' + icon('comment') + '</span></button>' +
-      '</div></div>';
-  }
-
   /* ---------------- Account ---------------- */
 
   function accountScreen() {
@@ -1153,6 +1186,9 @@
           '<form data-form="name" id="name-form">' +
             '<div class="field"><label>Your name</label>' +
               '<input class="input" id="auth-name" placeholder="e.g. Alex Morgan" autocomplete="name" /></div>' +
+            '<div class="field"><label>Email</label>' +
+              '<input class="input" id="auth-email" type="email" placeholder="you@example.com" autocomplete="email" />' +
+              '<div class="field-hint">Name + email is your identity \u2014 the same pair always resolves to the same account, on any device.</div></div>' +
             '<button class="btn btn-primary btn-block btn-lg" type="button" data-act="enter-app" data-mode="demo">Start recording</button>' +
           '</form>' +
           '<div class="auth-alt">or</div>' +
@@ -1165,22 +1201,33 @@
   // enter the app: `mode` is 'demo' (sample data) or 'blank' (empty ledger)
   function enterApp(mode) {
     const nameEl = document.getElementById('auth-name');
+    const emailEl = document.getElementById('auth-email');
     const name = (nameEl && nameEl.value ? nameEl.value : '').trim() || 'Me';
-    const u = me();
-    u.name = name;
-    u.email = '';
+    const email = (emailEl && emailEl.value ? emailEl.value : '').trim();
+    if (!email || !EMAIL_RE.test(email)) {
+      showToast('Enter a valid email \u2014 name + email is your identity');
+      const el = document.getElementById('auth-email');
+      if (el) el.focus();
+      return;
+    }
+    const uid = upsertUser(name, email);
     if (mode === 'blank') {
       state.groups = [];
       state.expenses = [];
       state.payments = [];
       state.comments = [];
       state.recurring = [];
-    } else if (!state.groups.length) {
-      seedDemo();
-      state.meId = 'u_me';
-      me().name = name;
+      state.meId = uid;
+    } else {
+      // first run on this device: build the sample ledger around this identity
+      if (!state.groups.length) {
+        seedDemo();                 // replaces state wholesale...
+        adoptDemoAsMe(uid);         // ...so re-add this identity afterwards
+        state.users[uid] = { id: uid, name: name, email: email, color: C.avatarColor(uid) };
+      }
+      state.meId = uid;
     }
-    state.session = { name };
+    state.session = { name, email };
     commit();
     go('#/home');
     showToast('Welcome, ' + name);
@@ -1513,6 +1560,7 @@
       id: null,
       kind: kind || 'group',
       name: '',
+      email: '',
       emoji: kind === 'friend' ? '' : '\u{1F389}',
       currency: state.settings.defaultCurrency,
       members: [state.meId],
@@ -1536,7 +1584,10 @@
 
       '<div class="field"><label>' + (d.kind === 'friend' ? 'Friend name' : 'Emoji') + '</label>' +
         (d.kind === 'friend'
-          ? '<input class="input" placeholder="Sam Rivera" value="' + h(d.name) + '" data-field="friend-name" />'
+          ? '<input class="input" placeholder="Sam Rivera" value="' + h(d.name) + '" data-field="friend-name" />' +
+            '<div class="field" style="margin-top:12px"><label>Friend email</label>' +
+            '<input class="input" type="email" placeholder="sam@example.com" value="' + h(d.email || '') + '" data-field="friend-email" />' +
+            '<div class="field-hint">Their name + email becomes their identity \u2014 if they ever join the same room, everything lines up.</div></div>'
           : '<div class="chips">' +
             ['\u{1F5FE}', '\u{1F3E0}', '\u{1F97E}', '✈️', '\u{1F35C}', '\u{1F389}', '\u{1F697}', '\u{1F393}', '⚽', '\u{1F3AE}', '\u{1F436}', '\u{1F4BC}'].map(em =>
               '<button type="button" class="chip' + (d.emoji === em ? ' on' : '') + '" data-act="pick-group-emoji" data-emoji="' + em + '" style="font-size:18px">' + em + '</button>').join('') +
@@ -1557,7 +1608,15 @@
             '<label class="check"><input type="checkbox" data-member="' + u.id + '"' + (d.members.includes(u.id) ? ' checked' : '') + ' /><span class="box">' + icon('check') + '</span></label>' +
             '</div>').join('') +
         '</div>' +
-        '<div class="field-hint">Invited members join instantly in this demo.</div></div>';
+        '<div class="field-hint">Pick people you already know, or add someone new by name + email below.</div></div>' +
+
+      '<div class="field"><label>Add someone new</label>' +
+        '<div class="flex gap8">' +
+          '<input class="input" placeholder="Name" data-field="new-person-name" />' +
+          '<input class="input" type="email" placeholder="Email" data-field="new-person-email" />' +
+        '</div>' +
+        '<button type="button" class="btn btn-secondary btn-block mt8" data-act="add-new-person">' + icon('userPlus') + ' Add person</button>' +
+        '<div class="field-hint">No invite is sent \u2014 the person is added to this ledger directly.</div></div>';
   }
 
   /* ---------------- Add member to group ---------------- */
@@ -1589,10 +1648,13 @@
             '</div>').join('') + '</div>'
           : '<div class="muted small">Everyone you know is already in this group.</div>') +
       '</div>' +
-      '<div class="field"><label>Or invite by email</label>' +
-        '<div class="flex gap8"><input class="input" placeholder="friend@example.com" data-field="invite-email" />' +
-        '<button class="btn btn-secondary" data-act="invite-member">Invite</button></div>' +
-        '<div class="field-hint">A fake invite is added instantly as a member.</div></div>';
+      '<div class="field"><label>Add someone new</label>' +
+        '<div class="flex gap8">' +
+          '<input class="input" placeholder="Name" data-field="new-person-name" />' +
+          '<input class="input" type="email" placeholder="Email" data-field="new-person-email" />' +
+        '</div>' +
+        '<button type="button" class="btn btn-secondary btn-block mt8" data-act="add-new-person">' + icon('userPlus') + ' Add person</button>' +
+        '<div class="field-hint">No invite is sent \u2014 name + email creates their identity and adds them to this group.</div></div>';
   }
 
   /* ---------------- Profile edit ---------------- */
@@ -1620,6 +1682,9 @@
       '</div>' +
       '<div class="field"><label>Your name</label>' +
         '<input class="input" value="' + h(d.name) + '" data-field="profile-name" /></div>' +
+      '<div class="field"><label>Email (your identity)</label>' +
+        '<input class="input" value="' + h(d.email) + '" readonly style="background:var(--bg-2);color:var(--text-3)" />' +
+        '<div class="field-hint">Name + email is your account. To change it, exit to the name screen and enter the new pair.</div></div>' +
       '<div class="field"><label>Avatar color</label><div class="chips">' +
         ['#1CC29F', '#9153D2', '#F96817', '#EE87A0', '#1D856C', '#7B44B5', '#D34508', '#18A582'].map(c =>
           '<button type="button" class="chip" style="width:38px;height:38px;padding:0;border-radius:999px;background:' + c + ';border:3px solid ' + (d.color === c ? 'var(--text)' : 'transparent') + '" data-act="pick-color" data-color="' + c + '" aria-label="Color"></button>').join('') +
@@ -1752,10 +1817,10 @@
 
     if (d.expenseId) {
       const e = state.expenses.find(x => x.id === d.expenseId);
-      if (e) Object.assign(e, payload, { updatedAt: new Date().toISOString() });
+      if (e) { Object.assign(e, payload); touch(e); }
       showToast('Expense updated');
     } else {
-      state.expenses.push(Object.assign({ id: C.id('e'), createdAt: new Date().toISOString() }, payload));
+      state.expenses.push(Object.assign({ id: C.id('e'), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }, payload));
       showToast('Expense added');
     }
     commit();
@@ -1778,6 +1843,7 @@
       method: d.method,
       note: (d.note || '').trim(),
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
     commit();
     showToast('Payment recorded');
@@ -1788,10 +1854,11 @@
     const e = state.expenses.find(x => x.id === expenseId);
     if (!e) return;
     e.deleted = true;
+    touch(e);
     commit();
     showToast('Expense deleted', {
       label: 'Undo',
-      fn: () => { e.deleted = false; commit(); showToast('Expense restored'); },
+      fn: () => { e.deleted = false; touch(e); commit(); showToast('Expense restored'); },
     });
   }
 
@@ -1804,12 +1871,16 @@
     if (!members.includes(state.meId)) members.push(state.meId);
 
     if (d.kind === 'friend') {
+      const email = (d.email || '').trim();
+      if (!email || !EMAIL_RE.test(email)) return { ok: false, error: 'Enter a valid email for your friend.' };
+      const fid = upsertUser(name, email);
       const gid = C.id('f');
       state.groups.push({
         id: gid, kind: 'friend', name, emoji: '',
         currency: state.settings.defaultCurrency,
-        members, simplifyDebts: false,
+        members: [state.meId, fid], simplifyDebts: false,
         createdAt: new Date().toISOString(), createdBy: state.meId,
+        updatedAt: new Date().toISOString(),
       });
       commit();
       showToast('Friend added');
@@ -1822,6 +1893,7 @@
       currency: d.currency || state.settings.defaultCurrency,
       members, simplifyDebts: false,
       createdAt: new Date().toISOString(), createdBy: state.meId,
+      updatedAt: new Date().toISOString(),
     });
     commit();
     showToast('Group created');
@@ -1842,6 +1914,7 @@
         }
       }
     }
+    touch(g);
     commit();
     showToast(d.selected.length + ' member' + (d.selected.length === 1 ? '' : 's') + ' added');
     return { ok: true };
@@ -1854,6 +1927,7 @@
     u.email = (d.email || '').trim();
     u.color = d.color;
     u.photo = d.photo || '';
+    touch(u);
     commit();
     showToast('Profile saved');
   }
@@ -1874,6 +1948,7 @@
       cadence: d.cadence,
       nextDate: d.nextDate,
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
     commit();
     showToast('Recurring expense added');
@@ -1895,6 +1970,7 @@
       paidBy: r.paidBy,
       date: C.todayISO(),
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       splitMethod: 'equal',
       splits: g.members.map((m, i) => ({ userId: m, cents: parts[i] })),
       notes: 'Added from recurring expense',
@@ -2102,20 +2178,53 @@
     });
   }
 
-  // adopt a remote snapshot, keeping the current session
-  function applyBackup(remote) {
-    const session = state.session;
-    state.users = remote.users;
-    state.groups = remote.groups;
-    state.expenses = remote.expenses;
-    state.payments = remote.payments || [];
-    state.comments = remote.comments || [];
-    state.recurring = remote.recurring || [];
-    if (remote.settings) state.settings = remote.settings;
-    state.meId = remote.meId || state.meId;
-    state.updatedAt = remote.updatedAt || state.updatedAt;
-    state.session = session;
-    commit();
+  /* ------------------------------------------------------------------ *
+   * Record-level merge. Instead of replacing the whole ledger with the
+   * cloud copy (which loses whatever this device added since the last
+   * sync), we union every collection by record id and keep the newer
+   * version of each record. Deletions win over undeleted copies.
+   * This is what makes two phones adding expenses to the same room both
+   * survive, instead of the last writer erasing the other.
+   * ------------------------------------------------------------------ */
+
+  function newerRec(a, b) {
+    if (!a) return b;
+    if (!b) return a;
+    if (!!a.deleted !== !!b.deleted) return a.deleted ? a : b;
+    const at = a.updatedAt || a.createdAt || '';
+    const bt = b.updatedAt || b.createdAt || '';
+    return bt > at ? b : a;
+  }
+
+  // returns true when local state changed
+  function mergeBackup(remote) {
+    let changed = false;
+    const stamp = rec => { changed = true; return rec; };
+
+    for (const u of Object.values(remote.users || {})) {
+      const local = state.users[u.id];
+      if (!local) { state.users[u.id] = stamp(u); continue; }
+      const win = newerRec(local, u);
+      if (win !== local) state.users[u.id] = stamp(win);
+    }
+
+    const mergeArr = (localArr, key) => {
+      const byId = {};
+      for (const r of localArr) byId[r.id] = r;
+      for (const r of (remote[key] || [])) {
+        const win = newerRec(byId[r.id], r);
+        if (win !== byId[r.id]) byId[r.id] = stamp(win);
+        else if (!byId[r.id]) byId[r.id] = stamp(r);
+      }
+      return Object.values(byId);
+    };
+
+    state.groups = mergeArr(state.groups, 'groups');
+    state.expenses = mergeArr(state.expenses, 'expenses');
+    state.payments = mergeArr(state.payments, 'payments');
+    state.comments = mergeArr(state.comments, 'comments');
+    state.recurring = mergeArr(state.recurring, 'recurring');
+    return changed;
   }
 
   // never yank the screen away while the user is typing or a sheet is open
@@ -2135,23 +2244,27 @@
       const remote = await jsonpGet(state.sync.url);
       const v = validateBackup(remote);
       if (!v.ok) { setSyncStatus('error', v.error); syncLog('error', v.error); return v; }
-      if (remote.updatedAt && remote.updatedAt > state.updatedAt) {
-        if (!force && syncBusy()) {
-          // busy: remember it and retry shortly instead of interrupting
-          setSyncStatus('ok');
-          syncLog('skip', 'cloud has newer data — will apply when you stop typing');
-          setTimeout(() => { if (!syncBusy()) syncPull({ force: true }); }, 4000);
-          return { ok: true, deferred: true };
-        }
-        applyBackup(remote);
-        state.sync.lastSyncAt = new Date().toISOString();
+      if (!force && syncBusy()) {
+        // busy: don't re-render under the user's hands; retry shortly
         setSyncStatus('ok');
-        syncLog('pull', 'adopted newer cloud snapshot');
-        return { ok: true, adopted: true };
+        syncLog('skip', 'cloud checked while you were busy — will apply when you stop typing');
+        setTimeout(() => { if (!syncBusy()) syncPull({ force: true }); }, 4000);
+        return { ok: true, deferred: true };
       }
+      const changed = mergeBackup(remote);
+      state.updatedAt = new Date().toISOString();
+      state.sync.lastSyncAt = new Date().toISOString();
+      if (changed) {
+        commit();
+        syncLog('pull', 'merged cloud changes');
+      } else {
+        save();
+        syncLog('pull', 'cloud already up to date');
+      }
+      setSyncStatus('ok');
+      // converge: push the merged result so every device ends up identical
       const pushed = await syncPush();
-      if (pushed.ok) syncLog('pull', 'cloud already up to date');
-      return pushed.ok ? { ok: true, adopted: false } : pushed;
+      return pushed.ok ? { ok: true, adopted: changed } : pushed;
     } catch (e) {
       const msg = String((e && e.message) || e);
       setSyncStatus('error', msg);
@@ -2296,6 +2409,7 @@
         const g = group(id);
         if (!g) return;
         g.members = g.members.filter(m => m !== t.dataset.uid);
+        touch(g);
         commit();
         showToast('Member removed');
         return;
@@ -2364,7 +2478,7 @@
 
       case 'pick-emoji': {
         const g = group(id);
-        if (g) { g.emoji = t.dataset.emoji; commit(); }
+        if (g) { g.emoji = t.dataset.emoji; touch(g); commit(); }
         return;
       }
       case 'pick-group-emoji':
@@ -2381,17 +2495,27 @@
         return;
 
       case 'add-member': openMemberSheet(id); return;
-      case 'invite-member': {
-        const email = val('[data-field="invite-email"]') || (document.querySelector('[data-field="invite-email"]') || {}).value || '';
-        if (!email || !email.includes('@')) { showToast('Enter a valid email'); return; }
-        const uid = C.id('u');
-        const name = email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-        state.users[uid] = { id: uid, name, email, color: C.avatarColor(email) };
-        const g = group(ui.memberDraft.groupId);
-        if (g) g.members.push(uid);
-        commit();
-        showToast('Invite accepted — ' + name + ' joined');
-        closeSheet();
+      case 'add-new-person': {
+        const nameEl = document.querySelector('[data-field="new-person-name"]');
+        const emailEl = document.querySelector('[data-field="new-person-email"]');
+        const pname = (nameEl && nameEl.value ? nameEl.value : '').trim();
+        const pemail = (emailEl && emailEl.value ? emailEl.value : '').trim();
+        if (!pname) { showToast('Enter a name'); return; }
+        if (!pemail || !EMAIL_RE.test(pemail)) { showToast('Enter a valid email'); return; }
+        const uid = upsertUser(pname, pemail);
+        const g = ui.memberDraft ? group(ui.memberDraft.groupId) : null;
+        if (g) {
+          if (!g.members.includes(uid)) g.members.push(uid);
+          touch(g);
+          if (!ui.memberDraft.selected.includes(uid)) ui.memberDraft.selected.push(uid);
+          commit();
+          showToast(pname + ' added to ' + g.name);
+          replaceTopBody(memberSheetHtml());
+        } else if (ui.groupDraft) {
+          if (!ui.groupDraft.members.includes(uid)) ui.groupDraft.members.push(uid);
+          showToast(pname + ' will join the new group');
+          replaceTopBody(groupFormHtml());
+        }
         return;
       }
 
@@ -2421,12 +2545,6 @@
         downloadJson(backupObject(), 'splitwise-backup.json');
         showToast('Backup exported');
         return;
-      case 'copy-invite': {
-        const el = $('#invite-link');
-        copyText(el ? el.value : location.href, 'Invite link copied');
-        return;
-      }
-      case 'fake-share': showToast('Shared via ' + t.dataset.what); return;
 
       case 'reset-demo':
         confirmSheet({
@@ -2435,9 +2553,12 @@
           confirmLabel: 'Reset', danger: true,
         }).then(ok => {
           if (!ok) return;
-          seedDemo();
-          state.session = { email: 'alex@example.com' };
-          state.meId = 'u_me';
+          const meRec = me();
+          const session = state.session;
+          seedDemo();                 // replaces state wholesale...
+          adoptDemoAsMe(state.meId);  // ...so restore our identity afterwards
+          state.users[state.meId] = meRec;
+          state.session = session;
           commit();
           applyTheme();
           go('#/home');
@@ -2501,6 +2622,7 @@
     if (f === 'settle-note' && ui.settleDraft) { ui.settleDraft.note = el.value; return; }
     if (f === 'group-name' && ui.groupDraft) { ui.groupDraft.name = el.value; return; }
     if (f === 'friend-name' && ui.groupDraft) { ui.groupDraft.name = el.value; return; }
+    if (f === 'friend-email' && ui.groupDraft) { ui.groupDraft.email = el.value; return; }
     if (f === 'profile-name' && ui.profileDraft) { ui.profileDraft.name = el.value; return; }
     if (f === 'profile-email' && ui.profileDraft) { ui.profileDraft.email = el.value; return; }
     if (f === 'rec-description' && ui.recurringDraft) { ui.recurringDraft.description = el.value; return; }
@@ -2567,7 +2689,7 @@
     if (f === 'default-currency') { state.settings.defaultCurrency = el.value; commit(); return; }
     if (f === 'group-currency' && el.dataset.id) {
       const g = group(el.dataset.id);
-      if (g) { g.currency = el.value; commit(); }
+      if (g) { g.currency = el.value; touch(g); commit(); }
       return;
     }
     if (f === 'rec-category' && ui.recurringDraft) { ui.recurringDraft.categoryId = el.value; return; }
@@ -2606,7 +2728,7 @@
     }
     if (el.dataset && el.dataset.simplify) {
       const g = group(el.dataset.simplify);
-      if (g) { g.simplifyDebts = el.checked; commit(); }
+      if (g) { g.simplifyDebts = el.checked; touch(g); commit(); }
       return;
     }
 
@@ -2691,6 +2813,7 @@
         userId: state.meId,
         text,
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       });
       commit();
       showToast('Comment posted');
@@ -2705,19 +2828,12 @@
         const name = nameEl.value.trim();
         if (name) g.name = name;
       }
+      touch(g);
       commit();
       showToast('Group updated');
       return;
     }
 
-    if (kind === 'invite-email') {
-      const el = form.querySelector('[data-field="invite-email"]');
-      const email = (el.value || '').trim();
-      if (!email || !email.includes('@')) { showToast('Enter a valid email'); return; }
-      showToast('Invite sent to ' + email);
-      el.value = '';
-      return;
-    }
   });
 
   /* ================================================================== *
@@ -2817,11 +2933,13 @@
     syncPush,
     syncPull,
     syncPayload,
-    applyBackup,
     saveSyncSettings,
     syncStatusHtml,
     shareLink,
     syncLog,
+    mergeBackup,
+    upsertUser,
+    identityId,
     applySharedLink,
     groupBalances: gid => C.groupBalances(state, gid),
     simplifyDebts: bal => C.simplifyDebts(bal),
