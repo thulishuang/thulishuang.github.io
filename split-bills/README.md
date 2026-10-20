@@ -28,9 +28,17 @@ GitHub Pages 和 StepPage 一样是**静态托管，没有后台数据库**。�
 ## 云同步（数据固定到云端，换设备不丢）
 
 Account → **Data sync** → Storage mode 选 `Cloud REST endpoint`，填 Endpoint URL 保存后点
-**Sync now**。之后每次新增 / 修改 / 删除支出、结算、评论都会自动推送，打开页面自动拉取。
-免费后端部署教程（Google Apps Script 现成代码 / LeanCloud / 自建 REST）见
-[`backend/README.md`](backend/README.md)。不配云同步则保持纯本地，随时可 JSON 备份迁移。
+**Sync now**。之后每次新增 / 修改 / 删除支出、结算、评论都会自动推送（1.2 秒防抖，界面不卡），
+打开页面自动拉取；页面开着时每 60 秒检查一次云端，朋友的改动约 1 分钟内出现，不用刷新。
+
+**别人不需要填 URL**：在 Data sync 里填好 Endpoint 和 Room（房间名）后，点
+**Copy share link**，把生成的 `…/#endpoint=…&room=…` 链接发给朋友——他们打开链接就自动
+配好同步，直接看到同一本账。不同朋友圈用不同 Room 即可各存各的。
+
+Data sync 卡片里有**同步日志**（push / pull / skip / error 带时间和数据量），
+同步正不正常直接看那里。免费后端部署教程（Google Apps Script 现成代码 / LeanCloud /
+自建 REST）见 [`backend/README.md`](backend/README.md)。不配云同步则保持纯本地，
+随时可 JSON 备份迁移。
 
 ## 功能
 
